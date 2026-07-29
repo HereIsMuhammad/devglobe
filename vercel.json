@@ -1,4 +1,7 @@
 {
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": ".",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
@@ -6,7 +9,7 @@
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "s-maxage=86400, stale-while-revalidate" }
+        { "key": "Cache-Control", "value": "s-maxage=3600, stale-while-revalidate=600" }
       ]
     }
   ]
