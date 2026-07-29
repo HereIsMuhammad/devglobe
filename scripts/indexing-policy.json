@@ -1,0 +1,8 @@
+{
+  "indexingMode": "consistent",
+  "automatic": true,
+  "includedPaths": [{"path": "/*"}],
+  "excludedPaths": [{"path": "/embedding/*"}, {"path": "/\"_etag\"/?"}],
+  "vectorIndexes": [{"path": "/embedding", "type": "quantizedFlat"}],
+  "fullTextIndexes": [{"path": "/login"}, {"path": "/name"}, {"path": "/location"}, {"path": "/bio"}, {"path": "/topLanguage"}]
+}
