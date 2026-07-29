@@ -1,0 +1,11 @@
+node_modules/
+.env
+.vercel
+data/developers.json
+data/github-raw.json
+data/github-so-merged.json
+data/github-so-geo.json
+data/fetch-progress.json
+data/geocode-cache.json
+data/pipeline.log
+*.log

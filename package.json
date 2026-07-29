@@ -1,0 +1,23 @@
+{
+  "name": "dev-globe-viz",
+  "version": "1.0.0",
+  "description": "Interactive 3D globe visualization of top GitHub developers",
+  "scripts": {
+    "dev": "node server.js",
+    "build-data": "node scripts/build-dataset.js",
+    "fetch-github": "node scripts/fetch-github.js",
+    "fetch-stackoverflow": "node scripts/fetch-stackoverflow.js",
+    "geocode": "node scripts/geocode.js",
+    "upload-cosmos": "node scripts/upload-cosmosdb.js"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.10.0",
+    "dotenv": "^16.4.5",
+    "express": "^5.2.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  },
+  "type": "module"
+}

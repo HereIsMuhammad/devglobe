@@ -1,0 +1,601 @@
+[
+  {
+    "login": "torvalds",
+    "name": "Linus Torvalds",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1024025?v=4",
+    "location": "Portland, OR, USA",
+    "lat": 45.5155,
+    "lng": -122.6789,
+    "totalStars": 178000,
+    "totalCommits": 42000,
+    "totalForks": 52000,
+    "totalWatchers": 8500,
+    "followers": 210000,
+    "topLanguage": "C",
+    "languages": [
+      { "name": "C", "percent": 85 },
+      { "name": "Assembly", "percent": 8 },
+      { "name": "Shell", "percent": 5 },
+      { "name": "Other", "percent": 2 }
+    ],
+    "topRepos": [
+      { "name": "linux", "stars": 175000, "forks": 52000 },
+      { "name": "subsurface-for-dirk", "stars": 2200, "forks": 680 },
+      { "name": "uemacs", "stars": 710, "forks": 120 }
+    ],
+    "soUserId": null,
+    "soReputation": 0,
+    "soAnswers": 0,
+    "soAcceptRate": 0,
+    "soBadges": 0
+  },
+  {
+    "login": "gaearon",
+    "name": "Dan Abramov",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/810438?v=4",
+    "location": "London, UK",
+    "lat": 51.5074,
+    "lng": -0.1278,
+    "totalStars": 340000,
+    "totalCommits": 8500,
+    "totalForks": 42000,
+    "totalWatchers": 6200,
+    "followers": 85000,
+    "topLanguage": "JavaScript",
+    "languages": [
+      { "name": "JavaScript", "percent": 60 },
+      { "name": "TypeScript", "percent": 25 },
+      { "name": "CSS", "percent": 10 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "redux", "stars": 60700, "forks": 15700 },
+      { "name": "react-hot-loader", "stars": 12300, "forks": 850 },
+      { "name": "overreacted.io", "stars": 7100, "forks": 1300 }
+    ],
+    "soUserId": 458193,
+    "soReputation": 52000,
+    "soAnswers": 320,
+    "soAcceptRate": 45,
+    "soBadges": 48
+  },
+  {
+    "login": "sindresorhus",
+    "name": "Sindre Sorhus",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/170270?v=4",
+    "location": "Bangkok, Thailand",
+    "lat": 13.7563,
+    "lng": 100.5018,
+    "totalStars": 480000,
+    "totalCommits": 25000,
+    "totalForks": 38000,
+    "totalWatchers": 4500,
+    "followers": 56000,
+    "topLanguage": "TypeScript",
+    "languages": [
+      { "name": "TypeScript", "percent": 45 },
+      { "name": "JavaScript", "percent": 35 },
+      { "name": "Swift", "percent": 15 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "awesome", "stars": 310000, "forks": 27000 },
+      { "name": "got", "stars": 14000, "forks": 940 },
+      { "name": "execa", "stars": 6800, "forks": 220 }
+    ],
+    "soUserId": null,
+    "soReputation": 1200,
+    "soAnswers": 15,
+    "soAcceptRate": 60,
+    "soBadges": 8
+  },
+  {
+    "login": "tj",
+    "name": "TJ Holowaychuk",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/25254?v=4",
+    "location": "Victoria, BC, Canada",
+    "lat": 48.4284,
+    "lng": -123.3656,
+    "totalStars": 290000,
+    "totalCommits": 18000,
+    "totalForks": 32000,
+    "totalWatchers": 5100,
+    "followers": 38000,
+    "topLanguage": "Go",
+    "languages": [
+      { "name": "Go", "percent": 40 },
+      { "name": "JavaScript", "percent": 35 },
+      { "name": "TypeScript", "percent": 15 },
+      { "name": "Other", "percent": 10 }
+    ],
+    "topRepos": [
+      { "name": "commander.js", "stars": 26500, "forks": 1700 },
+      { "name": "co", "stars": 11900, "forks": 780 },
+      { "name": "n", "stars": 18700, "forks": 750 }
+    ],
+    "soUserId": 68115,
+    "soReputation": 35000,
+    "soAnswers": 890,
+    "soAcceptRate": 52,
+    "soBadges": 62
+  },
+  {
+    "login": "yyx990803",
+    "name": "Evan You",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/499550?v=4",
+    "location": "Singapore",
+    "lat": 1.3521,
+    "lng": 103.8198,
+    "totalStars": 520000,
+    "totalCommits": 12000,
+    "totalForks": 55000,
+    "totalWatchers": 7800,
+    "followers": 95000,
+    "topLanguage": "TypeScript",
+    "languages": [
+      { "name": "TypeScript", "percent": 55 },
+      { "name": "JavaScript", "percent": 30 },
+      { "name": "HTML", "percent": 10 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "vue", "stars": 207000, "forks": 33800 },
+      { "name": "vite", "stars": 67000, "forks": 6000 },
+      { "name": "vue-next", "stars": 45000, "forks": 8200 }
+    ],
+    "soUserId": 2437875,
+    "soReputation": 8400,
+    "soAnswers": 120,
+    "soAcceptRate": 38,
+    "soBadges": 22
+  },
+  {
+    "login": "antirez",
+    "name": "Salvatore Sanfilippo",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/65601?v=4",
+    "location": "Catania, Italy",
+    "lat": 37.5079,
+    "lng": 15.0830,
+    "totalStars": 66000,
+    "totalCommits": 9800,
+    "totalForks": 24000,
+    "totalWatchers": 3600,
+    "followers": 22000,
+    "topLanguage": "C",
+    "languages": [
+      { "name": "C", "percent": 70 },
+      { "name": "Tcl", "percent": 15 },
+      { "name": "Ruby", "percent": 10 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "redis", "stars": 65000, "forks": 23500 },
+      { "name": "kilo", "stars": 6900, "forks": 960 },
+      { "name": "smallchat", "stars": 7200, "forks": 870 }
+    ],
+    "soUserId": null,
+    "soReputation": 0,
+    "soAnswers": 0,
+    "soAcceptRate": 0,
+    "soBadges": 0
+  },
+  {
+    "login": "mrdoob",
+    "name": "Ricardo Cabello",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/97088?v=4",
+    "location": "Barcelona, Spain",
+    "lat": 41.3874,
+    "lng": 2.1686,
+    "totalStars": 102000,
+    "totalCommits": 32000,
+    "totalForks": 27000,
+    "totalWatchers": 4200,
+    "followers": 28000,
+    "topLanguage": "JavaScript",
+    "languages": [
+      { "name": "JavaScript", "percent": 80 },
+      { "name": "GLSL", "percent": 10 },
+      { "name": "HTML", "percent": 8 },
+      { "name": "Other", "percent": 2 }
+    ],
+    "topRepos": [
+      { "name": "three.js", "stars": 101000, "forks": 27000 },
+      { "name": "htmleditor", "stars": 980, "forks": 290 }
+    ],
+    "soUserId": null,
+    "soReputation": 3200,
+    "soAnswers": 45,
+    "soAcceptRate": 30,
+    "soBadges": 12
+  },
+  {
+    "login": "JakeWharton",
+    "name": "Jake Wharton",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/66577?v=4",
+    "location": "Pittsburgh, PA, USA",
+    "lat": 40.4406,
+    "lng": -79.9959,
+    "totalStars": 120000,
+    "totalCommits": 14000,
+    "totalForks": 18000,
+    "totalWatchers": 3800,
+    "followers": 68000,
+    "topLanguage": "Kotlin",
+    "languages": [
+      { "name": "Kotlin", "percent": 40 },
+      { "name": "Java", "percent": 35 },
+      { "name": "Groovy", "percent": 15 },
+      { "name": "Other", "percent": 10 }
+    ],
+    "topRepos": [
+      { "name": "butterknife", "stars": 25700, "forks": 4700 },
+      { "name": "timber", "stars": 10400, "forks": 960 },
+      { "name": "retrofit", "stars": 43000, "forks": 7400 }
+    ],
+    "soUserId": 132047,
+    "soReputation": 128000,
+    "soAnswers": 2400,
+    "soAcceptRate": 68,
+    "soBadges": 184
+  },
+  {
+    "login": "getify",
+    "name": "Kyle Simpson",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/150330?v=4",
+    "location": "Austin, TX, USA",
+    "lat": 30.2672,
+    "lng": -97.7431,
+    "totalStars": 178000,
+    "totalCommits": 5200,
+    "totalForks": 21000,
+    "totalWatchers": 2800,
+    "followers": 44000,
+    "topLanguage": "JavaScript",
+    "languages": [
+      { "name": "JavaScript", "percent": 90 },
+      { "name": "HTML", "percent": 5 },
+      { "name": "CSS", "percent": 3 },
+      { "name": "Other", "percent": 2 }
+    ],
+    "topRepos": [
+      { "name": "You-Dont-Know-JS", "stars": 178000, "forks": 21000 },
+      { "name": "Functional-Light-JS", "stars": 16500, "forks": 2100 },
+      { "name": "LABjs", "stars": 2300, "forks": 340 }
+    ],
+    "soUserId": 228852,
+    "soReputation": 67000,
+    "soAnswers": 1800,
+    "soAcceptRate": 55,
+    "soBadges": 95
+  },
+  {
+    "login": "addyosmani",
+    "name": "Addy Osmani",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/110953?v=4",
+    "location": "Mountain View, CA, USA",
+    "lat": 37.3861,
+    "lng": -122.0839,
+    "totalStars": 95000,
+    "totalCommits": 6800,
+    "totalForks": 12000,
+    "totalWatchers": 3100,
+    "followers": 42000,
+    "topLanguage": "JavaScript",
+    "languages": [
+      { "name": "JavaScript", "percent": 65 },
+      { "name": "HTML", "percent": 15 },
+      { "name": "CSS", "percent": 10 },
+      { "name": "Other", "percent": 10 }
+    ],
+    "topRepos": [
+      { "name": "learning-jsdp", "stars": 28000, "forks": 5100 },
+      { "name": "es6-tools", "stars": 4000, "forks": 510 },
+      { "name": "critical", "stars": 10000, "forks": 430 }
+    ],
+    "soUserId": 193238,
+    "soReputation": 48000,
+    "soAnswers": 620,
+    "soAcceptRate": 42,
+    "soBadges": 55
+  },
+  {
+    "login": "vczh",
+    "name": "Zhiyu Chen",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1320481?v=4",
+    "location": "Redmond, WA, USA",
+    "lat": 47.6740,
+    "lng": -122.1215,
+    "totalStars": 25000,
+    "totalCommits": 22000,
+    "totalForks": 3800,
+    "totalWatchers": 1200,
+    "followers": 18000,
+    "topLanguage": "C++",
+    "languages": [
+      { "name": "C++", "percent": 70 },
+      { "name": "C#", "percent": 15 },
+      { "name": "TypeScript", "percent": 10 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "GacUI", "stars": 3600, "forks": 480 },
+      { "name": "vczh-libraries", "stars": 2800, "forks": 380 },
+      { "name": "tinymoe", "stars": 1600, "forks": 220 }
+    ],
+    "soUserId": null,
+    "soReputation": 15000,
+    "soAnswers": 450,
+    "soAcceptRate": 35,
+    "soBadges": 32
+  },
+  {
+    "login": "ThePrimeagen",
+    "name": "ThePrimeagen",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/4458174?v=4",
+    "location": "Salt Lake City, UT, USA",
+    "lat": 40.7608,
+    "lng": -111.8910,
+    "totalStars": 32000,
+    "totalCommits": 8900,
+    "totalForks": 4200,
+    "totalWatchers": 1800,
+    "followers": 24000,
+    "topLanguage": "TypeScript",
+    "languages": [
+      { "name": "TypeScript", "percent": 35 },
+      { "name": "Go", "percent": 25 },
+      { "name": "Rust", "percent": 20 },
+      { "name": "Zig", "percent": 15 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "harpoon", "stars": 6800, "forks": 420 },
+      { "name": "vim-be-good", "stars": 2900, "forks": 180 },
+      { "name": "kata-machine", "stars": 2100, "forks": 680 }
+    ],
+    "soUserId": null,
+    "soReputation": 2800,
+    "soAnswers": 35,
+    "soAcceptRate": 40,
+    "soBadges": 8
+  },
+  {
+    "login": "jonschlinkert",
+    "name": "Jon Schlinkert",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/383994?v=4",
+    "location": "Cincinnati, OH, USA",
+    "lat": 39.1031,
+    "lng": -84.5120,
+    "totalStars": 68000,
+    "totalCommits": 45000,
+    "totalForks": 9800,
+    "totalWatchers": 1400,
+    "followers": 6800,
+    "topLanguage": "JavaScript",
+    "languages": [
+      { "name": "JavaScript", "percent": 85 },
+      { "name": "TypeScript", "percent": 10 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "micromatch", "stars": 2200, "forks": 180 },
+      { "name": "remarkable", "stars": 5700, "forks": 410 },
+      { "name": "gray-matter", "stars": 3800, "forks": 210 }
+    ],
+    "soUserId": null,
+    "soReputation": 4200,
+    "soAnswers": 85,
+    "soAcceptRate": 50,
+    "soBadges": 15
+  },
+  {
+    "login": "brendangregg",
+    "name": "Brendan Gregg",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1904851?v=4",
+    "location": "Sydney, Australia",
+    "lat": -33.8688,
+    "lng": 151.2093,
+    "totalStars": 18000,
+    "totalCommits": 3200,
+    "totalForks": 5600,
+    "totalWatchers": 1100,
+    "followers": 16000,
+    "topLanguage": "C",
+    "languages": [
+      { "name": "C", "percent": 40 },
+      { "name": "DTrace", "percent": 25 },
+      { "name": "Shell", "percent": 20 },
+      { "name": "Perl", "percent": 10 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "perf-tools", "stars": 9700, "forks": 1700 },
+      { "name": "FlameGraph", "stars": 17000, "forks": 1900 },
+      { "name": "bcc", "stars": 2100, "forks": 410 }
+    ],
+    "soUserId": null,
+    "soReputation": 5800,
+    "soAnswers": 42,
+    "soAcceptRate": 65,
+    "soBadges": 18
+  },
+  {
+    "login": "mitchellh",
+    "name": "Mitchell Hashimoto",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/1299?v=4",
+    "location": "Los Angeles, CA, USA",
+    "lat": 34.0522,
+    "lng": -118.2437,
+    "totalStars": 94000,
+    "totalCommits": 28000,
+    "totalForks": 18000,
+    "totalWatchers": 3200,
+    "followers": 32000,
+    "topLanguage": "Zig",
+    "languages": [
+      { "name": "Zig", "percent": 35 },
+      { "name": "Go", "percent": 30 },
+      { "name": "Ruby", "percent": 20 },
+      { "name": "Other", "percent": 15 }
+    ],
+    "topRepos": [
+      { "name": "vagrant", "stars": 26000, "forks": 4500 },
+      { "name": "ghostty", "stars": 22000, "forks": 680 },
+      { "name": "packer", "stars": 15000, "forks": 3400 }
+    ],
+    "soUserId": 84745,
+    "soReputation": 22000,
+    "soAnswers": 180,
+    "soAcceptRate": 48,
+    "soBadges": 35
+  },
+  {
+    "login": "fabpot",
+    "name": "Fabien Potencier",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/47313?v=4",
+    "location": "Paris, France",
+    "lat": 48.8566,
+    "lng": 2.3522,
+    "totalStars": 95000,
+    "totalCommits": 36000,
+    "totalForks": 28000,
+    "totalWatchers": 4100,
+    "followers": 21000,
+    "topLanguage": "PHP",
+    "languages": [
+      { "name": "PHP", "percent": 90 },
+      { "name": "Twig", "percent": 5 },
+      { "name": "JavaScript", "percent": 3 },
+      { "name": "Other", "percent": 2 }
+    ],
+    "topRepos": [
+      { "name": "symfony", "stars": 29500, "forks": 9500 },
+      { "name": "Twig", "stars": 8100, "forks": 1200 },
+      { "name": "Silex", "stars": 3600, "forks": 720 }
+    ],
+    "soUserId": 42983,
+    "soReputation": 31000,
+    "soAnswers": 520,
+    "soAcceptRate": 58,
+    "soBadges": 72
+  },
+  {
+    "login": "mattn",
+    "name": "Yasuhiro Matsumoto",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/10111?v=4",
+    "location": "Osaka, Japan",
+    "lat": 34.6937,
+    "lng": 135.5023,
+    "totalStars": 52000,
+    "totalCommits": 55000,
+    "totalForks": 7200,
+    "totalWatchers": 1800,
+    "followers": 12000,
+    "topLanguage": "Go",
+    "languages": [
+      { "name": "Go", "percent": 45 },
+      { "name": "Vim Script", "percent": 20 },
+      { "name": "C", "percent": 15 },
+      { "name": "JavaScript", "percent": 10 },
+      { "name": "Other", "percent": 10 }
+    ],
+    "topRepos": [
+      { "name": "go-sqlite3", "stars": 7800, "forks": 1100 },
+      { "name": "vim-gist", "stars": 1800, "forks": 210 },
+      { "name": "goreman", "stars": 1400, "forks": 160 }
+    ],
+    "soUserId": 340289,
+    "soReputation": 18000,
+    "soAnswers": 680,
+    "soAcceptRate": 42,
+    "soBadges": 45
+  },
+  {
+    "login": "kennethreitz",
+    "name": "Kenneth Reitz",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/119893?v=4",
+    "location": "Lynchburg, VA, USA",
+    "lat": 37.4138,
+    "lng": -79.1423,
+    "totalStars": 130000,
+    "totalCommits": 9200,
+    "totalForks": 15000,
+    "totalWatchers": 3500,
+    "followers": 35000,
+    "topLanguage": "Python",
+    "languages": [
+      { "name": "Python", "percent": 85 },
+      { "name": "Shell", "percent": 8 },
+      { "name": "Makefile", "percent": 4 },
+      { "name": "Other", "percent": 3 }
+    ],
+    "topRepos": [
+      { "name": "requests", "stars": 52000, "forks": 9300 },
+      { "name": "httpbin", "stars": 12600, "forks": 2100 },
+      { "name": "pipenv", "stars": 24800, "forks": 1900 }
+    ],
+    "soUserId": 356942,
+    "soReputation": 28000,
+    "soAnswers": 240,
+    "soAcceptRate": 50,
+    "soBadges": 42
+  },
+  {
+    "login": "substack",
+    "name": "James Halliday",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/12631?v=4",
+    "location": "Oakland, CA, USA",
+    "lat": 37.8044,
+    "lng": -122.2712,
+    "totalStars": 82000,
+    "totalCommits": 38000,
+    "totalForks": 9500,
+    "totalWatchers": 2100,
+    "followers": 11000,
+    "topLanguage": "JavaScript",
+    "languages": [
+      { "name": "JavaScript", "percent": 70 },
+      { "name": "Rust", "percent": 15 },
+      { "name": "C", "percent": 10 },
+      { "name": "Other", "percent": 5 }
+    ],
+    "topRepos": [
+      { "name": "browserify", "stars": 14500, "forks": 1200 },
+      { "name": "stream-handbook", "stars": 13600, "forks": 990 },
+      { "name": "tape", "stars": 5800, "forks": 330 }
+    ],
+    "soUserId": null,
+    "soReputation": 6200,
+    "soAnswers": 110,
+    "soAcceptRate": 45,
+    "soBadges": 20
+  },
+  {
+    "login": "jonsuh",
+    "name": "Jon Skeet",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/73aborsky?v=4",
+    "location": "Reading, UK",
+    "lat": 51.4543,
+    "lng": -0.9781,
+    "totalStars": 8500,
+    "totalCommits": 6200,
+    "totalForks": 3200,
+    "totalWatchers": 890,
+    "followers": 9200,
+    "topLanguage": "C#",
+    "languages": [
+      { "name": "C#", "percent": 70 },
+      { "name": "Java", "percent": 20 },
+      { "name": "Other", "percent": 10 }
+    ],
+    "topRepos": [
+      { "name": "nodatime", "stars": 2700, "forks": 380 },
+      { "name": "google-cloud-dotnet", "stars": 920, "forks": 480 }
+    ],
+    "soUserId": 22656,
+    "soReputation": 1410000,
+    "soAnswers": 36000,
+    "soAcceptRate": 82,
+    "soBadges": 890
+  }
+]
