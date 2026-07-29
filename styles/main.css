@@ -71,6 +71,12 @@ body {
   font-weight: 400;
 }
 
+.header__search {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 .header__search input {
   width: 260px;
   padding: 8px 14px;
@@ -80,10 +86,25 @@ body {
   color: var(--text-primary);
   font-size: 13px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, opacity 0.2s;
 }
 
 .header__search input:focus {
+  border-color: var(--accent-blue);
+}
+
+.header__search select {
+  padding: 8px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.header__search select:focus {
   border-color: var(--accent-blue);
 }
 

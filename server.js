@@ -53,7 +53,7 @@ app.get('/api/developers', async (req, res) => {
   }
 });
 
-// Search endpoint — supports text search now, upgrades to hybrid when vector is ready
+// Search endpoint — supports text, vector, and hybrid search
 app.get('/api/search', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
 
@@ -64,11 +64,75 @@ app.get('/api/search', async (req, res) => {
     const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
     const container = client.database(DATABASE).container(CONTAINER);
     const limit = Math.min(parseInt(top) || 10, 50);
-    const searchTerm = q.toLowerCase();
 
-    const { resources } = await container.items.query({
-      query: `
-        SELECT TOP @limit
+    let results;
+
+    if (mode === 'vector' || mode === 'hybrid') {
+      const OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
+      const OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
+      const DEPLOYMENT = process.env.EMBEDDING_DEPLOYMENT || 'text-embedding-3-small';
+
+      if (!OPENAI_ENDPOINT || !OPENAI_KEY) {
+        return res.status(500).json({ error: 'OpenAI not configured for vector search' });
+      }
+
+      // Generate embedding for the query
+      const embRes = await fetch(
+        `${OPENAI_ENDPOINT}/openai/deployments/${DEPLOYMENT}/embeddings?api-version=2024-02-01`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'api-key': OPENAI_KEY },
+          body: JSON.stringify({ input: [q] })
+        }
+      );
+      const embData = await embRes.json();
+      const embedding = embData.data[0].embedding;
+
+      // Vector search
+      const { resources: vectorResults } = await container.items.query({
+        query: `SELECT TOP ${limit}
+          c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
+          c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation,
+          c.bio, c.totalCommits, c.scoreDimensions,
+          VectorDistance(c.embedding, @emb) AS similarity
+        FROM c ORDER BY VectorDistance(c.embedding, @emb)`,
+        parameters: [{ name: '@emb', value: embedding }]
+      }).fetchAll();
+
+      if (mode === 'vector') {
+        results = vectorResults;
+      } else {
+        // Hybrid: also run text search and merge with RRF
+        const searchTerm = q.toLowerCase();
+        const { resources: textResults } = await container.items.query({
+          query: `SELECT TOP ${limit}
+            c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
+            c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation,
+            c.bio, c.totalCommits, c.scoreDimensions
+          FROM c
+          WHERE CONTAINS(LOWER(c.login), @q)
+             OR CONTAINS(LOWER(c.name), @q)
+             OR CONTAINS(LOWER(c.location), @q)
+             OR CONTAINS(LOWER(c.bio), @q)
+             OR CONTAINS(LOWER(c.topLanguage), @q)
+          ORDER BY c.score DESC`,
+          parameters: [{ name: '@q', value: searchTerm }]
+        }).fetchAll();
+
+        // Client-side RRF
+        const rrf = new Map();
+        const k = 60;
+        vectorResults.forEach((r, i) => rrf.set(r.login, (rrf.get(r.login) || 0) + 1 / (k + i + 1)));
+        textResults.forEach((r, i) => rrf.set(r.login, (rrf.get(r.login) || 0) + 1 / (k + i + 1)));
+        const allMap = new Map();
+        [...vectorResults, ...textResults].forEach(r => allMap.set(r.login, r));
+        results = [...rrf.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([login]) => allMap.get(login));
+      }
+    } else {
+      // Text search
+      const searchTerm = q.toLowerCase();
+      const { resources } = await container.items.query({
+        query: `SELECT TOP ${limit}
           c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
           c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation,
           c.bio, c.totalCommits, c.scoreDimensions
@@ -78,16 +142,14 @@ app.get('/api/search', async (req, res) => {
            OR CONTAINS(LOWER(c.location), @q)
            OR CONTAINS(LOWER(c.bio), @q)
            OR CONTAINS(LOWER(c.topLanguage), @q)
-        ORDER BY c.score DESC
-      `,
-      parameters: [
-        { name: '@q', value: searchTerm },
-        { name: '@limit', value: limit }
-      ]
-    }).fetchAll();
+        ORDER BY c.score DESC`,
+        parameters: [{ name: '@q', value: searchTerm }]
+      }).fetchAll();
+      results = resources;
+    }
 
-    console.log(`🔍 Search "${q}" → ${resources.length} results`);
-    res.json({ query: q, mode, count: resources.length, results: resources });
+    console.log(`🔍 Search "${q}" (${mode}) → ${results.length} results`);
+    res.json({ query: q, mode, count: results.length, results });
   } catch (err) {
     console.error('Search error:', err.message);
     res.status(500).json({ error: 'Search failed' });

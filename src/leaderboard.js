@@ -8,9 +8,11 @@ const Leaderboard = (() => {
   const filterCountry = document.getElementById('filter-country');
   const filterLang = document.getElementById('filter-language');
   const filterSort = document.getElementById('filter-sort');
+  const searchMode = document.getElementById('search-mode');
 
   let allDevelopers = [];
   let filteredDevelopers = [];
+  let activeSearchAbort = null;
 
   // Virtual scrolling state
   const ITEM_HEIGHT = 62;
@@ -40,7 +42,34 @@ const Leaderboard = (() => {
     let searchTimer;
     searchInput.addEventListener('input', () => {
       clearTimeout(searchTimer);
-      searchTimer = setTimeout(applyFilters, 200);
+      searchTimer = setTimeout(() => {
+        const mode = searchMode.value;
+        if (mode === 'vector' || mode === 'hybrid') {
+          apiSearch();
+        } else {
+          applyFilters();
+        }
+      }, 400);
+    });
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        clearTimeout(searchTimer);
+        const mode = searchMode.value;
+        if (mode === 'vector' || mode === 'hybrid') {
+          apiSearch();
+        } else {
+          applyFilters();
+        }
+      }
+    });
+    searchMode.addEventListener('change', () => {
+      if (!searchInput.value.trim()) return;
+      const mode = searchMode.value;
+      if (mode === 'vector' || mode === 'hybrid') {
+        apiSearch();
+      } else {
+        applyFilters();
+      }
     });
     filterCountry.addEventListener('change', applyFilters);
     filterLang.addEventListener('change', applyFilters);
@@ -117,6 +146,39 @@ const Leaderboard = (() => {
     listEl.scrollTop = 0;
     renderVirtual();
     GlobeViz.updateData(filteredDevelopers);
+  }
+
+  async function apiSearch() {
+    const query = searchInput.value.trim();
+    if (!query) { applyFilters(); return; }
+
+    if (activeSearchAbort) activeSearchAbort.abort();
+    const controller = new AbortController();
+    activeSearchAbort = controller;
+
+    const mode = searchMode.value;
+    searchInput.style.opacity = '0.5';
+
+    try {
+      const res = await fetch(
+        `/api/search?q=${encodeURIComponent(query)}&mode=${mode}&top=20`,
+        { signal: controller.signal }
+      );
+      const data = await res.json();
+      if (controller.signal.aborted) return;
+
+      filteredDevelopers = data.results || [];
+      // Compute scores using the full dataset's max values
+      filteredDevelopers = Scoring.scoreAll(filteredDevelopers);
+      renderedRange = { start: -1, end: -1 };
+      listEl.scrollTop = 0;
+      renderVirtual();
+      GlobeViz.updateData(filteredDevelopers);
+    } catch (e) {
+      if (e.name !== 'AbortError') console.error('Search failed:', e);
+    } finally {
+      if (!controller.signal.aborted) searchInput.style.opacity = '1';
+    }
   }
 
   function renderVirtual() {
