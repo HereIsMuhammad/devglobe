@@ -64,17 +64,36 @@ const GlobeViz = (() => {
     const tooltip = document.getElementById('tooltip');
     if (point) {
       tooltip.innerHTML = `
-        <div class="tooltip__name">${point.name || point.login}</div>
+        <div class="tooltip__header">
+          <img class="tooltip__avatar" src="${point.avatarUrl}" alt="${point.login}">
+          <div>
+            <div class="tooltip__name">${point.name || point.login}</div>
+            <div class="tooltip__login">@${point.login}</div>
+          </div>
+        </div>
         <div class="tooltip__score">Score: ${point.score}/100</div>
-        <div class="tooltip__meta">${point.location || 'Unknown'} · ${point.topLanguage || 'N/A'}</div>
+        <div class="tooltip__stats">
+          <span>⭐ ${formatNum(point.totalStars || 0)}</span>
+          <span>👥 ${formatNum(point.followers || 0)}</span>
+          ${point.soReputation ? `<span class="tooltip__so">SO ${formatNum(point.soReputation)}</span>` : ''}
+        </div>
+        <div class="tooltip__meta">
+          <span>📍 ${point.location || 'Unknown'}</span>
+          ${point.topLanguage ? `<span>· ${point.topLanguage}</span>` : ''}
+        </div>
       `;
       tooltip.classList.add('visible');
-      // Stop auto-rotate on hover
       globe.controls().autoRotate = false;
     } else {
       tooltip.classList.remove('visible');
       globe.controls().autoRotate = true;
     }
+  }
+
+  function formatNum(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+    return n.toString();
   }
 
   function handleClick(point) {
