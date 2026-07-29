@@ -79,61 +79,75 @@ async function main() {
       query: `
         SELECT TOP 10
           c.login, c.name, c.location, c.topLanguage, c.score,
-          c.totalStars, c.followers, c.soReputation,
-          FullTextScore(c.login, [@query]) +
-          FullTextScore(c.name, [@query]) +
-          FullTextScore(c.location, [@query]) +
-          FullTextScore(c.bio, [@query]) +
-          FullTextScore(c.topLanguage, [@query]) AS textScore
+          c.totalStars, c.followers, c.soReputation
         FROM c
-        WHERE FullTextContains(c.login, @query)
-           OR FullTextContains(c.name, @query)
-           OR FullTextContains(c.location, @query)
-           OR FullTextContains(c.bio, @query)
-           OR FullTextContains(c.topLanguage, @query)
-        ORDER BY RANK FullTextScore(c.login, [@query]) +
-                      FullTextScore(c.name, [@query]) +
-                      FullTextScore(c.location, [@query]) +
-                      FullTextScore(c.bio, [@query]) +
-                      FullTextScore(c.topLanguage, [@query])
+        WHERE CONTAINS(LOWER(c.login), @query)
+           OR CONTAINS(LOWER(c.name), @query)
+           OR CONTAINS(LOWER(c.location), @query)
+           OR CONTAINS(LOWER(c.bio), @query)
+           OR CONTAINS(LOWER(c.topLanguage), @query)
+        ORDER BY c.score DESC
       `,
-      parameters: [{ name: '@query', value: query }]
+      parameters: [{ name: '@query', value: query.toLowerCase() }]
     }).fetchAll();
     results = resources;
 
   } else {
-    // ─── Hybrid Search (Vector + Full-Text with RRF) ────────────────────────
-    // Best of both: semantic understanding + keyword precision
-    // Uses Reciprocal Rank Fusion (RRF) to combine rankings
+    // ─── Hybrid Search (Vector + Text) ──────────────────────────────────────
+    // Combines semantic vector similarity with keyword matching
+    if (!OPENAI_ENDPOINT || !OPENAI_KEY) {
+      return console.error('OpenAI credentials required for hybrid search');
+    }
     const embedding = await getQueryEmbedding(query);
 
-    const { resources } = await container.items.query({
+    // Get vector results
+    const { resources: vectorResults } = await container.items.query({
+      query: `
+        SELECT TOP 10
+          c.login, c.name, c.location, c.topLanguage, c.score,
+          c.totalStars, c.followers, c.soReputation,
+          VectorDistance(c.embedding, @embedding) AS similarity
+        FROM c
+        ORDER BY VectorDistance(c.embedding, @embedding)
+      `,
+      parameters: [{ name: '@embedding', value: embedding }]
+    }).fetchAll();
+
+    // Get text results
+    const searchLower = query.toLowerCase();
+    const { resources: textResults } = await container.items.query({
       query: `
         SELECT TOP 10
           c.login, c.name, c.location, c.topLanguage, c.score,
           c.totalStars, c.followers, c.soReputation
         FROM c
-        WHERE FullTextContains(c.login, @query)
-           OR FullTextContains(c.name, @query)
-           OR FullTextContains(c.location, @query)
-           OR FullTextContains(c.bio, @query)
-           OR FullTextContains(c.topLanguage, @query)
-           OR VectorDistance(c.embedding, @embedding) > 0.7
-        ORDER BY RANK RRF(
-          FullTextScore(c.login, [@query]) +
-          FullTextScore(c.name, [@query]) +
-          FullTextScore(c.location, [@query]) +
-          FullTextScore(c.bio, [@query]) +
-          FullTextScore(c.topLanguage, [@query]),
-          VectorDistance(c.embedding, @embedding)
-        )
+        WHERE CONTAINS(LOWER(c.login), @q)
+           OR CONTAINS(LOWER(c.name), @q)
+           OR CONTAINS(LOWER(c.location), @q)
+           OR CONTAINS(LOWER(c.bio), @q)
+           OR CONTAINS(LOWER(c.topLanguage), @q)
+        ORDER BY c.score DESC
       `,
-      parameters: [
-        { name: '@query', value: query },
-        { name: '@embedding', value: embedding }
-      ]
+      parameters: [{ name: '@q', value: searchLower }]
     }).fetchAll();
-    results = resources;
+
+    // Client-side RRF (Reciprocal Rank Fusion)
+    const rrf = new Map();
+    const k = 60; // RRF constant
+    vectorResults.forEach((r, i) => {
+      rrf.set(r.login, (rrf.get(r.login) || 0) + 1 / (k + i + 1));
+    });
+    textResults.forEach((r, i) => {
+      rrf.set(r.login, (rrf.get(r.login) || 0) + 1 / (k + i + 1));
+    });
+
+    // Merge and sort by RRF score
+    const allResults = new Map();
+    [...vectorResults, ...textResults].forEach(r => allResults.set(r.login, r));
+    results = [...rrf.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([login]) => allResults.get(login));
   }
 
   // Display results

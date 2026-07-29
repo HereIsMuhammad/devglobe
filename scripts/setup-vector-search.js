@@ -106,7 +106,7 @@ async function main() {
     if (e.code !== 404) throw e;
   }
 
-  const { container } = await database.containers.create(containerDef);
+  const { container } = await database.containers.create(containerDef, { offerThroughput: 1000 });
   console.log(`✅ Created container "${CONTAINER_NAME}" with vector + full-text indexes`);
   console.log('   Vector: 1536-dim, cosine, quantizedFlat');
   console.log('   Full-text: login, name, location, bio, topLanguage\n');
