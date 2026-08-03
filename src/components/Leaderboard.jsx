@@ -1,17 +1,22 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { formatNum } from '../utils/format.js';
-import { extractCountry } from '../utils/country.js';
+import { extractCountry, normalizeCountry, countryKey } from '../utils/country.js';
 
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
 
-export default function Leaderboard({ developers, selectedLogin, onSelectDev }) {
+export default function Leaderboard({
+  developers,
+  selectedLogin,
+  onSelectDev,
+  countryFilter = '',
+  onCountryFilterChange,
+}) {
   const listRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewHeight, setViewHeight] = useState(600);
 
-  // Filters
-  const [countryFilter, setCountryFilter] = useState('');
+  // Filters (country is owned by App so the globe can drive it too)
   const [langFilter, setLangFilter] = useState('');
   const [sortBy, setSortBy] = useState('score');
 
@@ -19,12 +24,24 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
     const map = new Map();
     developers.forEach(d => {
       if (d.location) {
-        const country = extractCountry(d.location);
-        if (country && country.length > 1) map.set(country, (map.get(country) || 0) + 1);
+        const country = normalizeCountry(extractCountry(d.location));
+        if (country && country.length > 1) {
+          const entry = map.get(country.toLowerCase());
+          if (entry) entry.count++;
+          else map.set(country.toLowerCase(), { name: country, count: 1 });
+        }
       }
     });
-    return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 50);
+    return [...map.values()].sort((a, b) => b.count - a.count).slice(0, 50);
   }, [developers]);
+
+  // A country picked on the globe may have no developers, or be spelled
+  // differently than the option built from developer locations.
+  const selectedCountryOption = useMemo(() => {
+    if (!countryFilter) return null;
+    const key = countryKey(countryFilter);
+    return countries.find(c => c.name.toLowerCase() === key) || null;
+  }, [countries, countryFilter]);
 
   const languages = useMemo(() => {
     const set = new Set();
@@ -33,9 +50,10 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
   }, [developers]);
 
   const filtered = useMemo(() => {
+    const wantedCountry = countryKey(countryFilter);
     let result = developers.filter(d => {
       const matchLang = !langFilter || d.topLanguage === langFilter;
-      const matchCountry = !countryFilter || (d.location && extractCountry(d.location) === countryFilter);
+      const matchCountry = !wantedCountry || (d.location && countryKey(extractCountry(d.location)) === wantedCountry);
       return matchLang && matchCountry;
     });
 
@@ -89,7 +107,7 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
 
   const hasActiveFilter = countryFilter || langFilter;
   const clearFilters = () => {
-    setCountryFilter('');
+    onCountryFilterChange?.('');
     setLangFilter('');
   };
 
@@ -106,10 +124,18 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
         </div>
         <div className="sidebar__count">{filtered.length} developer{filtered.length !== 1 ? 's' : ''}</div>
         <div className="sidebar__filters">
-          <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)}>
+          <select
+            value={selectedCountryOption ? selectedCountryOption.name : countryFilter}
+            onChange={e => onCountryFilterChange?.(e.target.value)}
+          >
             <option value="">All Countries</option>
-            {countries.map(([c, n]) => (
-              <option key={c} value={c}>{c.length > 15 ? c.slice(0, 14) + '…' : c} ({n})</option>
+            {countryFilter && !selectedCountryOption && (
+              <option value={countryFilter}>
+                {countryFilter.length > 15 ? countryFilter.slice(0, 14) + '…' : countryFilter} (0)
+              </option>
+            )}
+            {countries.map(({ name, count }) => (
+              <option key={name} value={name}>{name.length > 15 ? name.slice(0, 14) + '…' : name} ({count})</option>
             ))}
           </select>
           <select value={langFilter} onChange={e => setLangFilter(e.target.value)}>

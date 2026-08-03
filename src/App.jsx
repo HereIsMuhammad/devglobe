@@ -14,6 +14,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [flyTarget, setFlyTarget] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState('');
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -50,6 +51,17 @@ export default function App() {
     }
   }, []);
 
+  const handleSelectCountry = useCallback((country, view) => {
+    setSelectedCountry(country);
+    if (view) {
+      setFlyTarget({ lat: view.lat, lng: view.lng, altitude: view.altitude });
+    }
+  }, []);
+
+  const handleClearCountry = useCallback(() => {
+    setSelectedCountry('');
+  }, []);
+
   const handleCloseDetail = useCallback(() => {
     setSelectedDev(null);
   }, []);
@@ -58,6 +70,7 @@ export default function App() {
     setSelectedDev(null);
     setFiltered(developers);
     setFlyTarget(null);
+    setSelectedCountry('');
   }, [developers]);
 
   if (loading || error) {
@@ -77,12 +90,17 @@ export default function App() {
           ref={globeRef}
           developers={filtered}
           flyTarget={flyTarget}
+          selectedCountry={selectedCountry}
           onSelectDev={handleSelectDev}
+          onSelectCountry={handleSelectCountry}
+          onClearCountry={handleClearCountry}
         />
         <Leaderboard
           developers={filtered}
           selectedLogin={selectedDev?.login}
           onSelectDev={handleSelectDev}
+          countryFilter={selectedCountry}
+          onCountryFilterChange={setSelectedCountry}
         />
         {selectedDev && (
           <DetailPanel dev={selectedDev} onClose={handleCloseDetail} />

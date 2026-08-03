@@ -25,8 +25,43 @@ const CITY_TO_COUNTRY = {
   'kuala lumpur': 'Malaysia',
 };
 
+// Canonical names for the same country written differently by GitHub users and
+// by the Natural Earth GeoJSON used for the globe polygons (properties.ADMIN).
+const COUNTRY_ALIASES = {
+  'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA', 'us': 'USA',
+  'u.s.': 'USA', 'u.s.a.': 'USA', 'america': 'USA',
+  'united kingdom': 'UK', 'great britain': 'UK', 'england': 'UK', 'scotland': 'UK',
+  'wales': 'UK', 'northern ireland': 'UK', 'uk': 'UK',
+  'republic of korea': 'South Korea', 'korea': 'South Korea',
+  'russian federation': 'Russia',
+  'czechia': 'Czech Republic',
+  "people's republic of china": 'China', 'prc': 'China',
+  'republic of india': 'India',
+  'deutschland': 'Germany',
+  'brasil': 'Brazil',
+  'españa': 'Spain', 'espana': 'Spain',
+  'the netherlands': 'Netherlands', 'nederland': 'Netherlands', 'holland': 'Netherlands',
+  'united arab emirates': 'UAE', 'uae': 'UAE',
+  'viet nam': 'Vietnam',
+  'islamic republic of iran': 'Iran',
+  'united republic of tanzania': 'Tanzania',
+  'democratic republic of the congo': 'DR Congo', 'republic of the congo': 'Congo',
+  'türkiye': 'Turkey', 'turkiye': 'Turkey',
+  'republic of serbia': 'Serbia',
+  'bosnia and herzegovina': 'Bosnia',
+  'hong kong s.a.r.': 'Hong Kong',
+  'macedonia': 'North Macedonia',
+};
+
+export function normalizeCountry(name) {
+  if (!name) return '';
+  const trimmed = name.trim();
+  return COUNTRY_ALIASES[trimmed.toLowerCase()] || trimmed;
+}
+
+// Comparable form — use whenever two country names from different sources are matched
 export function countryKey(name) {
-  return (name || '').trim().toLowerCase();
+  return normalizeCountry(name).toLowerCase();
 }
 
 export function extractCountry(location) {
