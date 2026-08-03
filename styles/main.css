@@ -316,13 +316,46 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.sidebar__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
 .sidebar__header h2 {
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-secondary);
+}
+
+.sidebar__clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 10px;
+  padding: 2px 8px;
+  color: #f87171;
+  font-size: 11px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.sidebar__clear-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #f87171;
+}
+
+.sidebar__count {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 
 .sidebar__filters {
@@ -351,15 +384,25 @@ body {
   overflow-y: auto;
   flex: 1;
   padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) transparent;
 }
 
 .sidebar__list::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+}
+
+.sidebar__list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .sidebar__list::-webkit-scrollbar-thumb {
-  background: var(--bg-hover);
-  border-radius: 3px;
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+.sidebar__list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 /* Leaderboard item */

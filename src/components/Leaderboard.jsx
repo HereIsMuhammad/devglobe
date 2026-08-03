@@ -70,6 +70,14 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
     setScrollTop(e.target.scrollTop);
   }, []);
 
+  // Scroll to top when filters change
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+      setScrollTop(0);
+    }
+  }, [countryFilter, langFilter, sortBy, developers]);
+
   // Scroll to selected
   useEffect(() => {
     if (!selectedLogin || !listRef.current) return;
@@ -79,10 +87,24 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
     }
   }, [selectedLogin, filtered, viewHeight]);
 
+  const hasActiveFilter = countryFilter || langFilter;
+  const clearFilters = () => {
+    setCountryFilter('');
+    setLangFilter('');
+  };
+
   return (
     <aside className="sidebar" id="sidebar">
       <div className="sidebar__header">
-        <h2>Leaderboard</h2>
+        <div className="sidebar__header-row">
+          <h2>Leaderboard</h2>
+          {hasActiveFilter && (
+            <button className="sidebar__clear-btn" onClick={clearFilters} title="Clear all filters">
+              ✕ Clear filters
+            </button>
+          )}
+        </div>
+        <div className="sidebar__count">{filtered.length} developer{filtered.length !== 1 ? 's' : ''}</div>
         <div className="sidebar__filters">
           <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)}>
             <option value="">All Countries</option>
