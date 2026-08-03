@@ -5,8 +5,6 @@ import { extractCountry, normalizeCountry, countryKey } from '../utils/country.j
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
 
-
-
 export default function Leaderboard({
   developers,
   selectedLogin,
