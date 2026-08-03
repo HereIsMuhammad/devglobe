@@ -80,29 +80,40 @@ async function main() {
   console.log(`   Found ${developers.length} developers needing embeddings\n`);
 
   let processed = 0;
+  let errors = 0;
   for (let i = 0; i < developers.length; i += BATCH_SIZE) {
     const batch = developers.slice(i, i + BATCH_SIZE);
     const texts = batch.map(buildEmbeddingText);
 
     // Generate embeddings
-    const embeddings = await getEmbeddings(texts);
+    let embeddings;
+    try {
+      embeddings = await getEmbeddings(texts);
+    } catch (err) {
+      console.log(`   ⚠ Embedding API error at ${i}: ${err.message.slice(0, 80)}`);
+      await new Promise(r => setTimeout(r, 5000));
+      try { embeddings = await getEmbeddings(texts); } catch { errors += batch.length; continue; }
+    }
 
-    // Patch each document with its embedding
-    for (let j = 0; j < batch.length; j++) {
-      const dev = batch[j];
-      await container.item(dev.id, dev.location || '').patch({
-        operations: [
-          { op: 'add', path: '/embedding', value: embeddings[j] }
-        ]
-      });
+    // Patch documents in parallel (10 concurrent)
+    const CONCURRENCY = 10;
+    for (let c = 0; c < batch.length; c += CONCURRENCY) {
+      const chunk = batch.slice(c, c + CONCURRENCY);
+      await Promise.all(chunk.map(async (dev, idx) => {
+        try {
+          await container.item(dev.id, dev.location || '').patch({
+            operations: [{ op: 'add', path: '/embedding', value: embeddings[c + idx] }]
+          });
+        } catch { errors++; }
+      }));
     }
 
     processed += batch.length;
-    console.log(`   Embedded: ${processed}/${developers.length}`);
+    console.log(`   Embedded: ${processed}/${developers.length} (errors: ${errors})`);
 
-    // Rate limit: ~3 requests/sec for embedding API
+    // Rate limit for embedding API
     if (i + BATCH_SIZE < developers.length) {
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 300));
     }
   }
 

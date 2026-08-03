@@ -4,100 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevGlobe — Visualizing the World's Top Open-Source Contributors</title>
-  <link rel="stylesheet" href="styles/main.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="app">
-    <!-- Header -->
-    <header class="header">
-      <div class="header__brand">
-        <span class="header__icon">🌐</span>
-        <h1 class="header__title">DevGlobe</h1>
-        <span class="header__subtitle">Visualizing the World's Top Open-Source Contributors</span>
-      </div>
-      <div class="header__search">
-        <input type="text" id="search-input" placeholder="Search developers..." autocomplete="off">
-        <select id="search-mode" title="Search mode">
-          <option value="text">Text</option>
-          <option value="vector">Vector (AI)</option>
-          <option value="hybrid" selected>Hybrid</option>
-        </select>
-      </div>
-    </header>
-
-    <!-- Main content -->
-    <main class="main">
-      <!-- Globe container -->
-      <div id="globe-container"></div>
-
-      <!-- Leaderboard sidebar -->
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar__header">
-          <h2>Leaderboard</h2>
-          <div class="sidebar__filters">
-            <select id="filter-country">
-              <option value="">All Countries</option>
-            </select>
-            <select id="filter-language">
-              <option value="">All Languages</option>
-            </select>
-            <select id="filter-sort">
-              <option value="score">Score</option>
-              <option value="stars">Stars</option>
-              <option value="commits">Commits</option>
-              <option value="soRep">SO Rep</option>
-            </select>
-          </div>
-        </div>
-        <ul class="sidebar__list" id="leaderboard-list"></ul>
-      </aside>
-
-      <!-- Detail panel -->
-      <div class="detail-panel" id="detail-panel">
-        <button class="detail-panel__close" id="detail-close">&times;</button>
-        <div class="detail-panel__header" id="detail-header"></div>
-        <div class="detail-panel__stats" id="detail-stats"></div>
-        <div class="detail-panel__charts">
-          <div class="chart-section">
-            <h3>Score Breakdown</h3>
-            <div id="chart-radar"></div>
-          </div>
-          <div class="chart-section">
-            <h3>StackOverflow Activity</h3>
-            <div id="chart-so"></div>
-          </div>
-          <div class="chart-section">
-            <h3>Contribution Activity</h3>
-            <div id="chart-heatmap"></div>
-          </div>
-          <div class="chart-section">
-            <h3>Languages</h3>
-            <div id="chart-languages"></div>
-          </div>
-          <div class="chart-section">
-            <h3>Top Repositories</h3>
-            <div id="chart-repos"></div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- Tooltip -->
-    <div class="tooltip" id="tooltip"></div>
-  </div>
-
-  <!-- Dependencies (CDN for simplicity; bundle for production) -->
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/globe.gl@2.31.0/dist/globe.gl.min.js"></script>
-  <script src="https://unpkg.com/d3@7.8.5/dist/d3.min.js"></script>
-
-  <!-- App modules -->
-  <script src="src/scoring.js"></script>
-  <script src="src/globe.js"></script>
-  <script src="src/detail-panel.js"></script>
-  <script src="src/leaderboard.js"></script>
-  <script src="src/app.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
