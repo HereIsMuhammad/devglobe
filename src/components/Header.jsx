@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function Header() {
+export default function Header({ onHome }) {
   return (
     <header className="header">
-      <div className="header__brand">
+      <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
         <span className="header__icon">🌐</span>
         <h1 className="header__title">DevGlobe</h1>
         <span className="header__subtitle">Visualizing the World's Top Open-Source Contributors</span>
