@@ -298,6 +298,36 @@ body {
   height: 100%;
 }
 
+/* Globe Legend */
+.globe-legend {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  z-index: 40;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.globe-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.globe-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 /* Sidebar */
 .sidebar {
   position: fixed;

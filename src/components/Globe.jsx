@@ -3,6 +3,14 @@ import GlobeGL from 'react-globe.gl';
 import { getPlatformColor } from '../utils/scoring.js';
 import { formatNum } from '../utils/format.js';
 
+// Score-based color gradient: blue → green → gold → red
+function getScoreColor(score) {
+  if (score >= 80) return '#fbbf24'; // gold — elite
+  if (score >= 60) return '#34d399'; // emerald — strong
+  if (score >= 40) return '#3b82f6'; // blue — solid
+  return '#6366f1'; // indigo — emerging
+}
+
 const Globe = forwardRef(function Globe({ developers, flyTarget, onSelectDev }, ref) {
   const globeEl = useRef();
   const tooltipRef = useRef(null);
@@ -16,6 +24,19 @@ const Globe = forwardRef(function Globe({ developers, flyTarget, onSelectDev }, 
 
   const labelDevs = useMemo(() => {
     return geoDevs.filter(d => d.score >= 80);
+  }, [geoDevs]);
+
+  // Pulsing rings for top 10 developers
+  const ringsData = useMemo(() => {
+    return geoDevs.slice(0, 10).map(d => ({
+      lat: d.lat,
+      lng: d.lng,
+      maxR: 3,
+      propagationSpeed: 2,
+      repeatPeriod: 1200,
+      color: getScoreColor(d.score),
+      login: d.login,
+    }));
   }, [geoDevs]);
 
   // Auto-rotate on mount
@@ -102,14 +123,21 @@ const Globe = forwardRef(function Globe({ developers, flyTarget, onSelectDev }, 
           backgroundImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/night-sky.png"
           showAtmosphere={true}
           atmosphereColor="#3a7ecf"
-          atmosphereAltitude={0.2}
+          atmosphereAltitude={0.25}
           pointsData={geoDevs}
           pointLat={d => d.lat}
           pointLng={d => d.lng}
           pointAltitude={d => 0.01 + (d.score / 100) * 0.06}
           pointRadius={d => 0.3 + (d.score / 100) * 0.7}
-          pointColor={d => getPlatformColor(d.scoreDimensions)}
+          pointColor={d => getScoreColor(d.score)}
           pointResolution={6}
+          ringsData={ringsData}
+          ringLat={d => d.lat}
+          ringLng={d => d.lng}
+          ringMaxRadius={d => d.maxR}
+          ringPropagationSpeed={d => d.propagationSpeed}
+          ringRepeatPeriod={d => d.repeatPeriod}
+          ringColor={d => () => d.color}
           labelsData={labelDevs}
           labelLat={d => d.lat}
           labelLng={d => d.lng}
@@ -121,6 +149,12 @@ const Globe = forwardRef(function Globe({ developers, flyTarget, onSelectDev }, 
           onPointHover={handleHover}
           onPointClick={handleClick}
         />
+      </div>
+      <div className="globe-legend">
+        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#fbbf24' }} />Elite (80+)</span>
+        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#34d399' }} />Strong (60+)</span>
+        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#3b82f6' }} />Solid (40+)</span>
+        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#6366f1' }} />Emerging</span>
       </div>
       <div className="tooltip" ref={tooltipRef} />
     </>
