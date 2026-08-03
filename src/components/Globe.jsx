@@ -2,15 +2,13 @@ import React, { useEffect, useRef, useMemo, useState, forwardRef, useImperativeH
 import GlobeGL from 'react-globe.gl';
 import { getPlatformColor } from '../utils/scoring.js';
 import { formatNum } from '../utils/format.js';
-import { extractCountry, countryKey } from './Leaderboard.jsx';
+import { extractCountry, countryKey } from '../utils/country.js';
 
-// Low-res Natural Earth countries (177 features).
-// Pinned to an immutable commit so the data cannot change or disappear unexpectedly.
-const GEOJSON_COMMIT = '507cfce3934e66349522bc80351d7a054e46ab6d';
-const GEOJSON_PATH = 'example/datasets/ne_110m_admin_0_countries.geojson';
+// Low-res Natural Earth countries (177 features), pinned to the commit that added
+// the dataset so the shapes can't change under us. Second entry is a mirror.
 const COUNTRY_GEOJSON_URLS = [
-  `https://cdn.jsdelivr.net/gh/vasturiano/react-globe.gl@${GEOJSON_COMMIT}/${GEOJSON_PATH}`,
-  `https://raw.githubusercontent.com/vasturiano/react-globe.gl/${GEOJSON_COMMIT}/${GEOJSON_PATH}`,
+  'https://cdn.jsdelivr.net/gh/vasturiano/react-globe.gl@507cfce3934e66349522bc80351d7a054e46ab6d/example/datasets/ne_110m_admin_0_countries.geojson',
+  'https://raw.githubusercontent.com/vasturiano/react-globe.gl/507cfce3934e66349522bc80351d7a054e46ab6d/example/datasets/ne_110m_admin_0_countries.geojson',
 ];
 
 // Kept below the lowest developer point (0.01) so points stay hoverable
