@@ -10,7 +10,7 @@ const SAMPLES = [
 
 export default function SearchBar({ developers, onResults, onReset }) {
   const [query, setQuery] = useState('');
-  const [mode, setMode] = useState('hybrid');
+  const [mode, setMode] = useState('text');
   const [topN, setTopN] = useState(50);
   const [searching, setSearching] = useState(false);
   const [resultCount, setResultCount] = useState(null);

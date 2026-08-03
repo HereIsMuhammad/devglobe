@@ -104,8 +104,14 @@ async function main() {
     console.log(`  [${i + 1}/${developers.length} ${pct}%] Looking up: ${searchTerm}`);
 
     try {
-      const soUsers = await fetchSOUser(searchTerm);
-      const match = bestMatch(soUsers, dev);
+      let soUsers = await fetchSOUser(searchTerm);
+      let match = bestMatch(soUsers, dev);
+
+      // If no match found and we haven't tried the login separately, try it
+      if (!match && dev.name && dev.login !== searchTerm) {
+        soUsers = await fetchSOUser(dev.login);
+        match = bestMatch(soUsers, dev);
+      }
 
       if (match) {
         matched++;

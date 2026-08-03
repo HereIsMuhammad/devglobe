@@ -31,8 +31,24 @@ function computeScore(dev, maxValues) {
     community: logNormalize((dev.followers || 0) + (dev.soBadges || 0), maxValues.community),
   };
 
+  // If developer has no SO data, redistribute SO weight to GitHub dimensions
+  const hasSO = (dev.soReputation || 0) > 0 || (dev.soAnswers || 0) > 0;
+  let weights = WEIGHTS;
+  if (!hasSO) {
+    const soWeight = WEIGHTS.soReputation + WEIGHTS.soEngagement;
+    const ghTotal = WEIGHTS.stars + WEIGHTS.commits + WEIGHTS.repoReach + WEIGHTS.community;
+    weights = {
+      stars: WEIGHTS.stars + (WEIGHTS.stars / ghTotal) * soWeight,
+      commits: WEIGHTS.commits + (WEIGHTS.commits / ghTotal) * soWeight,
+      repoReach: WEIGHTS.repoReach + (WEIGHTS.repoReach / ghTotal) * soWeight,
+      soReputation: 0,
+      soEngagement: 0,
+      community: WEIGHTS.community + (WEIGHTS.community / ghTotal) * soWeight,
+    };
+  }
+
   let score = 0;
-  for (const [key, weight] of Object.entries(WEIGHTS)) {
+  for (const [key, weight] of Object.entries(weights)) {
     score += dimensions[key] * weight;
   }
 

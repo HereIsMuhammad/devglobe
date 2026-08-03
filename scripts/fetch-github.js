@@ -68,6 +68,12 @@ const COUNTRY_QUERIES = [
   'Belgium', 'Brussels',
   'Greece', 'Athens',
   'Hungary', 'Budapest',
+  'Sri Lanka', 'Colombo',
+  'Nepal', 'Kathmandu',
+  'Peru', 'Lima',
+  'Ghana', 'Accra',
+  'Ethiopia', 'Addis Ababa',
+  'Morocco',
 ];
 
 async function graphql(query, variables = {}) {
