@@ -130,6 +130,9 @@ export default function SearchBar({ developers, onResults, onReset }) {
       {resultCount !== null && query && (
         <div className="search-bar__results">
           {resultCount === 0 ? 'No results found' : `${resultCount} developer${resultCount !== 1 ? 's' : ''} found`}
+          <button className="search-bar__reset" onClick={handleClear} title="Clear filter and show all">
+            ✕ Clear
+          </button>
         </div>
       )}
       <div className={`search-bar__samples${query ? ' hidden' : ''}`}>
