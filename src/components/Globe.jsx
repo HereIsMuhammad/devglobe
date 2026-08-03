@@ -277,9 +277,10 @@ const Globe = forwardRef(function Globe({
 
     if (feat) {
       const name = featureName(feat);
+      const safeName = String(name).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
       const count = devCountByCountry.get(countryKey(name)) || 0;
       tooltip.innerHTML = `
-        <div class="tooltip__name">${name}</div>
+        <div class="tooltip__name">${safeName}</div>
         <div class="tooltip__score">${count ? `${formatNum(count)} developer${count === 1 ? '' : 's'}` : 'No developers yet'}</div>
         <div class="tooltip__meta"><span>Click to focus this country</span></div>
       `;
