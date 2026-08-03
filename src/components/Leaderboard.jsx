@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { formatNum } from '../utils/format.js';
-import { normalizeCountry, countryKey, extractCountry } from '../utils/country.js';
+import { extractCountry, normalizeCountry, countryKey } from '../utils/country.js';
 
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
