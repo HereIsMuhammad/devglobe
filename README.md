@@ -2,7 +2,7 @@
 
 # 🌐 DevGlobe
 
-**Visualizing the World's Top Open-Source Contributors on an Interactive 3D Globe**
+**The global network for top open-source developers — discover, connect, and celebrate the people behind the code**
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel)](https://devglobe.vercel.app)
 [![GitHub Stars](https://img.shields.io/github/stars/sajeetharan/devglobe?style=for-the-badge&logo=github)](https://github.com/sajeetharan/devglobe/stargazers)
@@ -11,7 +11,7 @@
 
 <img src="assets/img/devglobe.gif" alt="DevGlobe Demo" width="800" />
 
-*26,000+ developers · ranked by stars, commits, repo reach & StackOverflow reputation*
+*26,000+ developers · ranked by stars, commits, repo reach & StackOverflow reputation · searchable by skill, location & language*
 
 </div>
 
@@ -25,8 +25,6 @@
 - **Leaderboard** — Filter by country, language, or sort by score/stars/commits
 - **Developer Profiles** — Click any pin to see detailed stats, top repos, and contribution breakdown
 - **Mobile Responsive** — Bottom-sheet filters and full-width search on smaller screens
-
-## 🚀 Quick Start
 
 ## 🚀 Quick Start
 
