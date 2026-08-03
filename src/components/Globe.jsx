@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useMemo, useState, forwardRef, useImperativeH
 import GlobeGL from 'react-globe.gl';
 import { getPlatformColor } from '../utils/scoring.js';
 import { formatNum } from '../utils/format.js';
-import { extractCountry, countryKey } from './Leaderboard.jsx';
+import { extractCountry, countryKey } from '../utils/country.js';
 
-// Low-res Natural Earth countries (177 features). Second entry is a mirror.
+// Low-res Natural Earth countries (177 features), pinned to the commit that added
+// the dataset so the shapes can't change under us. Second entry is a mirror.
 const COUNTRY_GEOJSON_URLS = [
-  'https://cdn.jsdelivr.net/gh/vasturiano/react-globe.gl@6dbcf2113880d6fa0c68d6e8932e2bb4fb2df0ba/example/datasets/ne_110m_admin_0_countries.geojson',
-  'https://raw.githubusercontent.com/vasturiano/react-globe.gl/6dbcf2113880d6fa0c68d6e8932e2bb4fb2df0ba/example/datasets/ne_110m_admin_0_countries.geojson',
+  'https://cdn.jsdelivr.net/gh/vasturiano/react-globe.gl@507cfce3934e66349522bc80351d7a054e46ab6d/example/datasets/ne_110m_admin_0_countries.geojson',
+  'https://raw.githubusercontent.com/vasturiano/react-globe.gl/507cfce3934e66349522bc80351d7a054e46ab6d/example/datasets/ne_110m_admin_0_countries.geojson',
 ];
 
 // Kept below the lowest developer point (0.01) so points stay hoverable
