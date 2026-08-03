@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to DevGlobe! This project visualizes the world's top developers on an interactive 3D globe, combining GitHub and StackOverflow data.
 
+By participating in this project, you're expected to uphold our [Code of Conduct](./CODE_OF_CONDUCT.md).
+
 ## Quick Setup
 
 ```bash
@@ -51,7 +53,28 @@ git checkout -b feature/your-feature-name
 - Test locally with `npm run dev`
 - Follow existing code style (vanilla JS, no frameworks)
 
-### 4. Submit a PR
+### 4. Commit Message Guidelines
+
+Use clear, semantic commit messages so history stays easy to scan:
+
+| Prefix | When to use it | Example |
+|---|---|---|
+| `feat:` | Adding a new feature | `feat: add country-level leaderboard filter` |
+| `fix:` | Fixing a bug | `fix: correct geocoding for ambiguous city names` |
+| `docs:` | Documentation changes | `docs: expand contributing guide` |
+| `refactor:` | Code change with no behavior change | `refactor: simplify scoring module` |
+| `chore:` | Tooling, deps, config | `chore: bump globe.gl version` |
+
+### 5. Submit a PR
+Before opening a PR, make sure:
+
+- [ ] Your branch is up to date with `main`
+- [ ] The app runs locally without errors (`npm run dev`)
+- [ ] Changes are focused on a single feature/fix
+- [ ] Commit messages follow the convention above
+- [ ] You didn't commit `.env` or any secrets
+
+Then:
 - Write a clear description of what changed and why
 - Include a screenshot if it's a UI change
 - Reference the issue number (e.g. "Fixes #12")
