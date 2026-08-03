@@ -6,8 +6,8 @@ import { extractCountry, countryKey } from './Leaderboard.jsx';
 
 // Low-res Natural Earth countries (177 features). Second entry is a mirror.
 const COUNTRY_GEOJSON_URLS = [
-  'https://cdn.jsdelivr.net/gh/vasturiano/react-globe.gl@master/example/datasets/ne_110m_admin_0_countries.geojson',
-  'https://raw.githubusercontent.com/vasturiano/react-globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson',
+  'https://cdn.jsdelivr.net/gh/vasturiano/react-globe.gl@6dbcf2113880d6fa0c68d6e8932e2bb4fb2df0ba/example/datasets/ne_110m_admin_0_countries.geojson',
+  'https://raw.githubusercontent.com/vasturiano/react-globe.gl/6dbcf2113880d6fa0c68d6e8932e2bb4fb2df0ba/example/datasets/ne_110m_admin_0_countries.geojson',
 ];
 
 // Kept below the lowest developer point (0.01) so points stay hoverable
