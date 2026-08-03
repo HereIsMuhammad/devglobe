@@ -27,8 +27,10 @@ export default async function handler(req, res) {
     const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
     const container = client.database(DATABASE).container(CONTAINER);
 
+    // Slim projection — only fields needed for globe rendering, leaderboard, and scoring
+    // Detail panel fetches full doc on demand via /api/developer?id=...
     const { resources } = await container.items
-      .query('SELECT * FROM c')
+      .query('SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges FROM c')
       .fetchAll();
 
     res.status(200).json(resources);

@@ -80,15 +80,31 @@ const COUNTRY_QUERIES = [
 ];
 
 async function graphql(query, variables = {}) {
-  const response = await fetch(GRAPHQL_URL, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, variables }),
-  });
-  if (!response.ok) throw new Error(`GitHub API ${response.status}`);
-  const data = await response.json();
-  if (data.errors && !data.data) throw new Error(`GraphQL: ${data.errors[0]?.message}`);
-  return data.data;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const response = await fetch(GRAPHQL_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables }),
+    });
+    if (response.status === 502 || response.status === 503) {
+      const wait = (attempt + 1) * 5;
+      log(`    ⏳ GitHub ${response.status}, retrying in ${wait}s (attempt ${attempt + 1}/3)`);
+      await new Promise(r => setTimeout(r, wait * 1000));
+      continue;
+    }
+    if (response.status === 403) {
+      const reset = response.headers.get('x-ratelimit-reset');
+      const waitSec = reset ? Math.max(0, parseInt(reset) - Math.floor(Date.now() / 1000)) + 5 : 60;
+      log(`    ⏳ Rate limited, waiting ${waitSec}s...`);
+      await new Promise(r => setTimeout(r, waitSec * 1000));
+      continue;
+    }
+    if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+    const data = await response.json();
+    if (data.errors && !data.data) throw new Error(`GraphQL: ${data.errors[0]?.message}`);
+    return data.data;
+  }
+  throw new Error('GitHub API failed after 3 retries');
 }
 
 async function searchGitHubUsers(query, first = 50) {
@@ -121,7 +137,7 @@ async function searchGitHubUsers(query, first = 50) {
       after = data.search.pageInfo.endCursor;
     } catch (err) {
       log(`    ⚠ Search page failed: ${err.message.slice(0, 60)}`);
-      break;
+      // Continue to next page instead of breaking
     }
     await new Promise(r => setTimeout(r, 1200));
   }

@@ -16,6 +16,18 @@ const DetailPanel = (() => {
     renderRadarChart(dev);
     renderSOActivity(dev);
     renderHeatmap(dev);
+    // Fetch full details (languages, topRepos, bio) on demand
+    fetchFullDetails(dev);
+  }
+
+  async function fetchFullDetails(dev) {
+    try {
+      const res = await fetch(`/api/developer?id=${encodeURIComponent(dev.id)}`);
+      if (res.ok) {
+        const full = await res.json();
+        Object.assign(dev, full);
+      }
+    } catch (e) { /* use existing data as fallback */ }
     renderLanguages(dev);
     renderRepos(dev);
   }

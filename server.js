@@ -156,6 +156,28 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
+// Single developer detail endpoint
+app.get('/api/developer', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ error: 'Query parameter "id" is required' });
+
+  try {
+    const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
+    const container = client.database(DATABASE).container(CONTAINER);
+    const { resources } = await container.items.query({
+      query: 'SELECT c.id, c.login, c.name, c.avatarUrl, c.bio, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.languages, c.publicRepos, c.topRepos, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.soUserId FROM c WHERE c.id = @id',
+      parameters: [{ name: '@id', value: id }]
+    }).fetchAll();
+
+    if (resources.length === 0) return res.status(404).json({ error: 'Developer not found' });
+    res.json(resources[0]);
+  } catch (err) {
+    console.error('Detail error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch developer' });
+  }
+});
+
 // Serve static files
 app.use(express.static(__dirname));
 
