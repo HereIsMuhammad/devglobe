@@ -31,7 +31,46 @@ const CITY_TO_COUNTRY = {
   'kuala lumpur': 'Malaysia',
 };
 
-function extractCountry(location) {
+// Canonical names for the same country written differently by GitHub users and
+// by the Natural Earth GeoJSON used for the globe polygons (properties.ADMIN).
+const COUNTRY_ALIASES = {
+  'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA', 'us': 'USA',
+  'u.s.': 'USA', 'u.s.a.': 'USA', 'america': 'USA',
+  'united kingdom': 'UK', 'great britain': 'UK', 'england': 'UK', 'scotland': 'UK',
+  'wales': 'UK', 'northern ireland': 'UK', 'uk': 'UK',
+  'republic of korea': 'South Korea', 'korea': 'South Korea',
+  'russian federation': 'Russia',
+  'czechia': 'Czech Republic',
+  "people's republic of china": 'China', 'prc': 'China',
+  'republic of india': 'India',
+  'deutschland': 'Germany',
+  'brasil': 'Brazil',
+  'españa': 'Spain', 'espana': 'Spain',
+  'the netherlands': 'Netherlands', 'nederland': 'Netherlands', 'holland': 'Netherlands',
+  'united arab emirates': 'UAE', 'uae': 'UAE',
+  'viet nam': 'Vietnam',
+  'islamic republic of iran': 'Iran',
+  'united republic of tanzania': 'Tanzania',
+  'democratic republic of the congo': 'DR Congo', 'republic of the congo': 'Congo',
+  'türkiye': 'Turkey', 'turkiye': 'Turkey',
+  'republic of serbia': 'Serbia',
+  'bosnia and herzegovina': 'Bosnia',
+  'hong kong s.a.r.': 'Hong Kong',
+  'macedonia': 'North Macedonia',
+};
+
+export function normalizeCountry(name) {
+  if (!name) return '';
+  const trimmed = name.trim();
+  return COUNTRY_ALIASES[trimmed.toLowerCase()] || trimmed;
+}
+
+// Comparable form — use whenever two country names from different sources are matched
+export function countryKey(name) {
+  return normalizeCountry(name).toLowerCase();
+}
+
+export function extractCountry(location) {
   const parts = location.split(/[,\-–]/).map(s => s.trim());
   const lastPart = parts[parts.length - 1];
 
@@ -55,13 +94,18 @@ function extractCountry(location) {
   return lastPart;
 }
 
-export default function Leaderboard({ developers, selectedLogin, onSelectDev }) {
+export default function Leaderboard({
+  developers,
+  selectedLogin,
+  onSelectDev,
+  countryFilter = '',
+  onCountryFilterChange,
+}) {
   const listRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewHeight, setViewHeight] = useState(600);
 
-  // Filters
-  const [countryFilter, setCountryFilter] = useState('');
+  // Filters (country is owned by App so the globe can drive it too)
   const [langFilter, setLangFilter] = useState('');
   const [sortBy, setSortBy] = useState('score');
 
@@ -69,12 +113,24 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
     const map = new Map();
     developers.forEach(d => {
       if (d.location) {
-        const country = extractCountry(d.location);
-        if (country && country.length > 1) map.set(country, (map.get(country) || 0) + 1);
+        const country = normalizeCountry(extractCountry(d.location));
+        if (country && country.length > 1) {
+          const entry = map.get(country.toLowerCase());
+          if (entry) entry.count++;
+          else map.set(country.toLowerCase(), { name: country, count: 1 });
+        }
       }
     });
-    return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 50);
+    return [...map.values()].sort((a, b) => b.count - a.count).slice(0, 50);
   }, [developers]);
+
+  // A country picked on the globe may have no developers, or be spelled
+  // differently than the option built from developer locations.
+  const selectedCountryOption = useMemo(() => {
+    if (!countryFilter) return null;
+    const key = countryKey(countryFilter);
+    return countries.find(c => c.name.toLowerCase() === key) || null;
+  }, [countries, countryFilter]);
 
   const languages = useMemo(() => {
     const set = new Set();
@@ -83,9 +139,10 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
   }, [developers]);
 
   const filtered = useMemo(() => {
+    const wantedCountry = countryKey(countryFilter);
     let result = developers.filter(d => {
       const matchLang = !langFilter || d.topLanguage === langFilter;
-      const matchCountry = !countryFilter || (d.location && extractCountry(d.location) === countryFilter);
+      const matchCountry = !wantedCountry || (d.location && countryKey(extractCountry(d.location)) === wantedCountry);
       return matchLang && matchCountry;
     });
 
@@ -139,7 +196,7 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
 
   const hasActiveFilter = countryFilter || langFilter;
   const clearFilters = () => {
-    setCountryFilter('');
+    onCountryFilterChange?.('');
     setLangFilter('');
   };
 
@@ -156,10 +213,18 @@ export default function Leaderboard({ developers, selectedLogin, onSelectDev }) 
         </div>
         <div className="sidebar__count">{filtered.length} developer{filtered.length !== 1 ? 's' : ''}</div>
         <div className="sidebar__filters">
-          <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)}>
+          <select
+            value={selectedCountryOption ? selectedCountryOption.name : countryFilter}
+            onChange={e => onCountryFilterChange?.(e.target.value)}
+          >
             <option value="">All Countries</option>
-            {countries.map(([c, n]) => (
-              <option key={c} value={c}>{c.length > 15 ? c.slice(0, 14) + '…' : c} ({n})</option>
+            {countryFilter && !selectedCountryOption && (
+              <option value={countryFilter}>
+                {countryFilter.length > 15 ? countryFilter.slice(0, 14) + '…' : countryFilter} (0)
+              </option>
+            )}
+            {countries.map(({ name, count }) => (
+              <option key={name} value={name}>{name.length > 15 ? name.slice(0, 14) + '…' : name} ({count})</option>
             ))}
           </select>
           <select value={langFilter} onChange={e => setLangFilter(e.target.value)}>
