@@ -54,13 +54,19 @@ export default function App() {
     setSelectedDev(null);
   }, []);
 
+  const handleHome = useCallback(() => {
+    setSelectedDev(null);
+    setFiltered(developers);
+    setFlyTarget(null);
+  }, [developers]);
+
   if (loading || error) {
     return <LoadingOverlay error={error} />;
   }
 
   return (
     <div id="app">
-      <Header />
+      <Header onHome={handleHome} />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
