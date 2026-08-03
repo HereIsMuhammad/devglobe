@@ -38,6 +38,8 @@ npm run dev
 
 The app runs with sample data out of the box — no API keys needed for local development.
 
+> **Want to test with a real database locally?** Use the [Azure Cosmos DB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-develop-emulator) — it runs locally with no Azure subscription required. Set `COSMOS_ENDPOINT=https://localhost:8081` and the emulator's key in your `.env`.
+
 ## 🏗️ Tech Stack
 
 | Layer | Technology |
