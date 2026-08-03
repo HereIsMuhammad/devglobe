@@ -1,75 +1,133 @@
-# DevGlobe — Visualizing the World's Top Open-Source Contributors
+<div align="center">
 
-Interactive 3D globe showing the world's top GitHub developers, scored by commits, stars, repo reach, and StackOverflow contributions.
+# 🌐 DevGlobe
 
-## Quick Start (with sample data)
+**Visualizing the World's Top Open-Source Contributors on an Interactive 3D Globe**
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel)](https://devglobe.vercel.app)
+[![GitHub Stars](https://img.shields.io/github/stars/sajeetharan/devglobe?style=for-the-badge&logo=github)](https://github.com/sajeetharan/devglobe/stargazers)
+[![License](https://img.shields.io/github/license/sajeetharan/devglobe?style=for-the-badge)](LICENSE)
+
+<img src="assets/img/devglobe.gif" alt="DevGlobe Demo" width="800" />
+
+*26,000+ developers · ranked by stars, commits, repo reach & StackOverflow reputation*
+
+</div>
+
+---
+
+## ✨ Features
+
+- **Interactive 3D Globe** — Explore developers pinned to their real-world locations using Three.js
+- **AI-Powered Search** — Hybrid + vector search via Azure Cosmos DB (e.g. "AI & deep learning", "full stack JS dev")
+- **Composite Scoring** — Each developer scored 0–100 across 6 dimensions
+- **Leaderboard** — Filter by country, language, or sort by score/stars/commits
+- **Developer Profiles** — Click any pin to see detailed stats, top repos, and contribution breakdown
+- **Mobile Responsive** — Bottom-sheet filters and full-width search on smaller screens
+
+## 🚀 Quick Start
 
 ```bash
+git clone https://github.com/sajeetharan/devglobe.git
+cd devglobe
 npm install
-npx serve . -l 3000
-# Open http://localhost:3000
+npm run dev
+# Open http://localhost:5173
 ```
 
-## Build Full Dataset (with API keys)
+The app runs with sample data out of the box — no API keys needed for local development.
 
-1. Copy `.env.example` to `.env` and fill in your tokens
-2. Run the data pipeline:
+## 🏗️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, Three.js (react-globe.gl), Vite |
+| Search | Azure Cosmos DB (vector + hybrid search) |
+| API | Vercel Serverless Functions |
+| Hosting | Vercel |
+| Data Pipeline | Node.js scripts (GitHub GraphQL, StackOverflow API, geocoding) |
+
+## 📊 Scoring Formula (0–100)
+
+| Dimension | Weight | Source |
+|-----------|--------|--------|
+| GitHub Stars | 25% | Total stars across repos |
+| GitHub Commits | 25% | Yearly commit activity |
+| Repo Reach | 20% | Forks + watchers |
+| SO Reputation | 15% | StackOverflow reputation |
+| SO Engagement | 10% | Answer acceptance × count |
+| Community | 5% | Followers + badges |
+
+All dimensions are log-normalized to prevent outlier domination.
+
+## 🔧 Building the Full Dataset
+
+Requires API keys — copy `.env.example` to `.env` and fill in your tokens.
 
 ```bash
-npm run build-data
+npm run fetch-github          # Fetch top devs from GitHub GraphQL
+npm run fetch-stackoverflow   # Enrich with StackOverflow reputation
+npm run geocode               # Convert locations to lat/lng
+npm run build-data            # Run full pipeline
+npm run upload-cosmos         # Upload to Azure Cosmos DB
 ```
 
-This executes: GitHub fetch → StackOverflow fetch → Geocoding → Scoring
+## 📁 Project Structure
 
-3. Update `DATA_URL` in `src/app.js` to `'data/developers.json'`
-
-## Individual Pipeline Steps
-
-```bash
-npm run fetch-github       # Fetch top devs from GitHub GraphQL
-npm run fetch-stackoverflow # Enrich with SO reputation
-npm run geocode            # Convert locations to lat/lng
+```
+├── index.html                  # Entry HTML
+├── src/
+│   ├── main.jsx                # App bootstrap + Vercel Analytics
+│   ├── App.jsx                 # Root component, data loading
+│   ├── components/
+│   │   ├── Globe.jsx           # 3D globe (react-globe.gl)
+│   │   ├── Leaderboard.jsx     # Ranked sidebar with filters
+│   │   ├── SearchBar.jsx       # Hybrid/vector search input
+│   │   ├── DetailPanel.jsx     # Developer detail card
+│   │   ├── Header.jsx          # Top bar with branding
+│   │   └── LoadingOverlay.jsx  # Loading state
+│   └── utils/
+│       ├── scoring.js          # Composite scoring algorithm
+│       └── format.js           # Number formatting helpers
+├── api/
+│   ├── developers.js           # List all developers
+│   ├── developer.js            # Single developer lookup
+│   └── search.js               # Cosmos DB vector/hybrid search
+├── scripts/                    # Data pipeline scripts
+├── styles/main.css             # Dark theme styles
+└── data/
+    └── developers-sample.json  # Sample data for local dev
 ```
 
-## Deploy to Vercel
+## 🌍 Deploy to Vercel
 
 ```bash
 npx vercel
 ```
 
-Environment variables needed: `GITHUB_TOKEN`, `SO_API_KEY`, `GEOCODE_API_KEY`
+Required environment variables:
 
-## Project Structure
+| Variable | Purpose |
+|----------|---------|
+| `COSMOS_ENDPOINT` | Azure Cosmos DB endpoint |
+| `COSMOS_KEY` | Azure Cosmos DB key |
+| `COSMOS_DATABASE` | Database name |
+| `COSMOS_CONTAINER` | Container name |
 
-```
-├── index.html              # Main page
-├── styles/main.css         # Dark theme UI
-├── src/
-│   ├── app.js              # Entry point, orchestration
-│   ├── globe.js            # 3D globe (globe.gl)
-│   ├── detail-panel.js     # D3 charts (radar, heatmap, donut)
-│   ├── leaderboard.js      # Ranked sidebar with search/filter
-│   └── scoring.js          # Composite scoring algorithm
-├── api/
-│   └── developers.js       # Vercel serverless endpoint
-├── scripts/
-│   ├── build-dataset.js    # Full pipeline orchestrator
-│   ├── fetch-github.js     # GitHub GraphQL fetcher
-│   ├── fetch-stackoverflow.js # SO API fetcher
-│   └── geocode.js          # Location → coordinates
-└── data/
-    └── developers-sample.json # Sample data (20 devs)
-```
+## 🤝 Contributing
 
-## Scoring Formula (0-100)
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and areas where help is needed.
 
-| Dimension       | Weight | Source            |
-|----------------|--------|-------------------|
-| GitHub Stars    | 25%    | Total stars       |
-| GitHub Commits  | 25%    | Yearly commits    |
-| Repo Reach      | 20%    | Forks + watchers  |
-| SO Reputation   | 15%    | StackOverflow rep |
-| SO Engagement   | 10%    | Acceptance × answers |
-| Community       | 5%     | Followers + badges |
+## 📄 License
 
-All dimensions are log-normalized to prevent outlier domination.
+MIT — see [LICENSE](LICENSE) for details.
+
+---
+
+<div align="center">
+
+**[⭐ Star this repo](https://github.com/sajeetharan/devglobe)** if you find it useful!
+
+Built with ❤️ by [@sajeetharan](https://github.com/sajeetharan)
+
+</div>
