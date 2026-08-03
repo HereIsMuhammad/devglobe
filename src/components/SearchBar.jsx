@@ -11,6 +11,7 @@ const SAMPLES = [
 export default function SearchBar({ developers, onResults, onReset }) {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState('hybrid');
+  const [topN, setTopN] = useState(50);
   const [searching, setSearching] = useState(false);
   const [resultCount, setResultCount] = useState(null);
   const inputRef = useRef(null);
@@ -43,7 +44,7 @@ export default function SearchBar({ developers, onResults, onReset }) {
 
     try {
       const res = await fetch(
-        `/api/search?q=${encodeURIComponent(q)}&mode=${m}&top=20`,
+        `/api/search?q=${encodeURIComponent(q)}&mode=${m}&top=${topN}`,
         { signal: controller.signal }
       );
       const data = await res.json();
@@ -57,7 +58,7 @@ export default function SearchBar({ developers, onResults, onReset }) {
     } finally {
       if (!controller.signal.aborted) setSearching(false);
     }
-  }, [developers, onResults, onReset]);
+  }, [developers, onResults, onReset, topN]);
 
   const handleInput = (e) => {
     const val = e.target.value;
@@ -80,6 +81,12 @@ export default function SearchBar({ developers, onResults, onReset }) {
     const m = e.target.value;
     setMode(m);
     if (query.trim()) doSearch(query, m);
+  };
+
+  const handleTopNChange = (e) => {
+    const n = parseInt(e.target.value);
+    setTopN(n);
+    if (query.trim()) doSearch(query, mode);
   };
 
   const handleSample = (q) => {
@@ -126,10 +133,15 @@ export default function SearchBar({ developers, onResults, onReset }) {
           <option value="vector">Vector (AI)</option>
           <option value="hybrid">Hybrid</option>
         </select>
+        <select value={topN} onChange={handleTopNChange} title="Max results">
+          <option value={10}>Top 10</option>
+          <option value={20}>Top 20</option>
+          <option value={50}>Top 50</option>
+        </select>
       </div>
       {resultCount !== null && query && (
         <div className="search-bar__results">
-          {resultCount === 0 ? 'No results found' : `${resultCount} developer${resultCount !== 1 ? 's' : ''} found`}
+          {resultCount === 0 ? 'No results found' : `Top ${resultCount} developer${resultCount !== 1 ? 's' : ''} matched`}
           <button className="search-bar__reset" onClick={handleClear} title="Clear filter and show all">
             ✕ Clear
           </button>
