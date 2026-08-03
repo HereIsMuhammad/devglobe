@@ -18,7 +18,6 @@ async function fetchSOUser(query, retries = 3) {
     inname: query,
     site: 'stackoverflow',
     pagesize: '5',
-    filter: '!LnNkvq0d-S*U.QkZOE2'
   });
   if (SO_API_KEY) params.set('key', SO_API_KEY);
 
@@ -50,6 +49,24 @@ async function fetchSOUser(query, retries = 3) {
 
   console.log(`    ⚠️ Skipped after ${retries} retries`);
   return [];
+}
+
+async function fetchAnswerCount(userId) {
+  const params = new URLSearchParams({
+    site: 'stackoverflow',
+    pagesize: '0',
+    filter: 'total',
+  });
+  if (SO_API_KEY) params.set('key', SO_API_KEY);
+  const url = `${SO_API_BASE}/users/${userId}/answers?${params}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.total || 0;
+  } catch {
+    return 0;
+  }
 }
 
 function bestMatch(soUsers, ghUser) {
@@ -115,17 +132,18 @@ async function main() {
 
       if (match) {
         matched++;
+        const answerCount = await fetchAnswerCount(match.user_id);
         enriched.push({
           ...dev,
           soUserId: match.user_id,
           soReputation: match.reputation || 0,
-          soAnswers: match.answer_count || 0,
+          soAnswers: answerCount || match.answer_count || 0,
           soAcceptRate: match.accept_rate || 0,
           soBadges: (match.badge_counts?.gold || 0) +
                     (match.badge_counts?.silver || 0) +
                     (match.badge_counts?.bronze || 0)
         });
-        console.log(`    ✓ Matched: ${match.display_name} (rep: ${match.reputation})`);
+        console.log(`    ✓ Matched: ${match.display_name} (rep: ${match.reputation}, answers: ${answerCount})`);
       } else {
         enriched.push({
           ...dev,
