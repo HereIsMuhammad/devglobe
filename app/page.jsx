@@ -1,13 +1,17 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import Header from './components/Header.jsx';
-import SearchBar from './components/SearchBar.jsx';
-import Globe from './components/Globe.jsx';
-import Leaderboard from './components/Leaderboard.jsx';
-import DetailPanel from './components/DetailPanel.jsx';
-import LoadingOverlay from './components/LoadingOverlay.jsx';
-import { scoreAll } from './utils/scoring.js';
+'use client';
 
-export default function App() {
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Header from '../components/Header.jsx';
+import SearchBar from '../components/SearchBar.jsx';
+import Leaderboard from '../components/Leaderboard.jsx';
+import DetailPanel from '../components/DetailPanel.jsx';
+import LoadingOverlay from '../components/LoadingOverlay.jsx';
+import { scoreAll } from '../lib/scoring.js';
+import dynamic from 'next/dynamic';
+
+const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
+
+export default function Home() {
   const [developers, setDevelopers] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [selectedDev, setSelectedDev] = useState(null);

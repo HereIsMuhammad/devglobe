@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { formatNum } from '../utils/format.js';
+import { formatNum } from '../lib/format.js';
 
 export default function DetailPanel({ dev, onClose }) {
   const [fullData, setFullData] = useState(null);
