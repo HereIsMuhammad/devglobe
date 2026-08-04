@@ -1,33 +1,33 @@
 {
   "name": "dev-globe-viz",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "type": "module",
   "description": "Interactive 3D globe visualization of top GitHub developers",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "server": "node server.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "build-data": "node scripts/build-dataset.js",
     "fetch-github": "node scripts/fetch-github.js",
     "fetch-stackoverflow": "node scripts/fetch-stackoverflow.js",
     "geocode": "node scripts/geocode.js",
-    "upload-cosmos": "node scripts/upload-cosmosdb.js"
+    "upload-cosmos": "node scripts/upload-cosmosdb.js",
+    "seed-emulator": "node scripts/seed-emulator.js"
   },
   "dependencies": {
     "@azure/cosmos": "^4.10.0",
     "@vercel/analytics": "^2.0.1",
-    "@vitejs/plugin-react": "^6.0.4",
     "d3": "^7.9.0",
     "dotenv": "^16.4.5",
-    "express": "^5.2.1",
+    "next": "^15.3.0",
     "node-fetch": "^3.3.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-globe.gl": "^2.38.0",
-    "vite": "^8.1.5"
+    "react-globe.gl": "^2.38.0"
   },
   "devDependencies": {
-    "serve": "^14.2.0"
-  },
-  "type": "module"
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.3.0"
+  }
 }

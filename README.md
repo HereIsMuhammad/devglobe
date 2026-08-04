@@ -28,25 +28,74 @@
 
 ## 🚀 Quick Start
 
+### Option 1: Zero-config (sample data, no database needed)
+
 ```bash
 git clone https://github.com/sajeetharan/devglobe.git
 cd devglobe
 npm install
 npm run dev
-# Open http://localhost:5173
+# Open http://localhost:3000
 ```
 
-The app runs with sample data out of the box — no API keys needed for local development.
+The app automatically falls back to the bundled sample data (20 developers) when no Cosmos DB credentials are configured. **No API keys, no emulator, no setup** — just clone and run.
 
-> **Want to test with a real database locally?** Use the [Azure Cosmos DB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-develop-emulator) — it runs locally with no Azure subscription required. Set `COSMOS_ENDPOINT=https://localhost:8081` and the emulator's key in your `.env`.
+> Text search works fully offline. Vector/hybrid search requires Azure OpenAI (see Option 3).
+
+---
+
+### Option 2: Cosmos DB Emulator (full database experience locally)
+
+For contributors working on the API layer or data pipeline:
+
+1. **Install the Cosmos DB Emulator** — [Download here](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-develop-emulator) (Windows, macOS via Docker, or Linux Docker)
+
+2. **Start the emulator** and wait for it to be ready at `https://localhost:8081`
+
+3. **Seed sample data into the emulator:**
+   ```bash
+   npm run seed-emulator
+   ```
+
+4. **Create `.env.local`** (the seed script prints this for you):
+   ```env
+   COSMOS_ENDPOINT=https://localhost:8081
+   COSMOS_KEY=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==
+   ```
+
+5. **Run the app:**
+   ```bash
+   npm run dev
+   ```
+
+> The emulator key above is Microsoft's [well-known emulator key](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator#authentication) — it is intentionally public and only works locally.
+
+---
+
+### Option 3: Full Azure backend (vector + hybrid search)
+
+For the complete experience including AI-powered search:
+
+```env
+# .env.local
+COSMOS_ENDPOINT=https://your-account.documents.azure.com:443/
+COSMOS_KEY=your-cosmos-key
+AZURE_OPENAI_ENDPOINT=https://your-openai.openai.azure.com/
+AZURE_OPENAI_KEY=your-openai-key
+EMBEDDING_DEPLOYMENT=text-embedding-3-small
+```
+
+```bash
+npm run dev
+```
 
 ## 🏗️ Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 19, Three.js (react-globe.gl), Vite |
+| Frontend | React 19, Three.js (react-globe.gl), Next.js 15 |
 | Search | Azure Cosmos DB (vector + hybrid search) |
-| API | Vercel Serverless Functions |
+| API | Next.js API Routes |
 | Hosting | Vercel |
 | Data Pipeline | Node.js scripts (GitHub GraphQL, StackOverflow API, geocoding) |
 

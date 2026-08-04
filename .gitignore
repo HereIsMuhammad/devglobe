@@ -1,5 +1,7 @@
 node_modules/
+.next/
 .env
+.env.local
 .vercel
 data/developers.json
 data/github-raw.json

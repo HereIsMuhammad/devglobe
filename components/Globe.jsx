@@ -1,8 +1,10 @@
+'use client';
+
 import React, { useEffect, useRef, useMemo, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import GlobeGL from 'react-globe.gl';
-import { getPlatformColor } from '../utils/scoring.js';
-import { formatNum } from '../utils/format.js';
-import { extractCountry, countryKey } from '../utils/country.js';
+import { getPlatformColor } from '../lib/scoring.js';
+import { formatNum } from '../lib/format.js';
+import { extractCountry, countryKey } from '../lib/country.js';
 
 // Low-res Natural Earth countries (177 features), pinned to the commit that added
 // the dataset so the shapes can't change under us. Second entry is a mirror.

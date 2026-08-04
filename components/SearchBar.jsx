@@ -1,12 +1,28 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { scoreAll } from '../utils/scoring.js';
+'use client';
 
-const SAMPLES = [
-  { query: 'open source contributors in San Francisco', label: 'SF contributors' },
-  { query: 'Python developer working on AI and deep learning', label: 'AI & deep learning' },
-  { query: 'full stack JavaScript developer', label: 'full stack JS dev' },
-  { query: 'Linux kernel and systems programming in C', label: 'Linux kernel devs' },
-];
+import React, { useState, useRef, useCallback } from 'react';
+import { scoreAll } from '../lib/scoring.js';
+
+const SAMPLES_BY_MODE = {
+  text: [
+    { query: 'Colombo', label: 'Colombo' },
+    { query: 'San Francisco', label: 'San Francisco' },
+    { query: 'torvalds', label: 'torvalds' },
+    { query: 'London', label: 'London' },
+  ],
+  vector: [
+    { query: 'open source contributors in San Francisco', label: 'SF contributors' },
+    { query: 'Python developer working on AI and deep learning', label: 'AI & deep learning' },
+    { query: 'full stack JavaScript developer', label: 'full stack JS dev' },
+    { query: 'Linux kernel and systems programming in C', label: 'Linux kernel devs' },
+  ],
+  hybrid: [
+    { query: 'React developer in India', label: 'React devs in India' },
+    { query: 'cloud infrastructure and DevOps engineer', label: 'DevOps engineers' },
+    { query: 'machine learning researcher in Europe', label: 'ML in Europe' },
+    { query: 'Rust systems programmer', label: 'Rust systems' },
+  ],
+};
 
 export default function SearchBar({ developers, onResults, onReset }) {
   const [query, setQuery] = useState('');
@@ -115,7 +131,7 @@ export default function SearchBar({ developers, onResults, onReset }) {
         <input
           ref={inputRef}
           type="text"
-          placeholder="Search developers, languages, or locations..."
+          placeholder={mode === 'text' ? 'Search by name, username, or location...' : mode === 'vector' ? 'Describe the developer you\'re looking for...' : 'Combine keywords and semantic search...'}
           autoComplete="off"
           value={query}
           onChange={handleInput}
@@ -149,7 +165,7 @@ export default function SearchBar({ developers, onResults, onReset }) {
       )}
       <div className={`search-bar__samples${query ? ' hidden' : ''}`}>
         <span>Try:</span>
-        {SAMPLES.map(s => (
+        {SAMPLES_BY_MODE[mode].map(s => (
           <button key={s.label} onClick={() => handleSample(s.query)}>
             {s.label}
           </button>

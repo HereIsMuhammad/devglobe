@@ -1,11 +1,7 @@
-/**
- * Vercel Serverless Function — Hybrid search for developers
- *
- * Endpoint: /api/search?q=machine+learning+python&mode=hybrid
- * 
- * Modes: vector | text | hybrid (default)
- */
 import { CosmosClient } from '@azure/cosmos';
+import { NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
@@ -13,8 +9,26 @@ const OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
 const OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
 const EMBEDDING_DEPLOYMENT = process.env.EMBEDDING_DEPLOYMENT || 'text-embedding-3-small';
 
-const DATABASE = 'devglobe';
-const CONTAINER = 'developers';
+const DATABASE = process.env.COSMOS_DATABASE || 'devglobe';
+const CONTAINER = process.env.COSMOS_CONTAINER || 'developers';
+
+async function getSampleData() {
+  const filePath = path.join(process.cwd(), 'data', 'developers-sample.json');
+  const raw = await fs.readFile(filePath, 'utf-8');
+  return JSON.parse(raw);
+}
+
+function searchSampleData(data, q, limit) {
+  const lower = q.toLowerCase();
+  return data
+    .filter(d =>
+      (d.login && d.login.toLowerCase().includes(lower)) ||
+      (d.name && d.name.toLowerCase().includes(lower)) ||
+      (d.location && d.location.toLowerCase().includes(lower)) ||
+      (d.topLanguage && d.topLanguage.toLowerCase().includes(lower))
+    )
+    .slice(0, limit);
+}
 
 async function getEmbedding(text) {
   const url = `${OPENAI_ENDPOINT}/openai/deployments/${EMBEDDING_DEPLOYMENT}/embeddings?api-version=2024-02-01`;
@@ -27,18 +41,25 @@ async function getEmbedding(text) {
   return data.data[0].embedding;
 }
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Content-Type', 'application/json');
-
-  const { q, mode = 'hybrid', top = '10' } = req.query;
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const q = searchParams.get('q');
+  const mode = searchParams.get('mode') || 'hybrid';
+  const top = searchParams.get('top') || '10';
 
   if (!q) {
-    return res.status(400).json({ error: 'Query parameter "q" is required' });
+    return NextResponse.json(
+      { error: 'Query parameter "q" is required' },
+      { status: 400 }
+    );
   }
 
   if (!COSMOS_ENDPOINT || !COSMOS_KEY) {
-    return res.status(500).json({ error: 'Cosmos DB not configured' });
+    // Fallback: search sample data locally (text mode only)
+    const data = await getSampleData();
+    const limit = Math.min(parseInt(top), 50);
+    const results = searchSampleData(data, q, limit);
+    return NextResponse.json({ query: q, mode: 'text', count: results.length, results });
   }
 
   try {
@@ -50,7 +71,10 @@ export default async function handler(req, res) {
 
     if (mode === 'vector') {
       if (!OPENAI_ENDPOINT || !OPENAI_KEY) {
-        return res.status(500).json({ error: 'OpenAI not configured for vector search' });
+        return NextResponse.json(
+          { error: 'OpenAI not configured for vector search' },
+          { status: 500 }
+        );
       }
       const embedding = await getEmbedding(q);
       const { resources } = await container.items.query({
@@ -88,12 +112,14 @@ export default async function handler(req, res) {
     } else {
       // Hybrid: client-side RRF fusion of vector + text results
       if (!OPENAI_ENDPOINT || !OPENAI_KEY) {
-        return res.status(500).json({ error: 'OpenAI not configured for hybrid search' });
+        return NextResponse.json(
+          { error: 'OpenAI not configured for hybrid search' },
+          { status: 500 }
+        );
       }
       const searchTerm = q.toLowerCase();
       const embedding = await getEmbedding(q);
 
-      // Run vector and text searches in parallel
       const [vectorRes, textRes] = await Promise.all([
         container.items.query({
           query: `
@@ -131,9 +157,12 @@ export default async function handler(req, res) {
       results = [...rrf.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([login]) => allMap.get(login));
     }
 
-    res.json({ query: q, mode, count: results.length, results });
+    return NextResponse.json({ query: q, mode, count: results.length, results });
   } catch (err) {
     console.error('Search error:', err.message);
-    res.status(500).json({ error: 'Search failed' });
+    return NextResponse.json(
+      { error: 'Search failed' },
+      { status: 500 }
+    );
   }
 }
