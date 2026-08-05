@@ -58,9 +58,7 @@ export default function Home() {
   useEffect(() => {
     if (!user || developers.length === 0) return;
     const match = developers.find(d => d.login === user.login);
-    if (!match) {
-      setClaimStatus('no_match');
-    } else if (match.claimed) {
+    if (match?.claimed) {
       setClaimStatus('claimed');
       setClaimedLogins(prev => new Set(prev).add(user.login));
     } else {
@@ -78,15 +76,24 @@ export default function Home() {
     try {
       const res = await fetch('/api/auth/claim', { method: 'POST' });
       if (res.ok) {
+        const result = await res.json();
         setClaimStatus('claimed');
         setClaimedLogins(prev => new Set(prev).add(user.login));
+        // If a new profile was created, reload developers to include it
+        if (result.created) {
+          const devRes = await fetch('/api/developers');
+          if (devRes.ok) {
+            const raw = await devRes.json();
+            const scored = scoreAll(raw);
+            setDevelopers(scored);
+            setFiltered(scored);
+            const claimed = new Set(raw.filter(d => d.claimed).map(d => d.login));
+            setClaimedLogins(claimed);
+          }
+        }
       } else {
         const data = await res.json();
-        if (res.status === 404) {
-          setClaimStatus('no_match');
-        } else {
-          console.error('Claim failed:', data.error);
-        }
+        console.error('Claim failed:', data.error);
       }
     } catch (err) {
       console.error('Claim error:', err);
