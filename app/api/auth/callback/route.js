@@ -1,13 +1,21 @@
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { createSessionToken, buildSessionCookie } from '../../../../lib/auth.js';
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
+function getBaseUrl(hdrs) {
+  const host = hdrs.get('x-forwarded-host') || hdrs.get('host') || 'localhost:3000';
+  const proto = hdrs.get('x-forwarded-proto') || 'http';
+  return `${proto}://${host}`;
+}
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const hdrs = await headers();
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || getBaseUrl(hdrs);
 
   if (!code) {
     return NextResponse.redirect(`${baseUrl}?auth_error=no_code`);
