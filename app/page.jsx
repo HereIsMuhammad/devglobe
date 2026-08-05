@@ -20,6 +20,9 @@ export default function Home() {
   const [flyTarget, setFlyTarget] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [theme, setTheme] = useState('dark');
+  const [user, setUser] = useState(null);
+  const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'claimed' | 'no_match'
+  const [claimedLogins, setClaimedLogins] = useState(new Set());
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -36,6 +39,59 @@ export default function Home() {
       // localStorage unavailable (e.g. private browsing) — fall back to dark
     }
   }, []);
+
+  // Fetch session on mount
+  useEffect(() => {
+    async function loadSession() {
+      try {
+        const res = await fetch('/api/auth/session');
+        const data = await res.json();
+        if (data.user) {
+          setUser(data.user);
+        }
+      } catch { /* not authenticated */ }
+    }
+    loadSession();
+  }, []);
+
+  // Check claim status when user and developers are loaded
+  useEffect(() => {
+    if (!user || developers.length === 0) return;
+    const match = developers.find(d => d.login === user.login);
+    if (!match) {
+      setClaimStatus('no_match');
+    } else if (match.claimed) {
+      setClaimStatus('claimed');
+      setClaimedLogins(prev => new Set(prev).add(user.login));
+    } else {
+      setClaimStatus('unclaimed');
+    }
+  }, [user, developers]);
+
+  const handleLogout = useCallback(async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    setUser(null);
+    setClaimStatus('unclaimed');
+  }, []);
+
+  const handleClaim = useCallback(async () => {
+    try {
+      const res = await fetch('/api/auth/claim', { method: 'POST' });
+      if (res.ok) {
+        setClaimStatus('claimed');
+        setClaimedLogins(prev => new Set(prev).add(user.login));
+      } else {
+        const data = await res.json();
+        if (res.status === 404) {
+          setClaimStatus('no_match');
+        } else {
+          console.error('Claim failed:', data.error);
+        }
+      }
+    } catch (err) {
+      console.error('Claim error:', err);
+    }
+  }, [user]);
 
   const handleToggleTheme = useCallback(() => {
     setTheme(prev => {
@@ -63,6 +119,9 @@ export default function Home() {
         const scored = scoreAll(raw);
         setDevelopers(scored);
         setFiltered(scored);
+        // Build set of all claimed logins from data
+        const claimed = new Set(raw.filter(d => d.claimed).map(d => d.login));
+        setClaimedLogins(claimed);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -116,7 +175,7 @@ export default function Home() {
 
   return (
     <div id="app">
-      <Header onHome={handleHome} theme={theme} onToggleTheme={handleToggleTheme} />
+      <Header onHome={handleHome} theme={theme} onToggleTheme={handleToggleTheme} user={user} onLogout={handleLogout} onClaim={handleClaim} claimStatus={claimStatus} />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
@@ -139,9 +198,10 @@ export default function Home() {
           onSelectDev={handleSelectDev}
           countryFilter={selectedCountry}
           onCountryFilterChange={setSelectedCountry}
+          claimedLogins={claimedLogins}
         />
         {selectedDev && (
-          <DetailPanel dev={selectedDev} onClose={handleCloseDetail} />
+          <DetailPanel dev={selectedDev} onClose={handleCloseDetail} claimedLogins={claimedLogins} />
         )}
       </main>
     </div>
