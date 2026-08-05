@@ -14,6 +14,44 @@
   --radius: 8px;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Panel/overlay backgrounds (previously hardcoded rgba values) */
+  --bg-header: rgba(10, 14, 23, 0.85);
+  --bg-panel-70: rgba(17, 24, 39, 0.7);
+  --bg-panel-85: rgba(17, 24, 39, 0.85);
+  --bg-panel-90: rgba(17, 24, 39, 0.9);
+  --bg-panel-92: rgba(17, 24, 39, 0.92);
+  --bg-panel-95: rgba(17, 24, 39, 0.95);
+  --bg-sample-btn: rgba(30, 41, 59, 0.7);
+  --overlay-subtle: rgba(255, 255, 255, 0.08);
+  --overlay-subtle-strong: rgba(255, 255, 255, 0.14);
+  --overlay-hover: rgba(255, 255, 255, 0.1);
+  --shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Light theme overrides */
+:root[data-theme='light'] {
+  --bg-primary: #f4f6fb;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #eef1f8;
+  --text-primary: #1a2234;
+  --text-secondary: #475569;
+  --text-muted: #7c8aa0;
+  --border: #dde3ee;
+  --shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+
+  --bg-header: rgba(255, 255, 255, 0.85);
+  --bg-panel-70: rgba(255, 255, 255, 0.7);
+  --bg-panel-85: rgba(255, 255, 255, 0.85);
+  --bg-panel-90: rgba(255, 255, 255, 0.9);
+  --bg-panel-92: rgba(255, 255, 255, 0.92);
+  --bg-panel-95: rgba(255, 255, 255, 0.95);
+  --bg-sample-btn: rgba(226, 232, 240, 0.8);
+  --overlay-subtle: rgba(15, 23, 42, 0.05);
+  --overlay-subtle-strong: rgba(15, 23, 42, 0.09);
+  --overlay-hover: rgba(15, 23, 42, 0.06);
+  --shadow-strong: 0 8px 32px rgba(15, 23, 42, 0.12);
 }
 
 * {
@@ -28,6 +66,7 @@ body {
   color: var(--text-primary);
   overflow: hidden;
   height: 100vh;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
 /* Header */
@@ -41,7 +80,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background: rgba(10, 14, 23, 0.85);
+  background: var(--bg-header);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   z-index: 100;
@@ -96,13 +135,13 @@ body {
 }
 
 .btn--star {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-subtle);
   border: 1px solid var(--border);
-  color: #e2e8f0;
+  color: var(--text-primary);
 }
 
 .btn--star:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--overlay-subtle-strong);
   border-color: #f0c040;
   color: #f0c040;
 }
@@ -116,6 +155,32 @@ body {
 .btn--sponsor:hover {
   background: rgba(219, 39, 119, 0.25);
   border-color: #f472b6;
+}
+
+.btn--theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--overlay-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+
+.btn--theme:hover {
+  background: var(--overlay-subtle-strong);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.btn--theme svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Centered search bar */
@@ -141,12 +206,12 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(17, 24, 39, 0.9);
+  background: var(--bg-panel-90);
   backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: 28px;
   padding: 6px 8px 6px 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-strong);
   transition: border-color 0.2s, box-shadow 0.2s;
   max-width: 100%;
 }
@@ -205,7 +270,7 @@ body {
 }
 
 .search-bar__samples button {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--bg-sample-btn);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 4px 12px;
@@ -237,7 +302,7 @@ body {
 
 .search-bar__clear:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-hover);
 }
 
 .search-bar__spinner {
@@ -257,7 +322,7 @@ body {
 .search-bar__results {
   font-size: 11px;
   color: var(--text-muted);
-  background: rgba(17, 24, 39, 0.7);
+  background: var(--bg-panel-70);
   padding: 3px 10px;
   border-radius: 10px;
   display: flex;
@@ -306,7 +371,7 @@ body {
   display: flex;
   gap: 16px;
   padding: 8px 16px;
-  background: rgba(17, 24, 39, 0.85);
+  background: var(--bg-panel-85);
   backdrop-filter: blur(8px);
   border-radius: 20px;
   border: 1px solid var(--border);
@@ -335,7 +400,7 @@ body {
   right: 0;
   width: 320px;
   height: calc(100vh - 56px);
-  background: rgba(17, 24, 39, 0.92);
+  background: var(--bg-panel-92);
   backdrop-filter: blur(12px);
   border-left: 1px solid var(--border);
   display: flex;
@@ -503,7 +568,7 @@ body {
   left: 0;
   width: 420px;
   height: calc(100vh - 56px);
-  background: rgba(17, 24, 39, 0.95);
+  background: var(--bg-panel-95);
   backdrop-filter: blur(16px);
   border-right: 1px solid var(--border);
   z-index: 95;
@@ -541,7 +606,7 @@ body {
   position: sticky;
   top: 0;
   float: right;
-  background: rgba(17, 24, 39, 0.85);
+  background: var(--bg-panel-85);
   border: 1px solid var(--border);
   border-radius: 50%;
   width: 32px;
@@ -680,7 +745,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-strong);
   z-index: 200;
   opacity: 0;
   transition: opacity 0.2s;

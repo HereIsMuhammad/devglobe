@@ -115,6 +115,7 @@ const Globe = forwardRef(function Globe({
   developers,
   flyTarget,
   selectedCountry,
+  theme,
   onSelectDev,
   onSelectCountry,
   onClearCountry,
@@ -124,6 +125,7 @@ const Globe = forwardRef(function Globe({
   const pointerDownPos = useRef(null);
   const [countryFeatures, setCountryFeatures] = useState([]);
   const [hoverCountry, setHoverCountry] = useState(null);
+  const isLight = theme === 'light';
 
   const geoDevs = useMemo(() => {
     return developers
@@ -336,11 +338,14 @@ const Globe = forwardRef(function Globe({
       <div id="globe-container" onPointerDown={handlePointerDown} onClick={handleContainerClick}>
         <GlobeGL
           ref={globeEl}
-          globeImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/earth-night.jpg"
+          globeImageUrl={isLight
+            ? 'https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg'
+            : 'https://unpkg.com/three-globe@2.31.0/example/img/earth-night.jpg'}
           bumpImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png"
-          backgroundImageUrl="https://unpkg.com/three-globe@2.31.0/example/img/night-sky.png"
+          backgroundImageUrl={isLight ? null : 'https://unpkg.com/three-globe@2.31.0/example/img/night-sky.png'}
+          backgroundColor={isLight ? '#f4f6fb' : '#000003'}
           showAtmosphere={true}
-          atmosphereColor="#3a7ecf"
+          atmosphereColor={isLight ? '#7ba7d9' : '#3a7ecf'}
           atmosphereAltitude={0.25}
           polygonsData={countryFeatures}
           polygonAltitude={polygonAltitude}
