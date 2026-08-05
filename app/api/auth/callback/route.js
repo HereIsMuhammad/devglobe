@@ -15,7 +15,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
   const hdrs = await headers();
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || getBaseUrl(hdrs);
+  const baseUrl = getBaseUrl(hdrs);
 
   if (!code) {
     return NextResponse.redirect(`${baseUrl}?auth_error=no_code`);
