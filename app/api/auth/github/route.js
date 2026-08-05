@@ -18,7 +18,7 @@ export async function GET() {
   }
 
   const hdrs = await headers();
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || getBaseUrl(hdrs);
+  const baseUrl = getBaseUrl(hdrs);
 
   const params = new URLSearchParams({
     client_id: GITHUB_CLIENT_ID,
