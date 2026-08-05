@@ -1042,3 +1042,167 @@ body {
     display: none;
   }
 }
+
+/* =============== User Menu / Auth =============== */
+
+.btn--signin {
+  background: var(--overlay-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.btn--signin:hover {
+  background: var(--overlay-subtle-strong);
+  border-color: var(--text-secondary);
+}
+
+.btn--signin svg {
+  width: 16px;
+  height: 16px;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu__trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 8px 3px 3px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.user-menu__trigger:hover {
+  border-color: var(--text-secondary);
+}
+
+.user-menu__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+
+.user-menu__caret {
+  color: var(--text-secondary);
+}
+
+.user-menu__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-strong);
+  z-index: 200;
+  padding: 8px 0;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-menu__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+}
+
+.user-menu__dropdown-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.user-menu__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-menu__login {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.user-menu__divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+.user-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.user-menu__item:hover {
+  background: var(--overlay-hover);
+}
+
+.user-menu__item--claimed {
+  color: var(--accent-github);
+  cursor: default;
+}
+
+.user-menu__item--no-match {
+  color: var(--text-muted);
+  cursor: default;
+  font-style: italic;
+}
+
+.user-menu__item--logout {
+  color: #ef4444;
+}
+
+.user-menu__item--logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* =============== Verified Badge =============== */
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: rgba(46, 164, 79, 0.15);
+  border: 1px solid rgba(46, 164, 79, 0.4);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #2ea44f;
+  vertical-align: middle;
+}
+
+.verified-badge svg {
+  color: #2ea44f;
+}
+
+.verified-badge--sm {
+  margin-left: 4px;
+  padding: 1px 5px;
+  font-size: 0;
+  line-height: 1;
+}

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { formatNum } from '../lib/format.js';
 
-export default function DetailPanel({ dev, onClose }) {
+export default function DetailPanel({ dev, onClose, claimedLogins }) {
   const [fullData, setFullData] = useState(null);
   const radarRef = useRef(null);
   const heatmapRef = useRef(null);
@@ -61,7 +61,17 @@ export default function DetailPanel({ dev, onClose }) {
         <div className="detail-header">
           <img className="detail-header__avatar" src={dev.avatarUrl} alt={dev.login} />
           <div>
-            <div className="detail-header__name">{dev.name || dev.login}</div>
+            <div className="detail-header__name">
+              {dev.name || dev.login}
+              {(dev.claimed || claimedLogins?.has(dev.login)) && (
+                <span className="verified-badge" title="Claimed profile">
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                    <path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z" />
+                  </svg>
+                  Verified
+                </span>
+              )}
+            </div>
             <div className="detail-header__location">📍 {dev.location || 'Unknown location'}</div>
             <span className="detail-header__score-badge">Score: {dev.score}/100</span>
             <div className="detail-header__links">

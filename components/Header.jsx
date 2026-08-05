@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
+import UserMenu from './UserMenu.jsx';
 
-export default function Header({ onHome, theme, onToggleTheme }) {
+export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, claimStatus }) {
   return (
     <header className="header">
       <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
@@ -48,6 +49,7 @@ export default function Header({ onHome, theme, onToggleTheme }) {
           </svg>
           Sponsor
         </a>
+        <UserMenu user={user} onLogout={onLogout} onClaim={onClaim} claimStatus={claimStatus} />
       </div>
     </header>
   );

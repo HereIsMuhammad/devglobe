@@ -1,0 +1,73 @@
+import { NextResponse } from 'next/server';
+import { createSessionToken, buildSessionCookie } from '../../../../lib/auth.js';
+
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const code = searchParams.get('code');
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+  if (!code) {
+    return NextResponse.redirect(`${baseUrl}?auth_error=no_code`);
+  }
+
+  if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+    return NextResponse.redirect(`${baseUrl}?auth_error=not_configured`);
+  }
+
+  try {
+    // Exchange code for access token
+    const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: GITHUB_CLIENT_ID,
+        client_secret: GITHUB_CLIENT_SECRET,
+        code,
+      }),
+    });
+
+    const tokenData = await tokenRes.json();
+
+    if (tokenData.error || !tokenData.access_token) {
+      return NextResponse.redirect(`${baseUrl}?auth_error=token_exchange_failed`);
+    }
+
+    // Fetch GitHub user profile
+    const userRes = await fetch('https://api.github.com/user', {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!userRes.ok) {
+      return NextResponse.redirect(`${baseUrl}?auth_error=user_fetch_failed`);
+    }
+
+    const ghUser = await userRes.json();
+
+    // Create session
+    const session = {
+      login: ghUser.login,
+      name: ghUser.name || ghUser.login,
+      avatarUrl: ghUser.avatar_url,
+      email: ghUser.email,
+    };
+
+    const token = await createSessionToken(session);
+    const cookie = buildSessionCookie(token);
+
+    const response = NextResponse.redirect(baseUrl);
+    response.cookies.set(cookie);
+    return response;
+  } catch (err) {
+    console.error('OAuth callback error:', err);
+    return NextResponse.redirect(`${baseUrl}?auth_error=unknown`);
+  }
+}
