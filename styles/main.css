@@ -30,7 +30,7 @@
 }
 
 /* Light theme overrides */
-[data-theme='light'] {
+:root[data-theme='light'] {
   --bg-primary: #f4f6fb;
   --bg-secondary: #ffffff;
   --bg-card: #ffffff;
