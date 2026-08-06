@@ -128,11 +128,17 @@ const Globe = forwardRef(function Globe({
   const isLight = theme === 'light';
 
   const geoDevs = useMemo(() => {
-    return developers
-      .filter(d => d.lat != null && d.lng != null)
+    let list = developers.filter(d => d.lat != null && d.lng != null);
+
+    if (selectedCountry) {
+      const wanted = countryKey(selectedCountry);
+      list = list.filter(d => d.location && countryKey(extractCountry(d.location)) === wanted);
+    }
+
+    return list
       .sort((a, b) => b.score - a.score)
       .slice(0, 5000);
-  }, [developers]);
+  }, [developers, selectedCountry]);
 
   const labelDevs = useMemo(() => {
     return geoDevs.filter(d => d.score >= 80);

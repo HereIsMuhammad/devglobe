@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { formatNum } from '../lib/format.js';
 
-export default function DetailPanel({ dev, onClose, claimedLogins }) {
+export default function DetailPanel({ dev, onClose, claimedLogins, countryRankings }) {
   const [fullData, setFullData] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const radarRef = useRef(null);
@@ -52,6 +52,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins }) {
   const soAnswers = merged.soAnswers || 0;
   const soAcceptRate = merged.soAcceptRate || 0;
   const soBadges = merged.soBadges || 0;
+  const countryRank = countryRankings?.get(dev.login || dev.id);
 
   return (
     <div className="detail-panel open">
@@ -74,7 +75,17 @@ export default function DetailPanel({ dev, onClose, claimedLogins }) {
               )}
             </div>
             <div className="detail-header__location">📍 {dev.location || 'Unknown location'}</div>
-            <span className="detail-header__score-badge">Score: {dev.score}/100</span>
+            <div className="detail-header__badges">
+              <span className="detail-header__score-badge">Score: {dev.score}/100</span>
+              {countryRank && (
+                <span
+                  className="rank-badge rank-badge--country"
+                  title={`Ranked ${countryRank.countryRank} of ${countryRank.countryTotal} developers in ${countryRank.country}`}
+                >
+                  #{countryRank.countryRank} in {countryRank.country}
+                </span>
+              )}
+            </div>
             <div className="detail-header__links">
               <a href={`https://github.com/${dev.login}`} target="_blank" rel="noreferrer">GitHub ↗</a>
               {merged.soUserId && (

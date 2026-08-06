@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Header from '../components/Header.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
@@ -8,6 +8,7 @@ import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import { scoreAll } from '../lib/scoring.js';
+import { buildCountryRankings } from '../lib/rankings.js';
 import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
@@ -27,6 +28,11 @@ export default function Home() {
   const [claimedLogins, setClaimedLogins] = useState(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const globeRef = useRef(null);
+
+  const countryRankings = useMemo(
+    () => buildCountryRankings(developers),
+    [developers]
+  );
 
   useEffect(() => {
     // Mirrors the blocking script in layout.jsx so React state matches the
@@ -261,7 +267,12 @@ export default function Home() {
           <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
         )}
         {selectedDev && (
-          <DetailPanel dev={selectedDev} onClose={handleCloseDetail} claimedLogins={claimedLogins} />
+          <DetailPanel
+            dev={selectedDev}
+            onClose={handleCloseDetail}
+            claimedLogins={claimedLogins}
+            countryRankings={countryRankings}
+          />
         )}
         {compareDevs.length === 2 && (
           <ComparePanel devs={compareDevs} onClose={handleCloseCompare} />
