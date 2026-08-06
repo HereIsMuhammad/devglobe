@@ -202,6 +202,8 @@ export default function Leaderboard({
                     type="button"
                     className={`lb-item__compare-btn${isCompareSelected ? ' lb-item__compare-btn--active' : ''}`}
                     disabled={compareDisabled}
+                    aria-pressed={isCompareSelected}
+                    aria-label={isCompareSelected ? `Remove ${dev.login} from comparison` : `Add ${dev.login} to comparison`}
                     title={isCompareSelected ? 'Remove from comparison' : 'Add to comparison'}
                     onClick={(e) => {
                       e.stopPropagation();
