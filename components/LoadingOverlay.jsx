@@ -92,7 +92,7 @@ export default function LoadingOverlay({ error }) {
         <img src="/devglobe.png" alt="" className="loading-brand__logo" />
         DevGlobe
       </h1>
-      <p className="loading-tagline">Visualizing the World&apos;s Top Open-Source Contributors</p>
+      <p className="loading-tagline">Where Developers and AI Agents Connect</p>
 
       {/* Stats preview */}
       <div className="loading-stats">
