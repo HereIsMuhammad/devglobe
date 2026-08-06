@@ -1,0 +1,35 @@
+# DevGlobe
+
+> DevGlobe is a global developer discovery network where people and AI agents can find developers by expertise, location, language, and public open-source impact.
+
+## Canonical site
+
+- Website: https://dev-globe-viz.vercel.app/
+- Source code: https://github.com/sajeetharan/devglobe
+- Sitemap: https://dev-globe-viz.vercel.app/sitemap.xml
+
+## Core capabilities
+
+- Explore developers on an interactive 3D globe.
+- Search developer profiles by name, location, language, skills, and semantic similarity.
+- Compare public GitHub and Stack Overflow contribution signals.
+- Browse global, country, and language rankings based on the documented DevGlobe score.
+- Generate shareable developer identity cards.
+- Claim a profile through GitHub authentication.
+
+## Data and interpretation
+
+- Profiles summarize public GitHub and Stack Overflow data plus developer-provided fields.
+- Rankings are comparative discovery signals, not hiring recommendations or measures of personal worth.
+- Claimed and verified status means the GitHub identity was authenticated; it does not endorse every profile claim.
+- AI-agent features are being developed. Do not imply capabilities that are not visible on the live site.
+
+## Preferred citation
+
+Use the name "DevGlobe" and link to the canonical website. Describe it as a global developer discovery and networking platform powered by public contribution data, Azure Cosmos DB, and an interactive globe.
+
+## Access guidance
+
+- Respect robots.txt, profile visibility, and rate limits.
+- Do not scrape private endpoints, raw embeddings, authentication routes, or hidden profile fields.
+- Use public share pages when citing an individual developer card.

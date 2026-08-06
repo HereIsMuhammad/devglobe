@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { formatNum } from '../lib/format.js';
 
-export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false }) {
+export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
   const [fullData, setFullData] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const radarRef = useRef(null);
@@ -174,7 +174,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
 
       {/* Card Modal */}
       {showCard && (
-        <CardModal dev={dev} onClose={() => setShowCard(false)} />
+        <CardModal dev={dev} claimSuccess={claimSuccess} onClose={() => setShowCard(false)} />
       )}
     </div>
   );
@@ -384,22 +384,22 @@ function renderLanguages(container, languages) {
 
 /* ─── Card Modal ─── */
 
-function CardModal({ dev, onClose }) {
+function CardModal({ dev, claimSuccess, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const { login } = dev;
   const name = dev.name || login;
   const cardUrl = `/api/card?login=${encodeURIComponent(login)}`;
-  const fullCardUrl = typeof window !== 'undefined' ? `${window.location.origin}${cardUrl}` : cardUrl;
-  const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const sharePath = `/share/${encodeURIComponent(login)}`;
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}${sharePath}` : sharePath;
 
   const rankText = dev.globalRank ? `Global #${dev.globalRank} of ${dev.globalTotal}` : 'Ranked on DevGlobe';
   const shareText = `My DevGlobe developer card: ${rankText}.`;
 
   const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(siteUrl)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullCardUrl)}`,
-    reddit: `https://reddit.com/submit?url=${encodeURIComponent(siteUrl)}&title=${encodeURIComponent(`My DevAgent Card — ${name}`)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+    reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(`My DevGlobe Developer Card - ${name}`)}`,
   };
 
   const handleDownload = async () => {
@@ -416,13 +416,21 @@ function CardModal({ dev, onClose }) {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(fullCardUrl);
+    navigator.clipboard.writeText(shareUrl);
   };
 
   return (
     <div className="card-modal-backdrop" onClick={onClose}>
       <div className="card-modal" onClick={e => e.stopPropagation()}>
         <button className="card-modal__close" onClick={onClose}>&times;</button>
+        {claimSuccess && (
+          <div className="card-modal__success" role="status">
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.7a1 1 0 00-1.4-1.4L9 10.2 7.7 8.9a1 1 0 00-1.4 1.4l2 2a1 1 0 001.4 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <div><strong>Profile claimed</strong><span>Share your verified DevGlobe identity with your network.</span></div>
+          </div>
+        )}
         <div className="card-modal__heading">
           <div>
             <div className="card-modal__eyebrow">DEVGLOBE IDENTITY</div>

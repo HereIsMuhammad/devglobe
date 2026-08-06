@@ -28,6 +28,7 @@ export default function Home() {
   const [claimedLogins, setClaimedLogins] = useState(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cardRequest, setCardRequest] = useState(0);
+  const [cardContext, setCardContext] = useState(null);
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -84,9 +85,10 @@ export default function Home() {
         const result = await res.json();
         setClaimStatus('claimed');
         setClaimedLogins(prev => new Set(prev).add(user.login));
+        let claimedDeveloper = developers.find(developer => developer.login === user.login);
         // If a new profile was created, reload developers to include it
         if (result.created) {
-          const devRes = await fetch('/api/developers');
+          const devRes = await fetch('/api/developers', { cache: 'no-store' });
           if (devRes.ok) {
             const raw = await devRes.json();
             const scored = addDeveloperRanks(scoreAll(raw));
@@ -94,8 +96,25 @@ export default function Home() {
             setFiltered(scored);
             const claimed = new Set(raw.filter(d => d.claimed).map(d => d.login));
             setClaimedLogins(claimed);
+            claimedDeveloper = scored.find(developer => developer.login === user.login);
           }
+        } else if (claimedDeveloper) {
+          claimedDeveloper = { ...claimedDeveloper, claimed: true };
+          setDevelopers(current => current.map(developer => developer.login === user.login ? claimedDeveloper : developer));
+          setFiltered(current => current.map(developer => developer.login === user.login ? claimedDeveloper : developer));
         }
+
+        claimedDeveloper ||= {
+          id: user.login,
+          login: user.login,
+          name: user.name || user.login,
+          avatarUrl: user.avatarUrl,
+          claimed: true,
+        };
+        setSelectedDev(claimedDeveloper);
+        setCardContext('claim');
+        setCardRequest(request => request + 1);
+        setSidebarOpen(false);
       } else {
         const data = await res.json();
         console.error('Claim failed:', data.error);
@@ -103,7 +122,7 @@ export default function Home() {
     } catch (err) {
       console.error('Claim error:', err);
     }
-  }, [user]);
+  }, [user, developers]);
 
   const handleToggleTheme = useCallback(() => {
     setTheme(prev => {
@@ -157,6 +176,7 @@ export default function Home() {
   const handleGenerateCard = useCallback((developer) => {
     const rankedDeveloper = developers.find(item => item.login === developer.login) || developer;
     setSelectedDev(rankedDeveloper);
+    setCardContext('generate');
     setCardRequest(request => request + 1);
     setSidebarOpen(false);
     if (rankedDeveloper.lat != null && rankedDeveloper.lng != null) {
@@ -170,6 +190,7 @@ export default function Home() {
 
   const handleSelectDev = useCallback((dev) => {
     setCardRequest(0);
+    setCardContext(null);
     setSelectedDev(dev);
     setSidebarOpen(false);
     if (dev?.lat != null && dev?.lng != null) {
@@ -193,6 +214,7 @@ export default function Home() {
   }, []);
 
   const handleCloseDetail = useCallback(() => {
+    setCardContext(null);
     setSelectedDev(null);
   }, []);
 
@@ -211,6 +233,7 @@ export default function Home() {
 
   const handleHome = useCallback(() => {
     setCardRequest(0);
+    setCardContext(null);
     setSelectedDev(null);
     setCompareDevs([]);
     setFiltered(developers);
@@ -289,6 +312,7 @@ export default function Home() {
             onClose={handleCloseDetail}
             claimedLogins={claimedLogins}
             openCardOnMount={cardRequest > 0}
+            claimSuccess={cardContext === 'claim'}
           />
         )}
         {compareDevs.length === 2 && (
