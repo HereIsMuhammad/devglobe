@@ -5,6 +5,7 @@ import Header from '../components/Header.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
 import DetailPanel from '../components/DetailPanel.jsx';
+import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import dynamic from 'next/dynamic';
@@ -19,6 +20,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [flyTarget, setFlyTarget] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState('');
+  const [compareDevs, setCompareDevs] = useState([]);
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -70,8 +72,22 @@ export default function Home() {
     setSelectedDev(null);
   }, []);
 
+  const handleToggleCompare = useCallback((dev) => {
+    setCompareDevs(prev => {
+      const idx = prev.findIndex(d => d.login === dev.login);
+      if (idx >= 0) return prev.filter(d => d.login !== dev.login);
+      if (prev.length >= 2) return prev;
+      return [...prev, dev];
+    });
+  }, []);
+
+  const handleCloseCompare = useCallback(() => {
+    setCompareDevs([]);
+  }, []);
+
   const handleHome = useCallback(() => {
     setSelectedDev(null);
+    setCompareDevs([]);
     setFiltered(developers);
     setFlyTarget(null);
     setSelectedCountry('');
@@ -105,9 +121,14 @@ export default function Home() {
           onSelectDev={handleSelectDev}
           countryFilter={selectedCountry}
           onCountryFilterChange={setSelectedCountry}
+          compareLogins={compareDevs.map(d => d.login)}
+          onToggleCompare={handleToggleCompare}
         />
         {selectedDev && (
           <DetailPanel dev={selectedDev} onClose={handleCloseDetail} />
+        )}
+        {compareDevs.length === 2 && (
+          <ComparePanel devs={compareDevs} onClose={handleCloseCompare} />
         )}
       </main>
     </div>

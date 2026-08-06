@@ -13,6 +13,8 @@ export default function Leaderboard({
   onSelectDev,
   countryFilter = '',
   onCountryFilterChange,
+  compareLogins = [],
+  onToggleCompare,
 }) {
   const listRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
@@ -124,7 +126,12 @@ export default function Leaderboard({
             </button>
           )}
         </div>
-        <div className="sidebar__count">{filtered.length} developer{filtered.length !== 1 ? 's' : ''}</div>
+        <div className="sidebar__count">
+          {filtered.length} developer{filtered.length !== 1 ? 's' : ''}
+          {compareLogins.length > 0 && (
+            <span className="sidebar__compare-hint"> · {compareLogins.length}/2 selected</span>
+          )}
+        </div>
         <div className="sidebar__filters">
           <select
             value={selectedCountryOption ? selectedCountryOption.name : countryFilter}
@@ -156,10 +163,13 @@ export default function Leaderboard({
         <div style={{ height: totalHeight, position: 'relative' }}>
           {visibleItems.map((dev, i) => {
             const idx = start + i;
+            const isCompareSelected = compareLogins.includes(dev.login);
+            const compareDisabled = compareLogins.length >= 2 && !isCompareSelected;
+
             return (
               <li
                 key={dev.login}
-                className={`lb-item${dev.login === selectedLogin ? ' active' : ''}`}
+                className={`lb-item${dev.login === selectedLogin ? ' active' : ''}${isCompareSelected ? ' compare-selected' : ''}`}
                 style={{
                   position: 'absolute',
                   top: idx * ITEM_HEIGHT,
@@ -179,7 +189,21 @@ export default function Leaderboard({
                     {dev.soReputation ? <span className="lb-badge lb-badge--so" title="SO Reputation">● {formatNum(dev.soReputation)}</span> : null}
                   </div>
                 </div>
-                <span className="lb-item__score">{dev.score}</span>
+                <div className="lb-item__actions">
+                  <button
+                    type="button"
+                    className={`lb-item__compare-btn${isCompareSelected ? ' lb-item__compare-btn--active' : ''}`}
+                    disabled={compareDisabled}
+                    title={isCompareSelected ? 'Remove from comparison' : 'Add to comparison'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleCompare?.(dev);
+                    }}
+                  >
+                    {isCompareSelected ? '✓' : '⇄'}
+                  </button>
+                  <span className="lb-item__score">{dev.score}</span>
+                </div>
               </li>
             );
           })}
