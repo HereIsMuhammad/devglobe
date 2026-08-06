@@ -28,7 +28,7 @@ export async function GET() {
     const container = client.database(DATABASE).container(CONTAINER);
 
     const { resources } = await container.items
-      .query('SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges FROM c')
+      .query('SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.claimed FROM c')
       .fetchAll();
 
     return NextResponse.json(resources, {
