@@ -23,6 +23,7 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'claimed' | 'no_match'
   const [claimedLogins, setClaimedLogins] = useState(new Set());
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -149,9 +150,14 @@ export default function Home() {
 
   const handleSelectDev = useCallback((dev) => {
     setSelectedDev(dev);
+    setSidebarOpen(false);
     if (dev?.lat != null && dev?.lng != null) {
       setFlyTarget({ lat: dev.lat, lng: dev.lng });
     }
+  }, []);
+
+  const handleToggleSidebar = useCallback(() => {
+    setSidebarOpen(prev => !prev);
   }, []);
 
   const handleSelectCountry = useCallback((country, view) => {
@@ -174,6 +180,7 @@ export default function Home() {
     setFiltered(developers);
     setFlyTarget(null);
     setSelectedCountry('');
+    setSidebarOpen(false);
   }, [developers]);
 
   if (loading || error) {
@@ -182,7 +189,17 @@ export default function Home() {
 
   return (
     <div id="app">
-      <Header onHome={handleHome} theme={theme} onToggleTheme={handleToggleTheme} user={user} onLogout={handleLogout} onClaim={handleClaim} claimStatus={claimStatus} />
+      <Header
+        onHome={handleHome}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+        user={user}
+        onLogout={handleLogout}
+        onClaim={handleClaim}
+        claimStatus={claimStatus}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={handleToggleSidebar}
+      />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
@@ -206,7 +223,12 @@ export default function Home() {
           countryFilter={selectedCountry}
           onCountryFilterChange={setSelectedCountry}
           claimedLogins={claimedLogins}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
         />
+        {sidebarOpen && (
+          <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+        )}
         {selectedDev && (
           <DetailPanel dev={selectedDev} onClose={handleCloseDetail} claimedLogins={claimedLogins} />
         )}
