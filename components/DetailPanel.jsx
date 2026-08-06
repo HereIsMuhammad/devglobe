@@ -4,12 +4,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { formatNum } from '../lib/format.js';
 
-export default function DetailPanel({ dev, onClose, claimedLogins, countryRankings }) {
+export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false }) {
   const [fullData, setFullData] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const radarRef = useRef(null);
   const heatmapRef = useRef(null);
   const langRef = useRef(null);
+
+  useEffect(() => {
+    if (openCardOnMount) setShowCard(true);
+  }, [openCardOnMount]);
 
   // Fetch full details on mount
   useEffect(() => {
@@ -52,7 +56,6 @@ export default function DetailPanel({ dev, onClose, claimedLogins, countryRankin
   const soAnswers = merged.soAnswers || 0;
   const soAcceptRate = merged.soAcceptRate || 0;
   const soBadges = merged.soBadges || 0;
-  const countryRank = countryRankings?.get(dev.login || dev.id);
 
   return (
     <div className="detail-panel open">
@@ -77,12 +80,20 @@ export default function DetailPanel({ dev, onClose, claimedLogins, countryRankin
             <div className="detail-header__location">📍 {dev.location || 'Unknown location'}</div>
             <div className="detail-header__badges">
               <span className="detail-header__score-badge">Score: {dev.score}/100</span>
-              {countryRank && (
+              {dev.globalRank && (
+                <span
+                  className="rank-badge rank-badge--global"
+                  title={`Ranked by DevGlobe score among ${formatNum(dev.globalTotal)} developers`}
+                >
+                  Global #{formatNum(dev.globalRank)}
+                </span>
+              )}
+              {dev.countryRank && (
                 <span
                   className="rank-badge rank-badge--country"
-                  title={`Ranked ${countryRank.countryRank} of ${countryRank.countryTotal} developers in ${countryRank.country}`}
+                  title={`Ranked ${formatNum(dev.countryRank)} of ${formatNum(dev.countryTotal)} developers in ${dev.country}`}
                 >
-                  #{countryRank.countryRank} in {countryRank.country}
+                  #{formatNum(dev.countryRank)} in {dev.country}
                 </span>
               )}
             </div>
@@ -163,7 +174,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, countryRankin
 
       {/* Card Modal */}
       {showCard && (
-        <CardModal login={dev.login} name={dev.name || dev.login} onClose={() => setShowCard(false)} />
+        <CardModal dev={dev} onClose={() => setShowCard(false)} />
       )}
     </div>
   );
@@ -373,14 +384,17 @@ function renderLanguages(container, languages) {
 
 /* ─── Card Modal ─── */
 
-function CardModal({ login, name, onClose }) {
+function CardModal({ dev, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { login } = dev;
+  const name = dev.name || login;
   const cardUrl = `/api/card?login=${encodeURIComponent(login)}`;
   const fullCardUrl = typeof window !== 'undefined' ? `${window.location.origin}${cardUrl}` : cardUrl;
   const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
-  const shareText = `Check out my DevAgent card on DevGlobe! 🌐🤖 Ranked among 26K+ open-source developers.`;
+  const rankText = dev.globalRank ? `Global #${dev.globalRank} of ${dev.globalTotal}` : 'Ranked on DevGlobe';
+  const shareText = `My DevGlobe developer card: ${rankText}.`;
 
   const shareLinks = {
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(siteUrl)}`,
@@ -409,7 +423,28 @@ function CardModal({ login, name, onClose }) {
     <div className="card-modal-backdrop" onClick={onClose}>
       <div className="card-modal" onClick={e => e.stopPropagation()}>
         <button className="card-modal__close" onClick={onClose}>&times;</button>
-        <h3 className="card-modal__title">Your DevAgent Card</h3>
+        <div className="card-modal__heading">
+          <div>
+            <div className="card-modal__eyebrow">DEVGLOBE IDENTITY</div>
+            <h3 className="card-modal__title">{name}&apos;s Developer Card</h3>
+          </div>
+          {dev.globalRank && (
+            <button
+              className="card-modal__rank-info"
+              title={`Global rank compares DevGlobe score across ${formatNum(dev.globalTotal)} developers${dev.countryRank ? `. Country rank compares ${formatNum(dev.countryTotal)} developers in ${dev.country}` : ''}.`}
+              aria-label="How DevGlobe ranks are calculated"
+            >
+              ?
+            </button>
+          )}
+        </div>
+
+        {dev.globalRank && (
+          <div className="card-modal__rank-strip">
+            <div><strong>#{formatNum(dev.globalRank)}</strong><span>Global rank</span></div>
+            {dev.countryRank && <div><strong>#{formatNum(dev.countryRank)}</strong><span>in {dev.country}</span></div>}
+          </div>
+        )}
 
         <div className="card-modal__preview">
           {loading && !error && <div className="card-modal__loading">Generating card...</div>}

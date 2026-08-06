@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from '../components/Header.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
@@ -8,7 +8,7 @@ import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import { scoreAll } from '../lib/scoring.js';
-import { buildCountryRankings } from '../lib/rankings.js';
+import { addDeveloperRanks } from '../lib/ranking.js';
 import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
@@ -27,12 +27,8 @@ export default function Home() {
   const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'claimed' | 'no_match'
   const [claimedLogins, setClaimedLogins] = useState(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cardRequest, setCardRequest] = useState(0);
   const globeRef = useRef(null);
-
-  const countryRankings = useMemo(
-    () => buildCountryRankings(developers),
-    [developers]
-  );
 
   useEffect(() => {
     // Mirrors the blocking script in layout.jsx so React state matches the
@@ -93,7 +89,7 @@ export default function Home() {
           const devRes = await fetch('/api/developers');
           if (devRes.ok) {
             const raw = await devRes.json();
-            const scored = scoreAll(raw);
+            const scored = addDeveloperRanks(scoreAll(raw));
             setDevelopers(scored);
             setFiltered(scored);
             const claimed = new Set(raw.filter(d => d.claimed).map(d => d.login));
@@ -132,7 +128,7 @@ export default function Home() {
         const res = await fetch('/api/developers');
         if (!res.ok) throw new Error(`Failed to load data: ${res.status}`);
         const raw = await res.json();
-        const scored = scoreAll(raw);
+        const scored = addDeveloperRanks(scoreAll(raw));
         setDevelopers(scored);
         setFiltered(scored);
         // Build set of all claimed logins from data
@@ -148,15 +144,32 @@ export default function Home() {
   }, []);
 
   const handleSearch = useCallback((results) => {
-    const scored = scoreAll(results);
-    setFiltered(scored);
-  }, []);
+    const developerByLogin = new Map(developers.map(developer => [developer.login, developer]));
+    const rankedResults = results.map(result => ({
+      ...developerByLogin.get(result.login),
+      ...result,
+    }));
+    setSelectedDev(null);
+    setCardRequest(0);
+    setFiltered(rankedResults);
+  }, [developers]);
+
+  const handleGenerateCard = useCallback((developer) => {
+    const rankedDeveloper = developers.find(item => item.login === developer.login) || developer;
+    setSelectedDev(rankedDeveloper);
+    setCardRequest(request => request + 1);
+    setSidebarOpen(false);
+    if (rankedDeveloper.lat != null && rankedDeveloper.lng != null) {
+      setFlyTarget({ lat: rankedDeveloper.lat, lng: rankedDeveloper.lng });
+    }
+  }, [developers]);
 
   const handleResetFilter = useCallback(() => {
     setFiltered(developers);
   }, [developers]);
 
   const handleSelectDev = useCallback((dev) => {
+    setCardRequest(0);
     setSelectedDev(dev);
     setSidebarOpen(false);
     if (dev?.lat != null && dev?.lng != null) {
@@ -197,6 +210,7 @@ export default function Home() {
   }, []);
 
   const handleHome = useCallback(() => {
+    setCardRequest(0);
     setSelectedDev(null);
     setCompareDevs([]);
     setFiltered(developers);
@@ -226,6 +240,7 @@ export default function Home() {
         developers={developers}
         onResults={handleSearch}
         onReset={handleResetFilter}
+        onGenerateCard={handleGenerateCard}
       />
       <a
         className="product-hunt-badge"
@@ -268,10 +283,11 @@ export default function Home() {
         )}
         {selectedDev && (
           <DetailPanel
+            key={`${selectedDev.login}-${cardRequest}`}
             dev={selectedDev}
             onClose={handleCloseDetail}
             claimedLogins={claimedLogins}
-            countryRankings={countryRankings}
+            openCardOnMount={cardRequest > 0}
           />
         )}
         {compareDevs.length === 2 && (

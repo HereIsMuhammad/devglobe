@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { classifyAgent, getPowerTier } from '../../../lib/agent-class.js';
 import { scoreAll } from '../../../lib/scoring.js';
+import { addDeveloperRanks } from '../../../lib/ranking.js';
 
 export const runtime = 'nodejs';
 
@@ -12,19 +13,15 @@ const COSMOS_KEY = process.env.COSMOS_KEY;
 const DATABASE = process.env.COSMOS_DATABASE || 'devglobe';
 const CONTAINER = process.env.COSMOS_CONTAINER || 'developers';
 
-async function getDeveloper(login) {
+async function getRankedDevelopers() {
   if (COSMOS_ENDPOINT && COSMOS_KEY) {
     try {
       const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
       const container = client.database(DATABASE).container(CONTAINER);
       const { resources } = await container.items.query({
-        query: 'SELECT * FROM c WHERE c.login = @login',
-        parameters: [{ name: '@login', value: login }],
+        query: 'SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.claimed FROM c',
       }).fetchAll();
-      if (resources.length > 0) {
-        const scored = scoreAll(resources);
-        return scored[0];
-      }
+      if (resources.length > 0) return addDeveloperRanks(scoreAll(resources));
     } catch (err) {
       console.error('Card: Cosmos error', err.message);
     }
@@ -33,8 +30,12 @@ async function getDeveloper(login) {
   const filePath = path.join(process.cwd(), 'data', 'developers-sample.json');
   const raw = await fs.readFile(filePath, 'utf-8');
   const data = JSON.parse(raw);
-  const scored = scoreAll(data);
-  return scored.find(d => d.login === login) || null;
+  return addDeveloperRanks(scoreAll(data));
+}
+
+async function getDeveloper(login) {
+  const developers = await getRankedDevelopers();
+  return developers.find(d => d.login.toLowerCase() === login.toLowerCase()) || null;
 }
 
 function formatNum(n) {
@@ -66,12 +67,32 @@ export async function GET(request) {
           width: '1200',
           height: '630',
           display: 'flex',
-          background: 'linear-gradient(135deg, #0a0e17 0%, #111827 40%, #0f172a 100%)',
+          background: 'linear-gradient(135deg, #080b10 0%, #111820 52%, #15120f 100%)',
           fontFamily: 'Inter, sans-serif',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
+        {/* Top identity bar */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '28',
+            left: '40',
+            right: '40',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ display: 'flex', color: '#f8fafc', fontSize: '18', fontWeight: '800', letterSpacing: '1' }}>
+            DEV<span style={{ color: '#22d3ee' }}>GLOBE</span>
+          </div>
+          <div style={{ display: 'flex', color: '#64748b', fontSize: '12', letterSpacing: '2' }}>
+            OPEN SOURCE IDENTITY · 2026
+          </div>
+        </div>
+
         {/* Grid pattern overlay */}
         <div
           style={{
@@ -109,7 +130,7 @@ export async function GET(request) {
             alignItems: 'center',
             justifyContent: 'center',
             width: '400',
-            padding: '40',
+            padding: '76px 40px 54px',
           }}
         >
           {/* Agent icon */}
@@ -191,7 +212,7 @@ export async function GET(request) {
             flexDirection: 'column',
             justifyContent: 'center',
             flex: 1,
-            padding: '40px 60px 40px 20px',
+            padding: '74px 60px 54px 20px',
           }}
         >
           {/* Agent class header */}
@@ -241,13 +262,57 @@ export async function GET(request) {
             &ldquo;{agent.tagline}&rdquo;
           </div>
 
+          {/* Global and local rank */}
+          <div style={{ display: 'flex', gap: '12', marginBottom: '22' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                width: dev.countryRank ? '255' : '522',
+                height: '82',
+                padding: '12px 18px',
+                background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.04))',
+                border: '1px solid rgba(34,211,238,0.32)',
+                borderRadius: '8',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
+                <span style={{ color: '#67e8f9', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.globalRank)}</span>
+                <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.globalTotal)}</span>
+              </div>
+              <div style={{ display: 'flex', color: '#a5f3fc', fontSize: '11', fontWeight: '700', letterSpacing: '1.6' }}>GLOBAL RANK</div>
+            </div>
+            {dev.countryRank && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  width: '255',
+                  height: '82',
+                  padding: '12px 18px',
+                  background: 'linear-gradient(135deg, rgba(251,146,60,0.15), rgba(251,146,60,0.04))',
+                  border: '1px solid rgba(251,146,60,0.32)',
+                  borderRadius: '8',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
+                  <span style={{ color: '#fdba74', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.countryRank)}</span>
+                  <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.countryTotal)}</span>
+                </div>
+                <div style={{ display: 'flex', color: '#fed7aa', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.country.toUpperCase()}</div>
+              </div>
+            )}
+          </div>
+
           {/* Score + Tier */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '16',
-              marginBottom: '28',
+              marginBottom: '20',
             }}
           >
             <div
@@ -260,7 +325,7 @@ export async function GET(request) {
               <div
                 style={{
                   color: power.color,
-                  fontSize: '64',
+                  fontSize: '48',
                   fontWeight: '800',
                   lineHeight: '1',
                   display: 'flex',
@@ -308,7 +373,7 @@ export async function GET(request) {
           <div
             style={{
               display: 'flex',
-              gap: '20',
+              gap: '10',
               flexWrap: 'wrap',
             }}
           >
@@ -325,9 +390,9 @@ export async function GET(request) {
                   flexDirection: 'column',
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '10',
-                  padding: '12px 20px',
-                  minWidth: '130',
+                  borderRadius: '8',
+                  padding: '10px 14px',
+                  minWidth: '120',
                 }}
               >
                 <div
@@ -345,7 +410,7 @@ export async function GET(request) {
                 <div
                   style={{
                     color: stat.color,
-                    fontSize: '24',
+                    fontSize: '21',
                     fontWeight: '700',
                     display: 'flex',
                   }}
