@@ -732,9 +732,16 @@ body {
   margin-top: 2px;
 }
 
+.detail-header__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
 .detail-header__score-badge {
   display: inline-block;
-  margin-top: 6px;
   padding: 3px 10px;
   background: var(--accent-blue);
   border-radius: 12px;
@@ -742,22 +749,24 @@ body {
   font-weight: 600;
 }
 
-.detail-header__ranks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 7px;
+.rank-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.detail-header__ranks span {
-  padding: 3px 8px;
-  border: 1px solid rgba(8, 145, 178, 0.3);
-  border-radius: 4px;
-  background: rgba(8, 145, 178, 0.1);
+.rank-badge--global {
+  background: rgba(8, 145, 178, 0.12);
+  border: 1px solid rgba(8, 145, 178, 0.4);
   color: #22d3ee;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: help;
+}
+
+.rank-badge--country {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
 }
 
 .detail-header__links {

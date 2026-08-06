@@ -78,19 +78,25 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
               )}
             </div>
             <div className="detail-header__location">📍 {dev.location || 'Unknown location'}</div>
-            <span className="detail-header__score-badge">Score: {dev.score}/100</span>
-            {dev.globalRank && (
-              <div className="detail-header__ranks">
-                <span title={`Ranked by DevGlobe score among ${formatNum(dev.globalTotal)} developers`}>
+            <div className="detail-header__badges">
+              <span className="detail-header__score-badge">Score: {dev.score}/100</span>
+              {dev.globalRank && (
+                <span
+                  className="rank-badge rank-badge--global"
+                  title={`Ranked by DevGlobe score among ${formatNum(dev.globalTotal)} developers`}
+                >
                   Global #{formatNum(dev.globalRank)}
                 </span>
-                {dev.countryRank && (
-                  <span title={`Ranked by DevGlobe score among ${formatNum(dev.countryTotal)} developers in ${dev.country}`}>
-                    {dev.country} #{formatNum(dev.countryRank)}
-                  </span>
-                )}
-              </div>
-            )}
+              )}
+              {dev.countryRank && (
+                <span
+                  className="rank-badge rank-badge--country"
+                  title={`Ranked ${formatNum(dev.countryRank)} of ${formatNum(dev.countryTotal)} developers in ${dev.country}`}
+                >
+                  #{formatNum(dev.countryRank)} in {dev.country}
+                </span>
+              )}
+            </div>
             <div className="detail-header__links">
               <a href={`https://github.com/${dev.login}`} target="_blank" rel="noreferrer">GitHub ↗</a>
               {merged.soUserId && (
