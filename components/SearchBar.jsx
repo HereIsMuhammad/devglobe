@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
-import { scoreAll } from '../lib/scoring.js';
 
 const SAMPLES_BY_MODE = {
   text: [
@@ -24,12 +23,13 @@ const SAMPLES_BY_MODE = {
   ],
 };
 
-export default function SearchBar({ developers, onResults, onReset }) {
+export default function SearchBar({ developers, onResults, onReset, onGenerateCard }) {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState('text');
   const [topN, setTopN] = useState(50);
   const [searching, setSearching] = useState(false);
   const [resultCount, setResultCount] = useState(null);
+  const [singleResult, setSingleResult] = useState(null);
   const inputRef = useRef(null);
   const abortRef = useRef(null);
   const timerRef = useRef(null);
@@ -38,11 +38,12 @@ export default function SearchBar({ developers, onResults, onReset }) {
     if (!q.trim()) {
       onReset();
       setResultCount(null);
+      setSingleResult(null);
       return;
     }
 
     if (m === 'text') {
-      const lower = q.toLowerCase();
+      const lower = q.trim().toLowerCase();
       const results = developers.filter(d =>
         (d.login && d.login.toLowerCase().includes(lower)) ||
         (d.name && d.name.toLowerCase().includes(lower)) ||
@@ -50,6 +51,7 @@ export default function SearchBar({ developers, onResults, onReset }) {
       );
       onResults(results);
       setResultCount(results.length);
+      setSingleResult(results.length === 1 ? results[0] : null);
       return;
     }
 
@@ -68,6 +70,10 @@ export default function SearchBar({ developers, onResults, onReset }) {
         const results = data.results || [];
         onResults(results);
         setResultCount(results.length);
+        const matchedDeveloper = results.length === 1
+          ? developers.find(developer => developer.login === results[0].login) || results[0]
+          : null;
+        setSingleResult(matchedDeveloper);
       }
     } catch (e) {
       if (e.name !== 'AbortError') console.error('Search failed:', e);
@@ -79,6 +85,7 @@ export default function SearchBar({ developers, onResults, onReset }) {
   const handleInput = (e) => {
     const val = e.target.value;
     setQuery(val);
+    setSingleResult(null);
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => doSearch(val, mode), 400);
   };
@@ -114,6 +121,7 @@ export default function SearchBar({ developers, onResults, onReset }) {
   const handleClear = () => {
     setQuery('');
     setResultCount(null);
+    setSingleResult(null);
     onReset();
     inputRef.current?.focus();
   };
@@ -156,11 +164,33 @@ export default function SearchBar({ developers, onResults, onReset }) {
         </select>
       </div>
       {resultCount !== null && query && (
-        <div className="search-bar__results">
-          {resultCount === 0 ? 'No results found' : `Top ${resultCount} developer${resultCount !== 1 ? 's' : ''} matched`}
-          <button className="search-bar__reset" onClick={handleClear} title="Clear filter and show all">
-            ✕ Clear
-          </button>
+        <div className="search-bar__feedback">
+          <div className="search-bar__results">
+            <span>{resultCount === 0 ? 'No developers found' : `${resultCount} developer${resultCount !== 1 ? 's' : ''} found`}</span>
+            <button className="search-bar__reset" onClick={handleClear} title="Clear filter and show all">
+              ✕ Clear
+            </button>
+          </div>
+          {singleResult && (
+            <div className="search-bar__card-suggestion">
+              <img src={singleResult.avatarUrl} alt="" />
+              <div className="search-bar__card-identity">
+                <strong>{singleResult.name || singleResult.login}</strong>
+                <span>
+                  @{singleResult.login}
+                  {singleResult.globalRank ? ` · Global #${singleResult.globalRank}` : ''}
+                </span>
+              </div>
+              <button onClick={() => onGenerateCard(singleResult)}>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path d="M21 15l-5-5L5 21" />
+                </svg>
+                Generate Card
+              </button>
+            </div>
+          )}
         </div>
       )}
       <div className={`search-bar__samples${query ? ' hidden' : ''}`}>
