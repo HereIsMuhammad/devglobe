@@ -9,7 +9,7 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
       <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
         <img src="/devglobe.png" alt="DevGlobe" className="header__logo" />
         <h1 className="header__title">DevGlobe</h1>
-        <span className="header__subtitle">Visualizing the World's Top Open-Source Contributors</span>
+        <span className="header__subtitle">Where Developers and AI Agents Connect</span>
       </div>
       <div className="header__actions">
         <button
