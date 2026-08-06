@@ -265,6 +265,7 @@ export default function Home() {
           onSelectDev={handleSelectDev}
           onSelectCountry={handleSelectCountry}
           onClearCountry={handleClearCountry}
+          tooltipDisabled={Boolean(selectedDev || compareDevs.length === 2)}
         />
         <Leaderboard
           developers={filtered}

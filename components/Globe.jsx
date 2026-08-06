@@ -119,6 +119,7 @@ const Globe = forwardRef(function Globe({
   onSelectDev,
   onSelectCountry,
   onClearCountry,
+  tooltipDisabled = false,
 }, ref) {
   const globeEl = useRef();
   const tooltipRef = useRef(null);
@@ -225,9 +226,20 @@ const Globe = forwardRef(function Globe({
     if (controls) controls.autoRotate = on && !selectedCountry;
   }, [selectedCountry]);
 
+  useEffect(() => {
+    if (!tooltipDisabled) return;
+    tooltipRef.current?.classList.remove('visible');
+    setHoverCountry(null);
+  }, [tooltipDisabled]);
+
   const handleHover = useCallback((point) => {
     const tooltip = tooltipRef.current;
     if (!tooltip) return;
+
+    if (tooltipDisabled) {
+      tooltip.classList.remove('visible');
+      return;
+    }
 
     if (point) {
       tooltip.innerHTML = `
@@ -255,7 +267,7 @@ const Globe = forwardRef(function Globe({
       tooltip.classList.remove('visible');
       setAutoRotate(true);
     }
-  }, [setAutoRotate]);
+  }, [setAutoRotate, tooltipDisabled]);
 
   const handleClick = useCallback((point) => {
     if (point) onSelectDev(point);
@@ -282,9 +294,16 @@ const Globe = forwardRef(function Globe({
   }, [hoverCountry, selectedFeature]);
 
   const handleCountryHover = useCallback((feat) => {
-    setHoverCountry(feat || null);
     const tooltip = tooltipRef.current;
     if (!tooltip) return;
+
+    if (tooltipDisabled) {
+      setHoverCountry(null);
+      tooltip.classList.remove('visible');
+      return;
+    }
+
+    setHoverCountry(feat || null);
 
     if (feat) {
       const name = featureName(feat);
@@ -301,7 +320,7 @@ const Globe = forwardRef(function Globe({
       tooltip.classList.remove('visible');
       setAutoRotate(true);
     }
-  }, [devCountByCountry, setAutoRotate]);
+  }, [devCountByCountry, setAutoRotate, tooltipDisabled]);
 
   const handleCountryClick = useCallback((feat) => {
     if (!feat) return;
@@ -330,14 +349,14 @@ const Globe = forwardRef(function Globe({
   // Track mouse for tooltip
   useEffect(() => {
     const handler = (e) => {
-      if (tooltipRef.current) {
+      if (tooltipRef.current && !tooltipDisabled) {
         tooltipRef.current.style.left = (e.clientX + 12) + 'px';
         tooltipRef.current.style.top = (e.clientY + 12) + 'px';
       }
     };
     document.addEventListener('mousemove', handler);
     return () => document.removeEventListener('mousemove', handler);
-  }, []);
+  }, [tooltipDisabled]);
 
   return (
     <>
