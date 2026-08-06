@@ -79,6 +79,20 @@ export default function DetailPanel({ dev, onClose, claimedLogins }) {
               {merged.soUserId && (
                 <a href={`https://stackoverflow.com/users/${merged.soUserId}`} target="_blank" rel="noreferrer">StackOverflow ↗</a>
               )}
+              <button
+                className="btn btn--share"
+                onClick={() => {
+                  const cardUrl = `${window.location.origin}/api/card?login=${dev.login}`;
+                  const text = `Check out my DevAgent card on DevGlobe! 🌐🤖\n\n${window.location.origin}`;
+                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(cardUrl)}`;
+                  window.open(twitterUrl, '_blank', 'width=550,height=420');
+                }}
+              >
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+                  <path d="M13.5 1h-3.7L8 3.6 6.2 1H2.5L6.6 6.5 2.3 13h1.7l2.5-3.2L9 13h4.2l-4.5-6.7L13.5 1zm-1.1 11h-1L4.5 2h1l6.9 10z" />
+                </svg>
+                Share Card
+              </button>
             </div>
           </div>
         </div>

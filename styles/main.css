@@ -92,8 +92,10 @@ body {
   gap: 10px;
 }
 
-.header__icon {
-  font-size: 24px;
+.header__logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 }
 
 .header__title {
@@ -1205,4 +1207,27 @@ body {
   padding: 1px 5px;
   font-size: 0;
   line-height: 1;
+}
+
+/* =============== Share Card Button =============== */
+
+.btn--share {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  background: rgba(29, 161, 242, 0.15);
+  border: 1px solid rgba(29, 161, 242, 0.4);
+  color: #1da1f2;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn--share:hover {
+  background: rgba(29, 161, 242, 0.25);
+  transform: translateY(-1px);
 }
