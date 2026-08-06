@@ -1405,3 +1405,183 @@ body {
   background: rgba(29, 161, 242, 0.25);
   transform: translateY(-1px);
 }
+
+/* =============== Card Modal =============== */
+
+.card-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  animation: fadeIn 0.15s ease;
+}
+
+.card-modal {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 680px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-strong);
+  animation: fadeIn 0.2s ease;
+}
+
+.card-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.card-modal__close:hover {
+  color: var(--text-primary);
+}
+
+.card-modal__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.card-modal__preview {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-modal__image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+.card-modal__loading,
+.card-modal__error {
+  padding: 40px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.card-modal__error {
+  color: #ef4444;
+}
+
+.card-modal__actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.card-modal__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.card-modal__btn:hover {
+  transform: translateY(-1px);
+}
+
+.card-modal__btn--download {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.card-modal__btn--download:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.card-modal__btn--copy {
+  background: var(--overlay-subtle);
+  color: var(--text-primary);
+}
+
+.card-modal__btn--copy:hover {
+  background: var(--overlay-subtle-strong);
+}
+
+.card-modal__share {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.card-modal__share-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.card-modal__social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.card-modal__social:hover {
+  transform: translateY(-2px);
+}
+
+.card-modal__social--twitter {
+  color: #1da1f2;
+}
+.card-modal__social--twitter:hover {
+  background: rgba(29, 161, 242, 0.12);
+  border-color: rgba(29, 161, 242, 0.4);
+}
+
+.card-modal__social--linkedin {
+  color: #0a66c2;
+}
+.card-modal__social--linkedin:hover {
+  background: rgba(10, 102, 194, 0.12);
+  border-color: rgba(10, 102, 194, 0.4);
+}
+
+.card-modal__social--reddit {
+  color: #ff4500;
+}
+.card-modal__social--reddit:hover {
+  background: rgba(255, 69, 0, 0.12);
+  border-color: rgba(255, 69, 0, 0.4);
+}
