@@ -16,6 +16,8 @@ export default function Leaderboard({
   compareLogins = [],
   onToggleCompare,
   claimedLogins,
+  open = false,
+  onClose,
 }) {
   const listRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
@@ -117,7 +119,8 @@ export default function Leaderboard({
   };
 
   return (
-    <aside className="sidebar" id="sidebar">
+    <aside className={`sidebar${open ? ' open' : ''}`} id="sidebar">
+      <div className="sidebar__drag-handle" onClick={onClose} aria-hidden="true" />
       <div className="sidebar__header">
         <div className="sidebar__header-row">
           <h2>Leaderboard</h2>
@@ -126,6 +129,9 @@ export default function Leaderboard({
               ✕ Clear filters
             </button>
           )}
+          <button className="sidebar__close-btn" onClick={onClose} aria-label="Close leaderboard" title="Close leaderboard">
+            &times;
+          </button>
         </div>
         <div className="sidebar__count">
           {filtered.length} developer{filtered.length !== 1 ? 's' : ''}
