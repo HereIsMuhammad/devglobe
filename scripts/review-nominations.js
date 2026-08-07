@@ -12,6 +12,7 @@
  */
 import 'dotenv/config';
 import { CosmosClient } from '@azure/cosmos';
+import { normalizeUsername } from '../lib/nominate.js';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
@@ -60,8 +61,8 @@ async function listNominations(container) {
 async function getNomination(container, username) {
   const { resources } = await container.items
     .query({
-      query: 'SELECT * FROM c WHERE c.username = @username',
-      parameters: [{ name: '@username', value: username }],
+      query: 'SELECT * FROM c WHERE LOWER(c.username) = @username',
+      parameters: [{ name: '@username', value: username.toLowerCase() }],
     })
     .fetchAll();
   return resources[0] || null;
@@ -172,12 +173,13 @@ async function approve(nominations, developers, username) {
 
   console.log(`Approving "${username}"...`);
   const dev = await fetchGitHubUser(username);
-  const coords = await geocode(dev.location);
+  const location = (nomination.location || '').trim() || dev.location;
+  const coords = await geocode(location);
 
   const doc = {
     id: dev.login,
     ...dev,
-    location: dev.location || 'Unknown',
+    location: location || 'Unknown',
     ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
   };
 
@@ -196,7 +198,8 @@ async function reject(nominations, username) {
 }
 
 async function main() {
-  const [cmd, username] = process.argv.slice(2);
+  const [cmd, rawUsername] = process.argv.slice(2);
+  const username = normalizeUsername(rawUsername);
   const { nominations, developers } = await ensureContainers();
 
   switch (cmd) {
