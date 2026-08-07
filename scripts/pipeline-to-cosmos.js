@@ -15,11 +15,6 @@ const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY || '';
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT || 'https://devglobe-cosmos.documents.azure.com:443/';
 const COSMOS_KEY = process.env.COSMOS_KEY;
 
-// Cosmos DB emulator uses a self-signed cert — bypass only for local emulator
-if (COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(COSMOS_ENDPOINT)) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
-
 const LOG_FILE = 'data/pipeline.log';
 mkdirSync('data', { recursive: true });
 

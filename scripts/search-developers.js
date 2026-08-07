@@ -20,11 +20,6 @@ const OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
 const OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
 const EMBEDDING_DEPLOYMENT = process.env.EMBEDDING_DEPLOYMENT || 'text-embedding-3-small';
 
-// Cosmos DB emulator uses a self-signed cert — bypass only for local emulator
-if (COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(COSMOS_ENDPOINT)) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
-
 const DATABASE_NAME = 'devglobe';
 const CONTAINER_NAME = 'developers';
 

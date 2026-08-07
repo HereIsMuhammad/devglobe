@@ -19,11 +19,6 @@ const DATABASE = 'devglobe';
 const DEVELOPERS_CONTAINER = 'developers';
 const NOMINATIONS_CONTAINER = 'nominations';
 
-// Cosmos DB emulator uses a self-signed cert — bypass only for local emulator
-if (COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(COSMOS_ENDPOINT)) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
-
 if (!COSMOS_ENDPOINT || !COSMOS_KEY) {
   console.error('Error: COSMOS_ENDPOINT and COSMOS_KEY are required in .env');
   process.exit(1);

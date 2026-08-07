@@ -10,12 +10,6 @@ import { submitNomination } from './api/lib/nominate.js';
 
 dotenv.config();
 
-// The Cosmos DB emulator uses a self-signed cert; only bypass TLS verification
-// when talking to the local emulator (never for real Azure endpoints).
-if (process.env.COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(process.env.COSMOS_ENDPOINT)) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
