@@ -59,6 +59,8 @@ export async function GET(request) {
 
   const agent = classifyAgent(dev);
   const power = getPowerTier(dev.score || 0);
+  const hasCityRank = Boolean(dev.cityRank && dev.city);
+  const rankCardWidth = hasCityRank ? '166' : dev.countryRank ? '255' : '522';
 
   return new ImageResponse(
     (
@@ -269,7 +271,7 @@ export async function GET(request) {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
-                width: dev.countryRank ? '255' : '522',
+                width: rankCardWidth,
                 height: '82',
                 padding: '12px 18px',
                 background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.04))',
@@ -289,7 +291,7 @@ export async function GET(request) {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  width: '255',
+                  width: rankCardWidth,
                   height: '82',
                   padding: '12px 18px',
                   background: 'linear-gradient(135deg, rgba(251,146,60,0.15), rgba(251,146,60,0.04))',
@@ -302,6 +304,27 @@ export async function GET(request) {
                   <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.countryTotal)}</span>
                 </div>
                 <div style={{ display: 'flex', color: '#fed7aa', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.country.toUpperCase()}</div>
+              </div>
+            )}
+            {hasCityRank && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  width: rankCardWidth,
+                  height: '82',
+                  padding: '12px 18px',
+                  background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.04))',
+                  border: '1px solid rgba(139,92,246,0.32)',
+                  borderRadius: '8',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
+                  <span style={{ color: '#c4b5fd', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.cityRank)}</span>
+                  <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.cityTotal)}</span>
+                </div>
+                <div style={{ display: 'flex', color: '#ddd6fe', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.city.toUpperCase()}</div>
               </div>
             )}
           </div>

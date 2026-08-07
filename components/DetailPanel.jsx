@@ -89,12 +89,22 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
                 </span>
               )}
               {dev.countryRank && (
-                <span
-                  className="rank-badge rank-badge--country"
-                  title={`Ranked ${formatNum(dev.countryRank)} of ${formatNum(dev.countryTotal)} developers in ${dev.country}`}
-                >
-                  #{formatNum(dev.countryRank)} in {dev.country}
-                </span>
+                <div className="rank-badge-stack">
+                  <span
+                    className="rank-badge rank-badge--country"
+                    title={`Ranked ${formatNum(dev.countryRank)} of ${formatNum(dev.countryTotal)} developers in ${dev.country}`}
+                  >
+                    #{formatNum(dev.countryRank)} in {dev.country}
+                  </span>
+                  {dev.cityRank && (
+                    <span
+                      className="rank-badge rank-badge--city"
+                      title={`Ranked ${formatNum(dev.cityRank)} of ${formatNum(dev.cityTotal)} developers in ${dev.city}`}
+                    >
+                      #{formatNum(dev.cityRank)} in {dev.city}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
             <div className="detail-header__links">

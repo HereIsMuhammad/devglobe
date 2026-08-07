@@ -757,6 +757,13 @@ body {
   font-weight: 600;
 }
 
+.rank-badge-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
 .rank-badge--global {
   background: rgba(8, 145, 178, 0.12);
   border: 1px solid rgba(8, 145, 178, 0.4);
@@ -767,6 +774,12 @@ body {
   background: rgba(251, 191, 36, 0.15);
   border: 1px solid rgba(251, 191, 36, 0.45);
   color: #fbbf24;
+}
+
+.rank-badge--city {
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  color: #a78bfa;
 }
 
 .detail-header__links {
