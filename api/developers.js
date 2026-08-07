@@ -8,7 +8,6 @@ import { CosmosClient } from '@azure/cosmos';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
-
 const DATABASE = 'devglobe';
 const CONTAINER = 'developers';
 
