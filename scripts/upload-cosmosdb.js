@@ -12,6 +12,11 @@ import { readFileSync, existsSync } from 'fs';
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT || 'https://devglobe-cosmos.documents.azure.com:443/';
 const COSMOS_KEY = process.env.COSMOS_KEY;
 
+// Cosmos DB emulator uses a self-signed cert — bypass only for local emulator
+if (COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(COSMOS_ENDPOINT)) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 if (!COSMOS_KEY) {
   console.error('Error: COSMOS_KEY environment variable is required');
   console.error('Add it to your .env file');

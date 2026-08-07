@@ -14,6 +14,11 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
 
+// Cosmos DB emulator uses a self-signed cert — bypass only for local emulator
+if (COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(COSMOS_ENDPOINT)) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
 const container = client.database('devglobe').container('developers');
 

@@ -42,6 +42,10 @@ async function verifyGitHubUser(username) {
 }
 
 async function getClient() {
+  // Cosmos DB emulator uses a self-signed cert — bypass only for local emulator
+  if (process.env.COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(process.env.COSMOS_ENDPOINT)) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  }
   return new CosmosClient({
     endpoint: process.env.COSMOS_ENDPOINT,
     key: process.env.COSMOS_KEY,

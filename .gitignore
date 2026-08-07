@@ -9,3 +9,4 @@ data/fetch-progress.json
 data/geocode-cache.json
 data/pipeline.log
 *.log
+dist/
