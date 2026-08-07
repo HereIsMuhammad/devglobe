@@ -11,6 +11,8 @@
 import 'dotenv/config';
 import { execSync } from 'child_process';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { scoreAll } from '../lib/scoring.js';
+import { addDeveloperRanks } from '../lib/ranking.js';
 
 function run(script, description) {
   console.log(`\n${'='.repeat(60)}`);
@@ -48,54 +50,38 @@ async function main() {
   console.log('  STEP: Computing composite scores');
   console.log(`${'='.repeat(60)}\n`);
 
-  const developers = JSON.parse(readFileSync('data/github-so-geo.json', 'utf-8'));
+  const developers = JSON.parse(readFileSync('data/github-so-geo.json', 'utf-8'))
+    // Freshness: record when each profile's metrics were captured, so the UI
+    // can show "last refreshed" and flag stale profiles. githubFetchedAt is
+    // always present (every profile goes through fetch-github.js); soFetchedAt
+    // only exists when a Stack Overflow match was found.
+    .map(dev => ({
+      ...dev,
+      metricsUpdatedAt: dev.soFetchedAt && dev.soFetchedAt < dev.githubFetchedAt
+        ? dev.soFetchedAt
+        : dev.githubFetchedAt || dev.soFetchedAt || null,
+    }));
 
-  // Import scoring logic (reuse browser module logic)
-  function logNormalize(value, max) {
-    if (value <= 0 || max <= 0) return 0;
-    return Math.log(1 + value) / Math.log(1 + max);
-  }
-
-  function linearNormalize(value, max) {
-    if (max <= 0) return 0;
-    return Math.min(value / max, 1);
-  }
-
-  const maxValues = {
-    stars: Math.max(...developers.map(d => d.totalStars || 0)),
-    commits: Math.max(...developers.map(d => d.totalCommits || 0)),
-    repoReach: Math.max(...developers.map(d => (d.totalForks || 0) + (d.totalWatchers || 0))),
-    soReputation: Math.max(...developers.map(d => d.soReputation || 0)),
-    soEngagement: Math.max(...developers.map(d => ((d.soAcceptRate || 0) / 100) * (d.soAnswers || 0))),
-    community: Math.max(...developers.map(d => (d.followers || 0) + (d.soBadges || 0)))
-  };
-
-  const WEIGHTS = { stars: 0.25, commits: 0.25, repoReach: 0.20, soReputation: 0.15, soEngagement: 0.10, community: 0.05 };
-
-  const scored = developers.map(dev => {
-    const dimensions = {
-      stars: logNormalize(dev.totalStars || 0, maxValues.stars),
-      commits: logNormalize(dev.totalCommits || 0, maxValues.commits),
-      repoReach: logNormalize((dev.totalForks || 0) + (dev.totalWatchers || 0), maxValues.repoReach),
-      soReputation: logNormalize(dev.soReputation || 0, maxValues.soReputation),
-      soEngagement: linearNormalize(((dev.soAcceptRate || 0) / 100) * (dev.soAnswers || 0), maxValues.soEngagement),
-      community: logNormalize((dev.followers || 0) + (dev.soBadges || 0), maxValues.community)
-    };
-
-    let score = 0;
-    for (const [key, weight] of Object.entries(WEIGHTS)) {
-      score += dimensions[key] * weight;
-    }
-
-    return { ...dev, score: Math.round(score * 100), scoreDimensions: dimensions };
-  }).sort((a, b) => b.score - a.score);
+  // Reuse the exact same scoring module the frontend uses, so the shipped
+  // dataset's scores are always consistent with what the app would compute
+  // client-side — no risk of the two implementations drifting apart.
+  const scored = addDeveloperRanks(scoreAll(developers));
 
   // Write final output
   writeFileSync('data/developers.json', JSON.stringify(scored, null, 2));
 
+  // Score distribution summary, for reviewing calibration (spread, outliers,
+  // how many profiles land in sparse-data territory) each time the dataset
+  // is rebuilt.
+  const scores = scored.map(d => d.score).sort((a, b) => a - b);
+  const pct = p => scores[Math.min(scores.length - 1, Math.floor((p / 100) * scores.length))];
+  const sparseCount = scored.filter(d => !d.scoreHasSO).length;
+
   console.log(`\n✅ Pipeline complete!`);
   console.log(`   Total developers: ${scored.length}`);
   console.log(`   Top scorer: ${scored[0]?.login} (${scored[0]?.score}/100)`);
+  console.log(`   Score distribution: min=${scores[0]} p25=${pct(25)} median=${pct(50)} p75=${pct(75)} max=${scores[scores.length - 1]}`);
+  console.log(`   Profiles without Stack Overflow data (weight redistributed): ${sparseCount}/${scored.length}`);
   console.log(`   Output: data/developers.json`);
   console.log(`\n   To use in the app, update DATA_URL in src/app.js to 'data/developers.json'`);
 }

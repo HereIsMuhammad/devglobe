@@ -204,7 +204,8 @@ function processUser(user) {
       name: r.name,
       stars: r.stargazerCount,
       forks: r.forkCount
-    }))
+    })),
+    githubFetchedAt: new Date().toISOString(),
   };
 }
 

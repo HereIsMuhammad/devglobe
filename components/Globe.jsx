@@ -17,12 +17,12 @@ const COUNTRY_GEOJSON_URLS = [
 const POLYGON_ALTITUDE = 0.003;
 const POLYGON_ALTITUDE_ACTIVE = 0.009;
 
-// Score-based color gradient: blue → green → gold → red
+// Score-based color gradient (visual tiering only, not a judgment of skill)
 function getScoreColor(score) {
-  if (score >= 80) return '#fbbf24'; // gold — elite
-  if (score >= 60) return '#34d399'; // emerald — strong
-  if (score >= 40) return '#3b82f6'; // blue — solid
-  return '#6366f1'; // indigo — emerging
+  if (score >= 80) return '#fbbf24'; // gold — top of the indexed range
+  if (score >= 60) return '#34d399'; // emerald — upper-mid range
+  if (score >= 40) return '#3b82f6'; // blue — mid range
+  return '#6366f1'; // indigo — lower range
 }
 
 function featureName(feat) {
