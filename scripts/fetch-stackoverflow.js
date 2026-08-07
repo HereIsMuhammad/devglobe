@@ -141,7 +141,8 @@ async function main() {
           soAcceptRate: match.accept_rate || 0,
           soBadges: (match.badge_counts?.gold || 0) +
                     (match.badge_counts?.silver || 0) +
-                    (match.badge_counts?.bronze || 0)
+                    (match.badge_counts?.bronze || 0),
+          soFetchedAt: new Date().toISOString(),
         });
         console.log(`    ✓ Matched: ${match.display_name} (rep: ${match.reputation}, answers: ${answerCount})`);
       } else {

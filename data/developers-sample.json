@@ -13,21 +13,46 @@
     "followers": 210000,
     "topLanguage": "C",
     "languages": [
-      { "name": "C", "percent": 85 },
-      { "name": "Assembly", "percent": 8 },
-      { "name": "Shell", "percent": 5 },
-      { "name": "Other", "percent": 2 }
+      {
+        "name": "C",
+        "percent": 85
+      },
+      {
+        "name": "Assembly",
+        "percent": 8
+      },
+      {
+        "name": "Shell",
+        "percent": 5
+      },
+      {
+        "name": "Other",
+        "percent": 2
+      }
     ],
     "topRepos": [
-      { "name": "linux", "stars": 175000, "forks": 52000 },
-      { "name": "subsurface-for-dirk", "stars": 2200, "forks": 680 },
-      { "name": "uemacs", "stars": 710, "forks": 120 }
+      {
+        "name": "linux",
+        "stars": 175000,
+        "forks": 52000
+      },
+      {
+        "name": "subsurface-for-dirk",
+        "stars": 2200,
+        "forks": 680
+      },
+      {
+        "name": "uemacs",
+        "stars": 710,
+        "forks": 120
+      }
     ],
     "soUserId": null,
     "soReputation": 0,
     "soAnswers": 0,
     "soAcceptRate": 0,
-    "soBadges": 0
+    "soBadges": 0,
+    "metricsUpdatedAt": "2026-08-06T00:00:00Z"
   },
   {
     "login": "gaearon",
@@ -43,21 +68,46 @@
     "followers": 85000,
     "topLanguage": "JavaScript",
     "languages": [
-      { "name": "JavaScript", "percent": 60 },
-      { "name": "TypeScript", "percent": 25 },
-      { "name": "CSS", "percent": 10 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "JavaScript",
+        "percent": 60
+      },
+      {
+        "name": "TypeScript",
+        "percent": 25
+      },
+      {
+        "name": "CSS",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "redux", "stars": 60700, "forks": 15700 },
-      { "name": "react-hot-loader", "stars": 12300, "forks": 850 },
-      { "name": "overreacted.io", "stars": 7100, "forks": 1300 }
+      {
+        "name": "redux",
+        "stars": 60700,
+        "forks": 15700
+      },
+      {
+        "name": "react-hot-loader",
+        "stars": 12300,
+        "forks": 850
+      },
+      {
+        "name": "overreacted.io",
+        "stars": 7100,
+        "forks": 1300
+      }
     ],
     "soUserId": 458193,
     "soReputation": 52000,
     "soAnswers": 320,
     "soAcceptRate": 45,
-    "soBadges": 48
+    "soBadges": 48,
+    "metricsUpdatedAt": "2026-08-04T00:00:00Z"
   },
   {
     "login": "sindresorhus",
@@ -73,21 +123,46 @@
     "followers": 56000,
     "topLanguage": "TypeScript",
     "languages": [
-      { "name": "TypeScript", "percent": 45 },
-      { "name": "JavaScript", "percent": 35 },
-      { "name": "Swift", "percent": 15 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "TypeScript",
+        "percent": 45
+      },
+      {
+        "name": "JavaScript",
+        "percent": 35
+      },
+      {
+        "name": "Swift",
+        "percent": 15
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "awesome", "stars": 310000, "forks": 27000 },
-      { "name": "got", "stars": 14000, "forks": 940 },
-      { "name": "execa", "stars": 6800, "forks": 220 }
+      {
+        "name": "awesome",
+        "stars": 310000,
+        "forks": 27000
+      },
+      {
+        "name": "got",
+        "stars": 14000,
+        "forks": 940
+      },
+      {
+        "name": "execa",
+        "stars": 6800,
+        "forks": 220
+      }
     ],
     "soUserId": null,
     "soReputation": 1200,
     "soAnswers": 15,
     "soAcceptRate": 60,
-    "soBadges": 8
+    "soBadges": 8,
+    "metricsUpdatedAt": "2026-08-02T00:00:00Z"
   },
   {
     "login": "tj",
@@ -103,21 +178,46 @@
     "followers": 38000,
     "topLanguage": "Go",
     "languages": [
-      { "name": "Go", "percent": 40 },
-      { "name": "JavaScript", "percent": 35 },
-      { "name": "TypeScript", "percent": 15 },
-      { "name": "Other", "percent": 10 }
+      {
+        "name": "Go",
+        "percent": 40
+      },
+      {
+        "name": "JavaScript",
+        "percent": 35
+      },
+      {
+        "name": "TypeScript",
+        "percent": 15
+      },
+      {
+        "name": "Other",
+        "percent": 10
+      }
     ],
     "topRepos": [
-      { "name": "commander.js", "stars": 26500, "forks": 1700 },
-      { "name": "co", "stars": 11900, "forks": 780 },
-      { "name": "n", "stars": 18700, "forks": 750 }
+      {
+        "name": "commander.js",
+        "stars": 26500,
+        "forks": 1700
+      },
+      {
+        "name": "co",
+        "stars": 11900,
+        "forks": 780
+      },
+      {
+        "name": "n",
+        "stars": 18700,
+        "forks": 750
+      }
     ],
     "soUserId": 68115,
     "soReputation": 35000,
     "soAnswers": 890,
     "soAcceptRate": 52,
-    "soBadges": 62
+    "soBadges": 62,
+    "metricsUpdatedAt": "2026-07-31T00:00:00Z"
   },
   {
     "login": "yyx990803",
@@ -133,21 +233,46 @@
     "followers": 95000,
     "topLanguage": "TypeScript",
     "languages": [
-      { "name": "TypeScript", "percent": 55 },
-      { "name": "JavaScript", "percent": 30 },
-      { "name": "HTML", "percent": 10 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "TypeScript",
+        "percent": 55
+      },
+      {
+        "name": "JavaScript",
+        "percent": 30
+      },
+      {
+        "name": "HTML",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "vue", "stars": 207000, "forks": 33800 },
-      { "name": "vite", "stars": 67000, "forks": 6000 },
-      { "name": "vue-next", "stars": 45000, "forks": 8200 }
+      {
+        "name": "vue",
+        "stars": 207000,
+        "forks": 33800
+      },
+      {
+        "name": "vite",
+        "stars": 67000,
+        "forks": 6000
+      },
+      {
+        "name": "vue-next",
+        "stars": 45000,
+        "forks": 8200
+      }
     ],
     "soUserId": 2437875,
     "soReputation": 8400,
     "soAnswers": 120,
     "soAcceptRate": 38,
-    "soBadges": 22
+    "soBadges": 22,
+    "metricsUpdatedAt": "2026-08-05T00:00:00Z"
   },
   {
     "login": "antirez",
@@ -155,7 +280,7 @@
     "avatarUrl": "https://avatars.githubusercontent.com/u/65601?v=4",
     "location": "Catania, Italy",
     "lat": 37.5079,
-    "lng": 15.0830,
+    "lng": 15.083,
     "totalStars": 66000,
     "totalCommits": 9800,
     "totalForks": 24000,
@@ -163,21 +288,46 @@
     "followers": 22000,
     "topLanguage": "C",
     "languages": [
-      { "name": "C", "percent": 70 },
-      { "name": "Tcl", "percent": 15 },
-      { "name": "Ruby", "percent": 10 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "C",
+        "percent": 70
+      },
+      {
+        "name": "Tcl",
+        "percent": 15
+      },
+      {
+        "name": "Ruby",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "redis", "stars": 65000, "forks": 23500 },
-      { "name": "kilo", "stars": 6900, "forks": 960 },
-      { "name": "smallchat", "stars": 7200, "forks": 870 }
+      {
+        "name": "redis",
+        "stars": 65000,
+        "forks": 23500
+      },
+      {
+        "name": "kilo",
+        "stars": 6900,
+        "forks": 960
+      },
+      {
+        "name": "smallchat",
+        "stars": 7200,
+        "forks": 870
+      }
     ],
     "soUserId": null,
     "soReputation": 0,
     "soAnswers": 0,
     "soAcceptRate": 0,
-    "soBadges": 0
+    "soBadges": 0,
+    "metricsUpdatedAt": "2026-06-23T00:00:00Z"
   },
   {
     "login": "mrdoob",
@@ -193,20 +343,41 @@
     "followers": 28000,
     "topLanguage": "JavaScript",
     "languages": [
-      { "name": "JavaScript", "percent": 80 },
-      { "name": "GLSL", "percent": 10 },
-      { "name": "HTML", "percent": 8 },
-      { "name": "Other", "percent": 2 }
+      {
+        "name": "JavaScript",
+        "percent": 80
+      },
+      {
+        "name": "GLSL",
+        "percent": 10
+      },
+      {
+        "name": "HTML",
+        "percent": 8
+      },
+      {
+        "name": "Other",
+        "percent": 2
+      }
     ],
     "topRepos": [
-      { "name": "three.js", "stars": 101000, "forks": 27000 },
-      { "name": "htmleditor", "stars": 980, "forks": 290 }
+      {
+        "name": "three.js",
+        "stars": 101000,
+        "forks": 27000
+      },
+      {
+        "name": "htmleditor",
+        "stars": 980,
+        "forks": 290
+      }
     ],
     "soUserId": null,
     "soReputation": 3200,
     "soAnswers": 45,
     "soAcceptRate": 30,
-    "soBadges": 12
+    "soBadges": 12,
+    "metricsUpdatedAt": "2026-07-28T00:00:00Z"
   },
   {
     "login": "JakeWharton",
@@ -222,21 +393,46 @@
     "followers": 68000,
     "topLanguage": "Kotlin",
     "languages": [
-      { "name": "Kotlin", "percent": 40 },
-      { "name": "Java", "percent": 35 },
-      { "name": "Groovy", "percent": 15 },
-      { "name": "Other", "percent": 10 }
+      {
+        "name": "Kotlin",
+        "percent": 40
+      },
+      {
+        "name": "Java",
+        "percent": 35
+      },
+      {
+        "name": "Groovy",
+        "percent": 15
+      },
+      {
+        "name": "Other",
+        "percent": 10
+      }
     ],
     "topRepos": [
-      { "name": "butterknife", "stars": 25700, "forks": 4700 },
-      { "name": "timber", "stars": 10400, "forks": 960 },
-      { "name": "retrofit", "stars": 43000, "forks": 7400 }
+      {
+        "name": "butterknife",
+        "stars": 25700,
+        "forks": 4700
+      },
+      {
+        "name": "timber",
+        "stars": 10400,
+        "forks": 960
+      },
+      {
+        "name": "retrofit",
+        "stars": 43000,
+        "forks": 7400
+      }
     ],
     "soUserId": 132047,
     "soReputation": 128000,
     "soAnswers": 2400,
     "soAcceptRate": 68,
-    "soBadges": 184
+    "soBadges": 184,
+    "metricsUpdatedAt": "2026-06-08T00:00:00Z"
   },
   {
     "login": "getify",
@@ -252,21 +448,46 @@
     "followers": 44000,
     "topLanguage": "JavaScript",
     "languages": [
-      { "name": "JavaScript", "percent": 90 },
-      { "name": "HTML", "percent": 5 },
-      { "name": "CSS", "percent": 3 },
-      { "name": "Other", "percent": 2 }
+      {
+        "name": "JavaScript",
+        "percent": 90
+      },
+      {
+        "name": "HTML",
+        "percent": 5
+      },
+      {
+        "name": "CSS",
+        "percent": 3
+      },
+      {
+        "name": "Other",
+        "percent": 2
+      }
     ],
     "topRepos": [
-      { "name": "You-Dont-Know-JS", "stars": 178000, "forks": 21000 },
-      { "name": "Functional-Light-JS", "stars": 16500, "forks": 2100 },
-      { "name": "LABjs", "stars": 2300, "forks": 340 }
+      {
+        "name": "You-Dont-Know-JS",
+        "stars": 178000,
+        "forks": 21000
+      },
+      {
+        "name": "Functional-Light-JS",
+        "stars": 16500,
+        "forks": 2100
+      },
+      {
+        "name": "LABjs",
+        "stars": 2300,
+        "forks": 340
+      }
     ],
     "soUserId": 228852,
     "soReputation": 67000,
     "soAnswers": 1800,
     "soAcceptRate": 55,
-    "soBadges": 95
+    "soBadges": 95,
+    "metricsUpdatedAt": "2026-08-03T00:00:00Z"
   },
   {
     "login": "addyosmani",
@@ -282,28 +503,53 @@
     "followers": 42000,
     "topLanguage": "JavaScript",
     "languages": [
-      { "name": "JavaScript", "percent": 65 },
-      { "name": "HTML", "percent": 15 },
-      { "name": "CSS", "percent": 10 },
-      { "name": "Other", "percent": 10 }
+      {
+        "name": "JavaScript",
+        "percent": 65
+      },
+      {
+        "name": "HTML",
+        "percent": 15
+      },
+      {
+        "name": "CSS",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 10
+      }
     ],
     "topRepos": [
-      { "name": "learning-jsdp", "stars": 28000, "forks": 5100 },
-      { "name": "es6-tools", "stars": 4000, "forks": 510 },
-      { "name": "critical", "stars": 10000, "forks": 430 }
+      {
+        "name": "learning-jsdp",
+        "stars": 28000,
+        "forks": 5100
+      },
+      {
+        "name": "es6-tools",
+        "stars": 4000,
+        "forks": 510
+      },
+      {
+        "name": "critical",
+        "stars": 10000,
+        "forks": 430
+      }
     ],
     "soUserId": 193238,
     "soReputation": 48000,
     "soAnswers": 620,
     "soAcceptRate": 42,
-    "soBadges": 55
+    "soBadges": 55,
+    "metricsUpdatedAt": "2026-08-01T00:00:00Z"
   },
   {
     "login": "vczh",
     "name": "Zhiyu Chen",
     "avatarUrl": "https://avatars.githubusercontent.com/u/1320481?v=4",
     "location": "Redmond, WA, USA",
-    "lat": 47.6740,
+    "lat": 47.674,
     "lng": -122.1215,
     "totalStars": 25000,
     "totalCommits": 22000,
@@ -312,21 +558,46 @@
     "followers": 18000,
     "topLanguage": "C++",
     "languages": [
-      { "name": "C++", "percent": 70 },
-      { "name": "C#", "percent": 15 },
-      { "name": "TypeScript", "percent": 10 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "C++",
+        "percent": 70
+      },
+      {
+        "name": "C#",
+        "percent": 15
+      },
+      {
+        "name": "TypeScript",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "GacUI", "stars": 3600, "forks": 480 },
-      { "name": "vczh-libraries", "stars": 2800, "forks": 380 },
-      { "name": "tinymoe", "stars": 1600, "forks": 220 }
+      {
+        "name": "GacUI",
+        "stars": 3600,
+        "forks": 480
+      },
+      {
+        "name": "vczh-libraries",
+        "stars": 2800,
+        "forks": 380
+      },
+      {
+        "name": "tinymoe",
+        "stars": 1600,
+        "forks": 220
+      }
     ],
     "soUserId": null,
     "soReputation": 15000,
     "soAnswers": 450,
     "soAcceptRate": 35,
-    "soBadges": 32
+    "soBadges": 32,
+    "metricsUpdatedAt": "2026-07-30T00:00:00Z"
   },
   {
     "login": "ThePrimeagen",
@@ -334,7 +605,7 @@
     "avatarUrl": "https://avatars.githubusercontent.com/u/4458174?v=4",
     "location": "Salt Lake City, UT, USA",
     "lat": 40.7608,
-    "lng": -111.8910,
+    "lng": -111.891,
     "totalStars": 32000,
     "totalCommits": 8900,
     "totalForks": 4200,
@@ -342,22 +613,50 @@
     "followers": 24000,
     "topLanguage": "TypeScript",
     "languages": [
-      { "name": "TypeScript", "percent": 35 },
-      { "name": "Go", "percent": 25 },
-      { "name": "Rust", "percent": 20 },
-      { "name": "Zig", "percent": 15 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "TypeScript",
+        "percent": 35
+      },
+      {
+        "name": "Go",
+        "percent": 25
+      },
+      {
+        "name": "Rust",
+        "percent": 20
+      },
+      {
+        "name": "Zig",
+        "percent": 15
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "harpoon", "stars": 6800, "forks": 420 },
-      { "name": "vim-be-good", "stars": 2900, "forks": 180 },
-      { "name": "kata-machine", "stars": 2100, "forks": 680 }
+      {
+        "name": "harpoon",
+        "stars": 6800,
+        "forks": 420
+      },
+      {
+        "name": "vim-be-good",
+        "stars": 2900,
+        "forks": 180
+      },
+      {
+        "name": "kata-machine",
+        "stars": 2100,
+        "forks": 680
+      }
     ],
     "soUserId": null,
     "soReputation": 2800,
     "soAnswers": 35,
     "soAcceptRate": 40,
-    "soBadges": 8
+    "soBadges": 8,
+    "metricsUpdatedAt": "2026-05-09T00:00:00Z"
   },
   {
     "login": "jonschlinkert",
@@ -365,7 +664,7 @@
     "avatarUrl": "https://avatars.githubusercontent.com/u/383994?v=4",
     "location": "Cincinnati, OH, USA",
     "lat": 39.1031,
-    "lng": -84.5120,
+    "lng": -84.512,
     "totalStars": 68000,
     "totalCommits": 45000,
     "totalForks": 9800,
@@ -373,20 +672,42 @@
     "followers": 6800,
     "topLanguage": "JavaScript",
     "languages": [
-      { "name": "JavaScript", "percent": 85 },
-      { "name": "TypeScript", "percent": 10 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "JavaScript",
+        "percent": 85
+      },
+      {
+        "name": "TypeScript",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "micromatch", "stars": 2200, "forks": 180 },
-      { "name": "remarkable", "stars": 5700, "forks": 410 },
-      { "name": "gray-matter", "stars": 3800, "forks": 210 }
+      {
+        "name": "micromatch",
+        "stars": 2200,
+        "forks": 180
+      },
+      {
+        "name": "remarkable",
+        "stars": 5700,
+        "forks": 410
+      },
+      {
+        "name": "gray-matter",
+        "stars": 3800,
+        "forks": 210
+      }
     ],
     "soUserId": null,
     "soReputation": 4200,
     "soAnswers": 85,
     "soAcceptRate": 50,
-    "soBadges": 15
+    "soBadges": 15,
+    "metricsUpdatedAt": "2026-08-05T00:00:00Z"
   },
   {
     "login": "brendangregg",
@@ -402,22 +723,50 @@
     "followers": 16000,
     "topLanguage": "C",
     "languages": [
-      { "name": "C", "percent": 40 },
-      { "name": "DTrace", "percent": 25 },
-      { "name": "Shell", "percent": 20 },
-      { "name": "Perl", "percent": 10 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "C",
+        "percent": 40
+      },
+      {
+        "name": "DTrace",
+        "percent": 25
+      },
+      {
+        "name": "Shell",
+        "percent": 20
+      },
+      {
+        "name": "Perl",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "perf-tools", "stars": 9700, "forks": 1700 },
-      { "name": "FlameGraph", "stars": 17000, "forks": 1900 },
-      { "name": "bcc", "stars": 2100, "forks": 410 }
+      {
+        "name": "perf-tools",
+        "stars": 9700,
+        "forks": 1700
+      },
+      {
+        "name": "FlameGraph",
+        "stars": 17000,
+        "forks": 1900
+      },
+      {
+        "name": "bcc",
+        "stars": 2100,
+        "forks": 410
+      }
     ],
     "soUserId": null,
     "soReputation": 5800,
     "soAnswers": 42,
     "soAcceptRate": 65,
-    "soBadges": 18
+    "soBadges": 18,
+    "metricsUpdatedAt": "2026-08-04T00:00:00Z"
   },
   {
     "login": "mitchellh",
@@ -433,21 +782,46 @@
     "followers": 32000,
     "topLanguage": "Zig",
     "languages": [
-      { "name": "Zig", "percent": 35 },
-      { "name": "Go", "percent": 30 },
-      { "name": "Ruby", "percent": 20 },
-      { "name": "Other", "percent": 15 }
+      {
+        "name": "Zig",
+        "percent": 35
+      },
+      {
+        "name": "Go",
+        "percent": 30
+      },
+      {
+        "name": "Ruby",
+        "percent": 20
+      },
+      {
+        "name": "Other",
+        "percent": 15
+      }
     ],
     "topRepos": [
-      { "name": "vagrant", "stars": 26000, "forks": 4500 },
-      { "name": "ghostty", "stars": 22000, "forks": 680 },
-      { "name": "packer", "stars": 15000, "forks": 3400 }
+      {
+        "name": "vagrant",
+        "stars": 26000,
+        "forks": 4500
+      },
+      {
+        "name": "ghostty",
+        "stars": 22000,
+        "forks": 680
+      },
+      {
+        "name": "packer",
+        "stars": 15000,
+        "forks": 3400
+      }
     ],
     "soUserId": 84745,
     "soReputation": 22000,
     "soAnswers": 180,
     "soAcceptRate": 48,
-    "soBadges": 35
+    "soBadges": 35,
+    "metricsUpdatedAt": "2026-08-02T00:00:00Z"
   },
   {
     "login": "fabpot",
@@ -463,21 +837,46 @@
     "followers": 21000,
     "topLanguage": "PHP",
     "languages": [
-      { "name": "PHP", "percent": 90 },
-      { "name": "Twig", "percent": 5 },
-      { "name": "JavaScript", "percent": 3 },
-      { "name": "Other", "percent": 2 }
+      {
+        "name": "PHP",
+        "percent": 90
+      },
+      {
+        "name": "Twig",
+        "percent": 5
+      },
+      {
+        "name": "JavaScript",
+        "percent": 3
+      },
+      {
+        "name": "Other",
+        "percent": 2
+      }
     ],
     "topRepos": [
-      { "name": "symfony", "stars": 29500, "forks": 9500 },
-      { "name": "Twig", "stars": 8100, "forks": 1200 },
-      { "name": "Silex", "stars": 3600, "forks": 720 }
+      {
+        "name": "symfony",
+        "stars": 29500,
+        "forks": 9500
+      },
+      {
+        "name": "Twig",
+        "stars": 8100,
+        "forks": 1200
+      },
+      {
+        "name": "Silex",
+        "stars": 3600,
+        "forks": 720
+      }
     ],
     "soUserId": 42983,
     "soReputation": 31000,
     "soAnswers": 520,
     "soAcceptRate": 58,
-    "soBadges": 72
+    "soBadges": 72,
+    "metricsUpdatedAt": "2026-07-23T00:00:00Z"
   },
   {
     "login": "mattn",
@@ -493,22 +892,50 @@
     "followers": 12000,
     "topLanguage": "Go",
     "languages": [
-      { "name": "Go", "percent": 45 },
-      { "name": "Vim Script", "percent": 20 },
-      { "name": "C", "percent": 15 },
-      { "name": "JavaScript", "percent": 10 },
-      { "name": "Other", "percent": 10 }
+      {
+        "name": "Go",
+        "percent": 45
+      },
+      {
+        "name": "Vim Script",
+        "percent": 20
+      },
+      {
+        "name": "C",
+        "percent": 15
+      },
+      {
+        "name": "JavaScript",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 10
+      }
     ],
     "topRepos": [
-      { "name": "go-sqlite3", "stars": 7800, "forks": 1100 },
-      { "name": "vim-gist", "stars": 1800, "forks": 210 },
-      { "name": "goreman", "stars": 1400, "forks": 160 }
+      {
+        "name": "go-sqlite3",
+        "stars": 7800,
+        "forks": 1100
+      },
+      {
+        "name": "vim-gist",
+        "stars": 1800,
+        "forks": 210
+      },
+      {
+        "name": "goreman",
+        "stars": 1400,
+        "forks": 160
+      }
     ],
     "soUserId": 340289,
     "soReputation": 18000,
     "soAnswers": 680,
     "soAcceptRate": 42,
-    "soBadges": 45
+    "soBadges": 45,
+    "metricsUpdatedAt": "2026-07-18T00:00:00Z"
   },
   {
     "login": "kennethreitz",
@@ -524,21 +951,46 @@
     "followers": 35000,
     "topLanguage": "Python",
     "languages": [
-      { "name": "Python", "percent": 85 },
-      { "name": "Shell", "percent": 8 },
-      { "name": "Makefile", "percent": 4 },
-      { "name": "Other", "percent": 3 }
+      {
+        "name": "Python",
+        "percent": 85
+      },
+      {
+        "name": "Shell",
+        "percent": 8
+      },
+      {
+        "name": "Makefile",
+        "percent": 4
+      },
+      {
+        "name": "Other",
+        "percent": 3
+      }
     ],
     "topRepos": [
-      { "name": "requests", "stars": 52000, "forks": 9300 },
-      { "name": "httpbin", "stars": 12600, "forks": 2100 },
-      { "name": "pipenv", "stars": 24800, "forks": 1900 }
+      {
+        "name": "requests",
+        "stars": 52000,
+        "forks": 9300
+      },
+      {
+        "name": "httpbin",
+        "stars": 12600,
+        "forks": 2100
+      },
+      {
+        "name": "pipenv",
+        "stars": 24800,
+        "forks": 1900
+      }
     ],
     "soUserId": 356942,
     "soReputation": 28000,
     "soAnswers": 240,
     "soAcceptRate": 50,
-    "soBadges": 42
+    "soBadges": 42,
+    "metricsUpdatedAt": "2026-08-06T00:00:00Z"
   },
   {
     "login": "substack",
@@ -554,21 +1006,46 @@
     "followers": 11000,
     "topLanguage": "JavaScript",
     "languages": [
-      { "name": "JavaScript", "percent": 70 },
-      { "name": "Rust", "percent": 15 },
-      { "name": "C", "percent": 10 },
-      { "name": "Other", "percent": 5 }
+      {
+        "name": "JavaScript",
+        "percent": 70
+      },
+      {
+        "name": "Rust",
+        "percent": 15
+      },
+      {
+        "name": "C",
+        "percent": 10
+      },
+      {
+        "name": "Other",
+        "percent": 5
+      }
     ],
     "topRepos": [
-      { "name": "browserify", "stars": 14500, "forks": 1200 },
-      { "name": "stream-handbook", "stars": 13600, "forks": 990 },
-      { "name": "tape", "stars": 5800, "forks": 330 }
+      {
+        "name": "browserify",
+        "stars": 14500,
+        "forks": 1200
+      },
+      {
+        "name": "stream-handbook",
+        "stars": 13600,
+        "forks": 990
+      },
+      {
+        "name": "tape",
+        "stars": 5800,
+        "forks": 330
+      }
     ],
     "soUserId": null,
     "soReputation": 6200,
     "soAnswers": 110,
     "soAcceptRate": 45,
-    "soBadges": 20
+    "soBadges": 20,
+    "metricsUpdatedAt": "2026-06-28T00:00:00Z"
   },
   {
     "login": "jonsuh",
@@ -584,18 +1061,36 @@
     "followers": 9200,
     "topLanguage": "C#",
     "languages": [
-      { "name": "C#", "percent": 70 },
-      { "name": "Java", "percent": 20 },
-      { "name": "Other", "percent": 10 }
+      {
+        "name": "C#",
+        "percent": 70
+      },
+      {
+        "name": "Java",
+        "percent": 20
+      },
+      {
+        "name": "Other",
+        "percent": 10
+      }
     ],
     "topRepos": [
-      { "name": "nodatime", "stars": 2700, "forks": 380 },
-      { "name": "google-cloud-dotnet", "stars": 920, "forks": 480 }
+      {
+        "name": "nodatime",
+        "stars": 2700,
+        "forks": 380
+      },
+      {
+        "name": "google-cloud-dotnet",
+        "stars": 920,
+        "forks": 480
+      }
     ],
     "soUserId": 22656,
     "soReputation": 1410000,
     "soAnswers": 36000,
     "soAcceptRate": 82,
-    "soBadges": 890
+    "soBadges": 890,
+    "metricsUpdatedAt": null
   }
 ]

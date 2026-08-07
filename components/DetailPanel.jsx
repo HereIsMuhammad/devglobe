@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { formatNum } from '../lib/format.js';
+import { formatNum, formatRelativeTime, isStaleData } from '../lib/format.js';
+import { DIMENSIONS, SCORE_METHODOLOGY } from '../lib/scoring.js';
 
 export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
   const [fullData, setFullData] = useState(null);
@@ -79,7 +80,12 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
             </div>
             <div className="detail-header__location">📍 {dev.location || 'Unknown location'}</div>
             <div className="detail-header__badges">
-              <span className="detail-header__score-badge">Score: {dev.score}/100</span>
+              <span
+                className="detail-header__score-badge"
+                title={dev.scoreHasSO === false ? `${SCORE_METHODOLOGY.short} ${SCORE_METHODOLOGY.noSO}` : SCORE_METHODOLOGY.short}
+              >
+                Score: {dev.score}/100
+              </span>
               {dev.globalRank && (
                 <span
                   className="rank-badge rank-badge--global"
@@ -107,6 +113,9 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
                 </div>
               )}
             </div>
+            <p className="detail-header__score-note">
+              {SCORE_METHODOLOGY.short}
+            </p>
             <div className="detail-header__links">
               <a href={`https://github.com/${dev.login}`} target="_blank" rel="noreferrer">GitHub ↗</a>
               {merged.soUserId && (
@@ -145,6 +154,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
         <div className="chart-section">
           <h3>Score Breakdown</h3>
           <div ref={radarRef} />
+          <ScoreExplanation dev={dev} />
         </div>
 
         <div className="chart-section">
@@ -186,6 +196,54 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
       {showCard && (
         <CardModal dev={dev} claimSuccess={claimSuccess} onClose={() => setShowCard(false)} />
       )}
+    </div>
+  );
+}
+
+function ScoreExplanation({ dev }) {
+  const dimensions = dev.scoreDimensions;
+  const weights = dev.scoreWeights;
+  if (!dimensions || !weights) return null;
+
+  const freshLabel = formatRelativeTime(dev.metricsUpdatedAt);
+  const stale = isStaleData(dev.metricsUpdatedAt);
+
+  return (
+    <div className="score-explain">
+      <p className="score-explain__methodology">{SCORE_METHODOLOGY.short}</p>
+      {dev.scoreHasSO === false && (
+        <p className="score-explain__redistribute">{SCORE_METHODOLOGY.noSO}</p>
+      )}
+
+      <ul className="score-explain__list">
+        {DIMENSIONS.map(({ key, label, description }) => {
+          const normalized = dimensions[key] || 0;
+          const weight = weights[key] || 0;
+          const points = Math.round(normalized * weight * 100);
+          return (
+            <li className="score-explain__row" key={key}>
+              <div className="score-explain__row-top">
+                <span className="score-explain__label" title={description}>{label}</span>
+                <span className="score-explain__points">{points} pts</span>
+              </div>
+              <div className="score-explain__track">
+                <div className="score-explain__fill" style={{ width: `${Math.round(normalized * 100)}%` }} />
+              </div>
+              <span className="score-explain__weight">{Math.round(weight * 100)}% weight</span>
+            </li>
+          );
+        })}
+      </ul>
+
+      {typeof dev.scorePercentile === 'number' && (
+        <p className="score-explain__percentile">
+          Higher than {dev.scorePercentile}% of developers currently indexed by DevGlobe.
+        </p>
+      )}
+
+      <p className={`score-explain__freshness${stale ? ' score-explain__freshness--stale' : ''}`}>
+        {freshLabel ? `Metrics last refreshed ${freshLabel}${stale ? ' — may be out of date' : ''}.` : 'Metrics freshness unknown.'}
+      </p>
     </div>
   );
 }

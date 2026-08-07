@@ -3,6 +3,7 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { formatNum } from '../lib/format.js';
 import { extractCountry, normalizeCountry, countryKey } from '../lib/country.js';
+import { SCORE_METHODOLOGY } from '../lib/scoring.js';
 
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
@@ -165,6 +166,11 @@ export default function Leaderboard({
             <option value="soRep">SO Rep</option>
           </select>
         </div>
+        {sortBy === 'score' && (
+          <p className="sidebar__score-note" title={SCORE_METHODOLOGY.short}>
+            ⓘ Score is relative to this dataset, not an absolute rating — tap a profile for the full breakdown.
+          </p>
+        )}
       </div>
       <ul className="sidebar__list" ref={listRef} onScroll={handleScroll} style={{ position: 'relative', overflow: 'auto' }}>
         <div style={{ height: totalHeight, position: 'relative' }}>
@@ -218,7 +224,13 @@ export default function Leaderboard({
                   >
                     {isCompareSelected ? '✓' : '⇄'}
                   </button>
-                  <span className="lb-item__score">{dev.score}</span>
+                  <span
+                    className="lb-item__score"
+                    title={`Score: ${dev.score}/100 — ${SCORE_METHODOLOGY.short}`}
+                    aria-label={`Relative score ${dev.score} out of 100`}
+                  >
+                    {dev.score}
+                  </span>
                 </div>
               </li>
             );
