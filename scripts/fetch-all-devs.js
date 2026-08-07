@@ -74,7 +74,8 @@ const LOCATIONS = [
   'Hungary', 'Greece', 'Thailand', 'Malaysia', 'Philippines',
   'Pakistan', 'Bangladesh', 'Colombia', 'Kenya', 'South Africa',
   'Egypt', 'Chile', 'Peru', 'Morocco', 'Ghana', 'Ethiopia',
-  'Sri Lanka', 'Nepal', 'Singapore', 'New Zealand'
+  'Sri Lanka', 'Colombo', 'Kandy', 'Galle', 'Jaffna', 'Matara', 'Kurunegala',
+  'Nepal', 'Singapore', 'New Zealand'
 ];
 
 // Multiple follower thresholds to get more depth
@@ -82,6 +83,7 @@ const FOLLOWER_THRESHOLDS = [
   { min: 500, sort: 'followers' },
   { min: 100, sort: 'followers' },
   { min: 50, sort: 'repositories' },
+  { min: 10, sort: 'followers' },
 ];
 
 // ============ REST API Search ============
