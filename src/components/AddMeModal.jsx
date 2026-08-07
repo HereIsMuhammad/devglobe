@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import styles from './AddMeModal.module.css';
 
 const SUCCESS_MESSAGE = "Thanks! We'll review and add you within a week.";
 
@@ -51,31 +52,31 @@ export default function AddMeModal({ onClose }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Add me to DevGlobe">
-        <button className="modal__close" onClick={onClose} aria-label="Close" type="button">✕</button>
+    <div className={styles['modal-overlay']} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Add me to DevGlobe">
+        <button className={styles['modal__close']} onClick={onClose} aria-label="Close" type="button">✕</button>
 
         {status === 'success' ? (
-          <div className="modal__success">
-            <div className="modal__success-icon">🎉</div>
-            <h2 className="modal__title">You're on the list!</h2>
-            <p className="modal__message">{SUCCESS_MESSAGE}</p>
+          <div className={styles['modal__success']}>
+            <div className={styles['modal__success-icon']}>🎉</div>
+            <h2 className={styles['modal__title']}>You're on the list!</h2>
+            <p className={styles['modal__message']}>{SUCCESS_MESSAGE}</p>
             <button className="btn btn--primary" onClick={onClose} type="button">Done</button>
           </div>
         ) : (
           <>
-            <h2 className="modal__title">Add me to DevGlobe</h2>
-            <p className="modal__subtitle">
+            <h2 className={styles['modal__title']}>Add me to DevGlobe</h2>
+            <p className={styles['modal__subtitle']}>
               Submit your GitHub username to be featured on the globe. We'll review and add you within a week.
             </p>
-            <form className="modal__form" onSubmit={handleSubmit}>
-              <label className="modal__label" htmlFor="nominate-username">
-                GitHub username <span className="modal__required">*</span>
+            <form className={styles['modal__form']} onSubmit={handleSubmit}>
+              <label className={styles['modal__label']} htmlFor="nominate-username">
+                GitHub username <span className={styles['modal__required']}>*</span>
               </label>
               <input
                 id="nominate-username"
                 ref={inputRef}
-                className="modal__input"
+                className={styles['modal__input']}
                 type="text"
                 placeholder="octocat"
                 value={username}
@@ -84,12 +85,12 @@ export default function AddMeModal({ onClose }) {
                 spellCheck="false"
               />
 
-              <label className="modal__label" htmlFor="nominate-location">
-                Location <span className="modal__optional">(optional)</span>
+              <label className={styles['modal__label']} htmlFor="nominate-location">
+                Location <span className={styles['modal__optional']}>(optional)</span>
               </label>
               <input
                 id="nominate-location"
-                className="modal__input"
+                className={styles['modal__input']}
                 type="text"
                 placeholder="San Francisco, CA"
                 value={location}
@@ -97,10 +98,10 @@ export default function AddMeModal({ onClose }) {
                 autoComplete="off"
               />
 
-              {status === 'error' && <div className="modal__error">{error}</div>}
+              {status === 'error' && <div className={styles['modal__error']}>{error}</div>}
 
               <button
-                className="btn btn--primary modal__submit"
+                className={`btn btn--primary ${styles['modal__submit']}`}
                 type="submit"
                 disabled={status === 'submitting'}
               >
