@@ -400,6 +400,22 @@ body {
   touch-action: none;
 }
 
+.product-hunt-badge {
+  position: fixed;
+  bottom: 64px;
+  left: 24px;
+  z-index: 39;
+  display: block;
+  width: 250px;
+  height: 54px;
+}
+
+.product-hunt-badge img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 /* Globe Legend */
 .globe-legend {
   position: fixed;
@@ -1519,6 +1535,9 @@ body {
   }
   .header__subtitle {
     display: none;
+  }
+  .product-hunt-badge {
+    left: 12px;
   }
 }
 
