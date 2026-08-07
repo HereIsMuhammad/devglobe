@@ -6,12 +6,21 @@ import { CosmosClient } from '@azure/cosmos';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { submitNomination } from './api/lib/nominate.js';
 
 dotenv.config();
+
+// The Cosmos DB emulator uses a self-signed cert; only bypass TLS verification
+// when talking to the local emulator (never for real Azure endpoints).
+if (process.env.COSMOS_ENDPOINT && /localhost|127\.0\.0\.1/.test(process.env.COSMOS_ENDPOINT)) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
@@ -176,6 +185,13 @@ app.get('/api/developer', async (req, res) => {
     console.error('Detail error:', err.message);
     res.status(500).json({ error: 'Failed to fetch developer' });
   }
+});
+
+// Add-me self-nomination endpoint
+app.post('/api/nominate', async (req, res) => {
+  const { username, location } = req.body || {};
+  const result = await submitNomination({ username, location });
+  res.status(result.status).json(result.body);
 });
 
 // Serve static files

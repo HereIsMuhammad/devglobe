@@ -5,6 +5,7 @@ import Globe from './components/Globe.jsx';
 import Leaderboard from './components/Leaderboard.jsx';
 import DetailPanel from './components/DetailPanel.jsx';
 import LoadingOverlay from './components/LoadingOverlay.jsx';
+import AddMeModal from './components/AddMeModal.jsx';
 import { scoreAll } from './utils/scoring.js';
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [flyTarget, setFlyTarget] = useState(null);
+  const [showAddMe, setShowAddMe] = useState(false);
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -60,13 +62,21 @@ export default function App() {
     setFlyTarget(null);
   }, [developers]);
 
+  const handleAddMe = useCallback(() => {
+    setShowAddMe(true);
+  }, []);
+
+  const handleCloseAddMe = useCallback(() => {
+    setShowAddMe(false);
+  }, []);
+
   if (loading || error) {
     return <LoadingOverlay error={error} />;
   }
 
   return (
     <div id="app">
-      <Header onHome={handleHome} />
+      <Header onHome={handleHome} onAddMe={handleAddMe} />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
@@ -87,6 +97,7 @@ export default function App() {
         {selectedDev && (
           <DetailPanel dev={selectedDev} onClose={handleCloseDetail} />
         )}
+        {showAddMe && <AddMeModal onClose={handleCloseAddMe} />}
       </main>
     </div>
   );

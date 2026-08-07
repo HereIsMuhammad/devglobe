@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Header({ onHome }) {
+export default function Header({ onHome, onAddMe }) {
   return (
     <header className="header">
       <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
@@ -9,6 +9,11 @@ export default function Header({ onHome }) {
         <span className="header__subtitle">Visualizing the World's Top Open-Source Contributors</span>
       </div>
       <div className="header__actions">
+        <button type="button" onClick={onAddMe} className="btn btn--join">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-2 5c-2.97 0-6 1.49-6 3v1h12v-1c0-1.51-3.03-3-6-3zm-4.9 3c.4-1 2.2-2 4.9-2s4.5 1 4.9 2H1.1zM12.5 4h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0V5h1a.5.5 0 0 0 0-1h-1V3a.5.5 0 0 0-1 0v1z"></path>
+          </svg>Add Me To Globe
+        </button>
         <a href="https://github.com/sajeetharan/devglobe" target="_blank" rel="noreferrer" className="btn btn--star">
           <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
             <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z" />
