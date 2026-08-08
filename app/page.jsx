@@ -229,6 +229,17 @@ export default function Home() {
     });
   }, []);
 
+  // On mobile, the sidebar is a drawer with a full-screen backdrop that sits
+  // above the compare panel's own backdrop. If it stays open once the
+  // compare panel appears, its backdrop swallows taps meant for the compare
+  // panel, so close it here the same way we already do for the detail panel
+  // (handleSelectDev).
+  useEffect(() => {
+    if (compareDevs.length === 2) {
+      setSidebarOpen(false);
+    }
+  }, [compareDevs.length]);
+
   const handleCloseCompare = useCallback(() => {
     setCompareDevs([]);
   }, []);

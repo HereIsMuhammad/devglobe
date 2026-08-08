@@ -1641,8 +1641,9 @@ body {
     z-index: 105;
   }
   .compare-panel-backdrop {
-    inset: 56px 0 55vh 0;
+    inset: 56px 0 0 0;
     padding: 16px;
+    z-index: 115;
   }
   .compare-panel__headers {
     gap: 8px;
