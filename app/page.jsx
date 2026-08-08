@@ -7,6 +7,7 @@ import Leaderboard from '../components/Leaderboard.jsx';
 import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
+import AddMeModal from '../components/AddMeModal.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
 import dynamic from 'next/dynamic';
@@ -29,6 +30,7 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cardRequest, setCardRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
+  const [showAddMe, setShowAddMe] = useState(false);
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -231,6 +233,14 @@ export default function Home() {
     setCompareDevs([]);
   }, []);
 
+  const handleAddMe = useCallback(() => {
+    setShowAddMe(true);
+  }, []);
+
+  const handleCloseAddMe = useCallback(() => {
+    setShowAddMe(false);
+  }, []);
+
   const handleHome = useCallback(() => {
     setCardRequest(0);
     setCardContext(null);
@@ -258,6 +268,7 @@ export default function Home() {
         claimStatus={claimStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
+        onAddMe={handleAddMe}
       />
       <SearchBar
         developers={developers}
@@ -318,6 +329,7 @@ export default function Home() {
         {compareDevs.length === 2 && (
           <ComparePanel devs={compareDevs} onClose={handleCloseCompare} />
         )}
+        {showAddMe && <AddMeModal onClose={handleCloseAddMe} />}
       </main>
     </div>
   );

@@ -13,6 +13,7 @@
     "fetch-stackoverflow": "node scripts/fetch-stackoverflow.js",
     "geocode": "node scripts/geocode.js",
     "upload-cosmos": "node scripts/upload-cosmosdb.js",
+    "review-nominations": "node scripts/review-nominations.js",
     "seed-emulator": "node scripts/seed-emulator.js"
   },
   "dependencies": {

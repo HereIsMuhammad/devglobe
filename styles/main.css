@@ -128,12 +128,41 @@ body {
   font-family: var(--font);
   font-weight: 500;
   text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: background 0.2s, transform 0.15s;
   white-space: nowrap;
 }
 
 .btn:hover {
   transform: translateY(-1px);
+}
+
+.btn--join {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  color: #fff;
+}
+
+.btn--join:hover {
+  background: linear-gradient(135deg, #4b8efc, #9a6cfc);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  color: #fff;
+  justify-content: center;
+}
+
+.btn--primary:hover {
+  background: linear-gradient(135deg, #4b8efc, #9a6cfc);
+}
+
+.btn--primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn--star {
