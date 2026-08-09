@@ -1,9 +1,9 @@
 import { CosmosClient } from '@azure/cosmos';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { getSiteUrl } from '../lib/site.js';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-  || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://dev-globe-viz.vercel.app');
+const siteUrl = getSiteUrl();
 const cosmosEndpoint = process.env.COSMOS_ENDPOINT;
 const cosmosKey = process.env.COSMOS_KEY;
 const databaseName = process.env.COSMOS_DATABASE || 'devglobe';

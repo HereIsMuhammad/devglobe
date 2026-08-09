@@ -205,6 +205,9 @@ export default function Home() {
   }, []);
 
   const handleSelectCountry = useCallback((country, view) => {
+    setCardRequest(0);
+    setCardContext(null);
+    setSelectedDev(null);
     setSelectedCountry(country);
     if (view) {
       setFlyTarget({ lat: view.lat, lng: view.lng, altitude: view.altitude });

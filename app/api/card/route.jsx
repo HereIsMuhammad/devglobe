@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { classifyAgent, getPowerTier } from '../../../lib/agent-class.js';
 import { scoreAll } from '../../../lib/scoring.js';
+import { getSiteHostname } from '../../../lib/site.js';
 import { addDeveloperRanks } from '../../../lib/ranking.js';
 
 export const runtime = 'nodejs';
@@ -522,7 +523,7 @@ export async function GET(request) {
               display: 'flex',
             }}
           >
-            dev-globe-viz.vercel.app
+            {getSiteHostname()}
           </div>
         </div>
 

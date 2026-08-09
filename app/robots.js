@@ -1,5 +1,6 @@
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-  || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://dev-globe-viz.vercel.app');
+import { getSiteUrl } from '../lib/site.js';
+
+const siteUrl = getSiteUrl();
 
 export default function robots() {
   return {

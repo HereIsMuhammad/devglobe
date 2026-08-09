@@ -44,6 +44,45 @@ const labelText = d => d.login;
 const labelSize = d => 0.6 + (d.score / 100) * 0.4;
 const labelColor = () => 'rgba(226, 232, 240, 0.75)';
 const noLabel = () => '';
+const avatarAltitude = d => pointAltitude(d) + 0.035;
+
+function createAvatarMarker(developer, onSelectDev, setAutoRotate) {
+  const marker = document.createElement('div');
+  marker.className = 'globe-avatar-marker';
+  marker.style.setProperty('--marker-color', getScoreColor(developer.score));
+  marker.setAttribute('role', 'button');
+  marker.setAttribute('tabindex', '0');
+  marker.setAttribute('aria-label', `Open ${developer.name || developer.login}'s profile`);
+  marker.title = developer.name || developer.login;
+
+  const selectDeveloper = (event) => {
+    event.stopPropagation();
+    onSelectDev(developer);
+  };
+  marker.addEventListener('pointerdown', event => event.stopPropagation());
+  marker.addEventListener('mousedown', event => event.stopPropagation());
+  marker.addEventListener('mouseup', event => event.stopPropagation());
+  marker.addEventListener('click', selectDeveloper);
+  marker.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      selectDeveloper(event);
+    }
+  });
+  marker.addEventListener('mouseenter', () => setAutoRotate(false));
+  marker.addEventListener('mouseleave', () => setAutoRotate(true));
+  marker.addEventListener('focus', () => setAutoRotate(false));
+  marker.addEventListener('blur', () => setAutoRotate(true));
+
+  const image = document.createElement('img');
+  image.src = developer.avatarUrl;
+  image.alt = '';
+  image.loading = 'lazy';
+  image.referrerPolicy = 'no-referrer';
+  marker.appendChild(image);
+
+  return marker;
+}
 
 function ringArea(ring) {
   let area = 0;
@@ -145,6 +184,9 @@ const Globe = forwardRef(function Globe({
     return geoDevs.filter(d => d.score >= 80);
   }, [geoDevs]);
 
+  // Keep the people-first markers readable and inexpensive at the global view.
+  const avatarDevs = useMemo(() => geoDevs.slice(0, selectedCountry ? 80 : 40), [geoDevs, selectedCountry]);
+
   // Pulsing rings for top 10 developers
   const ringsData = useMemo(() => {
     return geoDevs.slice(0, 10).map(d => ({
@@ -225,6 +267,11 @@ const Globe = forwardRef(function Globe({
     // Stay still while a country is in focus
     if (controls) controls.autoRotate = on && !selectedCountry;
   }, [selectedCountry]);
+
+  const avatarElement = useCallback(
+    developer => createAvatarMarker(developer, onSelectDev, setAutoRotate),
+    [onSelectDev, setAutoRotate],
+  );
 
   useEffect(() => {
     if (!tooltipDisabled) return;
@@ -389,6 +436,12 @@ const Globe = forwardRef(function Globe({
           pointRadius={pointRadius}
           pointColor={pointColor}
           pointResolution={6}
+          htmlElementsData={avatarDevs}
+          htmlLat={devLat}
+          htmlLng={devLng}
+          htmlAltitude={avatarAltitude}
+          htmlElement={avatarElement}
+          htmlTransitionDuration={250}
           ringsData={ringsData}
           ringLat={devLat}
           ringLng={devLng}

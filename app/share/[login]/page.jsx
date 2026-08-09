@@ -1,11 +1,5 @@
 import Link from 'next/link';
-
-function getSiteUrl() {
-  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
-  const value = configuredUrl || (vercelUrl ? `https://${vercelUrl}` : 'http://localhost:3000');
-  return value.replace(/\/$/, '');
-}
+import { getSiteUrl } from '../../../lib/site.js';
 
 export async function generateMetadata({ params }) {
   const { login } = await params;

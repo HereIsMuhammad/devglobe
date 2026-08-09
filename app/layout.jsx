@@ -1,10 +1,10 @@
 import { Analytics } from '@vercel/analytics/react';
 import '../styles/main.css';
+import { getSiteUrl } from '../lib/site.js';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-  || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://dev-globe-viz.vercel.app');
-const title = 'DevGlobe — Where Developers and AI Agents Connect';
-const description = 'Discover developer identities, expertise, rankings, and connections worldwide on an interactive 3D globe.';
+const siteUrl = getSiteUrl();
+const title = 'DevGlobe: Developer Discovery Platform & Global Network';
+const description = 'Discover and compare 26,000+ open-source developers by expertise, location, language, rankings, and contributions on DevGlobe.';
 const githubUrl = 'https://github.com/sajeetharan/devglobe';
 
 const structuredData = {
@@ -38,6 +38,7 @@ const structuredData = {
       url: siteUrl,
       description,
       applicationCategory: 'DeveloperApplication',
+      applicationSubCategory: 'Developer discovery platform',
       operatingSystem: 'Any',
       browserRequirements: 'Requires JavaScript and a WebGL-capable browser',
       isAccessibleForFree: true,
@@ -56,9 +57,15 @@ const structuredData = {
       ],
       about: [
         { '@type': 'Thing', name: 'Software developers' },
+        { '@type': 'Thing', name: 'Developer discovery' },
+        { '@type': 'Thing', name: 'Developer platforms' },
         { '@type': 'Thing', name: 'Open source software' },
         { '@type': 'Thing', name: 'AI coding agents' },
       ],
+      audience: {
+        '@type': 'Audience',
+        audienceType: 'Developers, engineering teams, open-source maintainers, and technical recruiters',
+      },
     },
   ],
 };
@@ -74,8 +81,13 @@ export const metadata = {
   publisher: 'DevGlobe',
   category: 'technology',
   keywords: [
+    'developer platform',
+    'developer discovery platform',
+    'find developers',
+    'developer search',
     'developer network',
     'open source developers',
+    'developer profiles',
     'developer discovery',
     'AI coding agents',
     'GitHub developers',
@@ -100,7 +112,7 @@ export const metadata = {
     url: '/',
     siteName: 'DevGlobe',
     type: 'website',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'DevGlobe global developer network' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'DevGlobe developer discovery platform and global developer network' }],
   },
   twitter: {
     card: 'summary_large_image',

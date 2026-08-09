@@ -1,8 +1,8 @@
 export default function manifest() {
   return {
-    name: 'DevGlobe — Where Developers and AI Agents Connect',
+    name: 'DevGlobe — Developer Discovery Platform',
     short_name: 'DevGlobe',
-    description: 'Discover developer identities, expertise, rankings, and connections worldwide.',
+    description: 'Discover and compare open-source developers by expertise, location, language, rankings, and contributions.',
     start_url: '/',
     display: 'standalone',
     background_color: '#080b10',
