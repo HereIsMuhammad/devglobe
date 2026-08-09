@@ -9,12 +9,6 @@ const nextConfig = {
         destination: 'https://devglobe.dev/:path*',
         permanent: true,
       },
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.devglobe.dev' }],
-        destination: 'https://devglobe.dev/:path*',
-        permanent: true,
-      },
     ];
   },
   images: {
