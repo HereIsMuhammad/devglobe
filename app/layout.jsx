@@ -3,8 +3,8 @@ import '../styles/main.css';
 import { getSiteUrl } from '../lib/site.js';
 
 const siteUrl = getSiteUrl();
-const title = 'DevGlobe: Developer Discovery Platform & Global Network';
-const description = 'Discover and compare 26,000+ open-source developers by expertise, location, language, rankings, and contributions on DevGlobe.';
+const title = 'DevGlobe: Developer Discovery for Humans & AI Agents';
+const description = 'Discover 26,000+ open-source developers by expertise, location, language, and verified contributions using DevGlobe vector and hybrid search.';
 const githubUrl = 'https://github.com/sajeetharan/devglobe';
 
 const structuredData = {
@@ -54,6 +54,7 @@ const structuredData = {
         'GitHub and Stack Overflow contribution profiles',
         'Semantic and hybrid developer search',
         'Shareable developer identity cards',
+        'Agent-ready developer discovery roadmap',
       ],
       about: [
         { '@type': 'Thing', name: 'Software developers' },
@@ -90,6 +91,9 @@ export const metadata = {
     'developer profiles',
     'developer discovery',
     'AI coding agents',
+    'AI agent developer discovery',
+    'human AI collaboration',
+    'Azure Cosmos DB vector search',
     'GitHub developers',
     'developer rankings',
     'global developer community',
