@@ -141,10 +141,7 @@ body {
 
 .btn--join {
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-  min-height: 32px;
-  padding: 0 12px;
   border: 1px solid transparent;
-  border-radius: 8px;
   color: #fff;
   justify-content: center;
 }
@@ -1738,8 +1735,17 @@ body {
   }
   .btn--join {
     width: 32px;
+    height: 32px;
     padding: 0;
     border-radius: 50%;
+    background: var(--overlay-subtle);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .btn--join:hover {
+    background: var(--overlay-subtle-strong);
+    color: var(--text-primary);
+    box-shadow: none;
   }
   .btn__label {
     display: none;

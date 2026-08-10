@@ -12,6 +12,10 @@ const EMBEDDING_DEPLOYMENT = process.env.EMBEDDING_DEPLOYMENT || 'text-embedding
 const DATABASE = process.env.COSMOS_DATABASE || 'devglobe';
 const CONTAINER = process.env.COSMOS_CONTAINER || 'developers';
 
+// Excludes pending/rejected self-nominations from every search mode. Legacy
+// documents with no `nomination` field (pre-dating the lifecycle) stay public.
+const PUBLIC_FILTER = "(NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')";
+
 async function getSampleData() {
   const filePath = path.join(process.cwd(), 'data', 'developers-sample.json');
   const raw = await fs.readFile(filePath, 'utf-8');
@@ -84,6 +88,7 @@ export async function GET(request) {
             c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation,
             VectorDistance(c.embedding, @embedding) AS relevance
           FROM c
+          WHERE ${PUBLIC_FILTER}
           ORDER BY VectorDistance(c.embedding, @embedding)
         `,
         parameters: [{ name: '@embedding', value: embedding }]
@@ -98,11 +103,13 @@ export async function GET(request) {
             c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
             c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation
           FROM c
-          WHERE CONTAINS(LOWER(c.login), @q)
+          WHERE (
+             CONTAINS(LOWER(c.login), @q)
              OR CONTAINS(LOWER(c.name), @q)
              OR CONTAINS(LOWER(c.location), @q)
              OR CONTAINS(LOWER(c.bio), @q)
              OR CONTAINS(LOWER(c.topLanguage), @q)
+          ) AND ${PUBLIC_FILTER}
           ORDER BY c.score DESC
         `,
         parameters: [{ name: '@q', value: searchTerm }]
@@ -127,6 +134,7 @@ export async function GET(request) {
               c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
               c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation
             FROM c
+            WHERE ${PUBLIC_FILTER}
             ORDER BY VectorDistance(c.embedding, @embedding)
           `,
           parameters: [{ name: '@embedding', value: embedding }]
@@ -137,11 +145,13 @@ export async function GET(request) {
               c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
               c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation
             FROM c
-            WHERE CONTAINS(LOWER(c.login), @q)
+            WHERE (
+               CONTAINS(LOWER(c.login), @q)
                OR CONTAINS(LOWER(c.name), @q)
                OR CONTAINS(LOWER(c.location), @q)
                OR CONTAINS(LOWER(c.bio), @q)
                OR CONTAINS(LOWER(c.topLanguage), @q)
+            ) AND ${PUBLIC_FILTER}
             ORDER BY c.score DESC
           `,
           parameters: [{ name: '@q', value: searchTerm }]

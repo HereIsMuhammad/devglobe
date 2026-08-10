@@ -22,7 +22,7 @@ async function getProfileLogins() {
     const client = new CosmosClient({ endpoint: cosmosEndpoint, key: cosmosKey });
     const container = client.database(databaseName).container(containerName);
     const { resources } = await container.items
-      .query('SELECT VALUE c.login FROM c WHERE c.claimed = true')
+      .query("SELECT VALUE c.login FROM c WHERE c.claimed = true AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')")
       .fetchAll();
     return resources.filter(Boolean);
   } catch (error) {
