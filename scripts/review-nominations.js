@@ -2,122 +2,64 @@
  * Admin review flow for "Add me to DevGlobe" nominations.
  *
  * Usage:
- *   node scripts/review-nominations.js list                    # show nominations
- *   node scripts/review-nominations.js approve <username>      # add to main dataset
- *   node scripts/review-nominations.js reject <username>       # reject nomination
- *   node scripts/review-nominations.js status <username>       # show single nomination
+ *   node scripts/review-nominations.js list                          # show pending/rejected nominations
+ *   node scripts/review-nominations.js status <username>
+ *   node scripts/review-nominations.js approve <username> [reviewer]
+ *   node scripts/review-nominations.js reject <username> [reviewer] [reason]
  *
- * Approving fetches the user's GitHub data, geocodes their location,
- * and upserts the developer document into the 'developers' container.
+ * As of issue #96, nominations live entirely inside the `developers`
+ * container as `nomination`-tagged documents — there is no separate
+ * container. Approving/rejecting patches the same document in place (never
+ * creates a second item) using an ETag precondition, so two people running
+ * this concurrently on the same username can't silently overwrite each
+ * other's review.
  */
 import 'dotenv/config';
-import { CosmosClient } from '@azure/cosmos';
-import { normalizeUsername } from '../lib/nominate.js';
+import {
+  getDevelopersContainer,
+  findDeveloperByLogin,
+  patchDeveloperNomination,
+  normalizeUsername,
+  enrichFromGitHub,
+} from '../lib/nominate.js';
 
-const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
-const COSMOS_KEY = process.env.COSMOS_KEY;
-const DATABASE = 'devglobe';
-const DEVELOPERS_CONTAINER = 'developers';
-const NOMINATIONS_CONTAINER = 'nominations';
-
-if (!COSMOS_ENDPOINT || !COSMOS_KEY) {
+if (!process.env.COSMOS_ENDPOINT || !process.env.COSMOS_KEY) {
   console.error('Error: COSMOS_ENDPOINT and COSMOS_KEY are required in .env');
   process.exit(1);
 }
 
-const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
-
-async function ensureContainers() {
-  const { database } = await client.databases.createIfNotExists({ id: DATABASE });
-  const { container: nominations } = await database.containers.createIfNotExists({
-    id: NOMINATIONS_CONTAINER,
-    partitionKey: { paths: ['/username'] },
-  });
-  const { container: developers } = await database.containers.createIfNotExists({
-    id: DEVELOPERS_CONTAINER,
-    partitionKey: { paths: ['/location'] },
-  });
-  return { database, nominations, developers };
-}
-
 async function listNominations(container) {
   const { resources } = await container.items
-    .query({ query: 'SELECT * FROM c ORDER BY c.createdAt' })
+    .query({
+      query: "SELECT * FROM c WHERE IS_DEFINED(c.nomination) AND c.nomination.status IN ('pending', 'rejected') ORDER BY c.nomination.submittedAt",
+    })
     .fetchAll();
   if (resources.length === 0) {
-    console.log('No nominations found.');
+    console.log('No pending or rejected nominations found.');
     return;
   }
   console.log(`Found ${resources.length} nomination(s):\n`);
-  for (const n of resources) {
-    const date = new Date(n.createdAt).toLocaleString();
+  for (const dev of resources) {
+    const date = new Date(dev.nomination.submittedAt).toLocaleString();
+    const enrich = dev.nomination.enrichmentStatus !== 'complete' ? ` [enrichment: ${dev.nomination.enrichmentStatus}]` : '';
     console.log(
-      `  [${n.status}] ${n.username.padEnd(24)} (${n.name || '—'})` +
-      `${n.location ? ` — ${n.location}` : ''} — submitted ${date}`
+      `  [${dev.nomination.status}] ${dev.login.padEnd(24)} (${dev.name || '—'})` +
+      `${dev.location ? ` — ${dev.location}` : ''} — submitted ${date}${enrich}`
     );
   }
 }
 
-async function getNomination(container, username) {
-  const { resources } = await container.items
-    .query({
-      query: 'SELECT * FROM c WHERE LOWER(c.username) = @username',
-      parameters: [{ name: '@username', value: username.toLowerCase() }],
-    })
-    .fetchAll();
-  return resources[0] || null;
-}
-
-async function setStatus(container, nomination, status) {
-  const doc = { ...nomination, status, reviewedAt: new Date().toISOString() };
-  await container.items.upsert(doc);
-  console.log(`  ✓ "${nomination.username}" marked as ${status}`);
-}
-
-async function fetchGitHubUser(username) {
-  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'devglobe-review' };
-  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-
-  const userRes = await fetch(`https://api.github.com/users/${username}`, { headers });
-  if (!userRes.ok) {
-    throw new Error(`GitHub API returned ${userRes.status} for user lookup`);
+async function requireNomination(container, username) {
+  const dev = await findDeveloperByLogin(container, username);
+  if (!dev) {
+    console.error(`No developer document found for "${username}".`);
+    process.exit(1);
   }
-  const user = await userRes.json();
-
-  const reposRes = await fetch(
-    `https://api.github.com/users/${username}/repos?sort=stargazers_count&direction=desc&per_page=5&type=owner`,
-    { headers }
-  );
-  const repos = reposRes.ok ? await reposRes.json() : [];
-
-  const totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
-  const totalForks = repos.reduce((sum, r) => sum + (r.forks_count || 0), 0);
-  const langCounts = {};
-  repos.forEach(r => {
-    if (r.language) langCounts[r.language] = (langCounts[r.language] || 0) + 1;
-  });
-  const totalLangRepos = Object.values(langCounts).reduce((s, v) => s + v, 0);
-  const languages = Object.entries(langCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 4)
-    .map(([name, count]) => ({ name, percent: Math.round((count / totalLangRepos) * 100) }));
-  const topLanguage = languages[0]?.name || null;
-
-  return {
-    login: user.login,
-    name: user.name || user.login,
-    avatarUrl: user.avatar_url,
-    bio: user.bio,
-    location: user.location || 'Unknown',
-    followers: user.followers || 0,
-    totalStars,
-    totalForks,
-    totalWatchers: totalForks,
-    topLanguage,
-    languages,
-    topRepos: repos.map(r => ({ name: r.name, stars: r.stargazers_count, forks: r.forks_count })),
-    totalCommits: 0,
-  };
+  if (!dev.nomination) {
+    console.error(`"${username}" has no nomination metadata (it's a pre-existing public developer, not a nomination).`);
+    process.exit(1);
+  }
+  return dev;
 }
 
 function fallbackGeocode(location) {
@@ -160,70 +102,125 @@ async function geocode(location) {
   return null;
 }
 
-async function approve(nominations, developers, username) {
-  const nomination = await getNomination(nominations, username);
-  if (!nomination) {
-    console.error(`No nomination found for "${username}".`);
-    process.exit(1);
-  }
-  if (nomination.status === 'approved') {
+async function approve(container, username, reviewer) {
+  const dev = await requireNomination(container, username);
+  if (dev.nomination.status === 'approved') {
     console.error(`"${username}" is already approved.`);
     process.exit(1);
   }
 
   console.log(`Approving "${username}"...`);
-  const dev = await fetchGitHubUser(username);
-  const location = (nomination.location || '').trim() || dev.location;
-  const coords = await geocode(location);
 
-  const doc = {
-    id: dev.login,
-    ...dev,
-    location: location || 'Unknown',
-    ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
-  };
-
-  await developers.items.upsert(doc);
-  await setStatus(nominations, nomination, 'approved');
-  console.log(`  ✓ Added "${username}" to the developers dataset.`);
-}
-
-async function reject(nominations, username) {
-  const nomination = await getNomination(nominations, username);
-  if (!nomination) {
-    console.error(`No nomination found for "${username}".`);
+  // Re-enrich in case the pending record has stale or partial data (e.g. it
+  // was created while GitHub was rate-limiting repo lookups).
+  const ghRes = await fetch(`https://api.github.com/users/${dev.login}`, {
+    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'devglobe-review' },
+  });
+  if (!ghRes.ok) {
+    console.error(`Could not re-fetch GitHub profile for "${username}" (status ${ghRes.status}). Aborting approval.`);
     process.exit(1);
   }
-  await setStatus(nominations, nomination, 'rejected');
+  const ghUser = await ghRes.json();
+  const enriched = await enrichFromGitHub(dev.login, ghUser);
+
+  if (enriched.enrichmentStatus !== 'complete') {
+    console.error(
+      `Refusing to approve "${username}": enrichment is still ${enriched.enrichmentStatus} ` +
+      `(${enriched.enrichmentError || 'unknown reason'}). Try again once GitHub data is fully available.`
+    );
+    process.exit(1);
+  }
+
+  // Geocode using the location resolved at submission time. `location`
+  // itself (the partition key) is intentionally never changed here — only
+  // lat/lng and other non-partition fields are updated.
+  const coords = await geocode(dev.location);
+
+  try {
+    await patchDeveloperNomination(container, dev, {
+      name: enriched.name,
+      avatarUrl: enriched.avatarUrl,
+      bio: enriched.bio,
+      githubUrl: enriched.githubUrl,
+      followers: enriched.followers,
+      publicRepos: enriched.publicRepos,
+      totalStars: enriched.totalStars,
+      totalForks: enriched.totalForks,
+      totalWatchers: enriched.totalWatchers,
+      topLanguage: enriched.topLanguage,
+      languages: enriched.languages,
+      topRepos: enriched.topRepos,
+      ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
+      nomination: {
+        status: 'approved',
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: reviewer || null,
+        enrichmentStatus: 'complete',
+        enrichedAt: new Date().toISOString(),
+        enrichmentError: null,
+      },
+    });
+  } catch (err) {
+    if (err.code === 412) {
+      console.error(`  ✗ "${username}" was modified by another review action concurrently. Re-run to review the latest version.`);
+      process.exit(1);
+    }
+    throw err;
+  }
+
+  console.log(`  ✓ "${username}" approved and now public.`);
+}
+
+async function reject(container, username, reviewer, reason) {
+  const dev = await requireNomination(container, username);
+
+  try {
+    await patchDeveloperNomination(container, dev, {
+      nomination: {
+        status: 'rejected',
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: reviewer || null,
+        rejectionReason: reason || null,
+      },
+    });
+  } catch (err) {
+    if (err.code === 412) {
+      console.error(`  ✗ "${username}" was modified by another review action concurrently. Re-run to review the latest version.`);
+      process.exit(1);
+    }
+    throw err;
+  }
+
+  console.log(`  ✓ "${username}" marked as rejected.`);
 }
 
 async function main() {
-  const [cmd, rawUsername] = process.argv.slice(2);
+  const [cmd, rawUsername, ...rest] = process.argv.slice(2);
   const username = normalizeUsername(rawUsername);
-  const { nominations, developers } = await ensureContainers();
+  const container = await getDevelopersContainer();
 
   switch (cmd) {
     case 'list':
-      await listNominations(nominations);
+      await listNominations(container);
       break;
     case 'status':
       if (!username) { console.error('Usage: review-nominations.js status <username>'); process.exit(1); }
-      console.log(JSON.stringify(await getNomination(nominations, username), null, 2));
+      console.log(JSON.stringify(await findDeveloperByLogin(container, username), null, 2));
       break;
     case 'approve':
-      if (!username) { console.error('Usage: review-nominations.js approve <username>'); process.exit(1); }
-      await approve(nominations, developers, username);
+      if (!username) { console.error('Usage: review-nominations.js approve <username> [reviewer]'); process.exit(1); }
+      await approve(container, username, rest[0]);
       break;
     case 'reject':
-      if (!username) { console.error('Usage: review-nominations.js reject <username>'); process.exit(1); }
-      await reject(nominations, username);
+      if (!username) { console.error('Usage: review-nominations.js reject <username> [reviewer] [reason]'); process.exit(1); }
+      await reject(container, username, rest[0], rest[1]);
       break;
     default:
-      console.log(`Usage: node scripts/review-nominations.js <command> [username]
-  list          Show all nominations
-  status <u>    Show details for one nomination
-  approve <u>   Approve and add to the developers dataset
-  reject <u>    Reject the nomination`);
+      console.log(`Usage: node scripts/review-nominations.js <command> [args]
+  list                                Show pending/rejected nominations
+  status <u>                          Show the full developer/nomination document
+  approve <u> [reviewer]              Approve and make public (same document)
+  reject <u> [reviewer] [reason]      Reject (same document, excluded from public reads)`);
       process.exit(cmd ? 1 : 0);
   }
 }
