@@ -66,6 +66,7 @@ body {
   color: var(--text-primary);
   overflow: hidden;
   height: 100vh;
+  height: 100dvh;
   transition: background 0.25s ease, color 0.25s ease;
 }
 
@@ -90,12 +91,16 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .header__logo {
   width: 36px;
   height: 36px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .header__title {
@@ -104,18 +109,25 @@ body {
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header__subtitle {
   font-size: 12px;
   color: var(--text-muted);
   font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header__actions {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .btn {
@@ -422,6 +434,7 @@ body {
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   padding-top: 56px;
 }
 
@@ -529,6 +542,7 @@ body {
   right: 0;
   width: 320px;
   height: calc(100vh - 56px);
+  height: calc(100dvh - 56px);
   background: var(--bg-panel-92);
   backdrop-filter: blur(12px);
   border-left: 1px solid var(--border);
@@ -731,6 +745,7 @@ body {
   left: 0;
   width: 420px;
   height: calc(100vh - 56px);
+  height: calc(100dvh - 56px);
   background: var(--bg-panel-95);
   backdrop-filter: blur(16px);
   border-right: 1px solid var(--border);
@@ -1647,6 +1662,7 @@ body {
     top: auto;
     bottom: 0;
     height: 55vh;
+    height: 55dvh;
     border-left: none;
     border-top: 1px solid var(--border);
     border-radius: 16px 16px 0 0;
@@ -1723,16 +1739,6 @@ body {
   .header__subtitle {
     display: none;
   }
-  .product-hunt-badge {
-    left: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .globe-avatar-marker {
-    width: 26px;
-    height: 26px;
-  }
   .btn--join {
     width: 32px;
     height: 32px;
@@ -1754,6 +1760,16 @@ body {
   .btn--sponsor {
     padding: 6px 8px;
   }
+  .product-hunt-badge {
+    left: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .globe-avatar-marker {
+    width: 26px;
+    height: 26px;
+  }
   .header__title {
     font-size: 16px;
   }
@@ -1766,6 +1782,7 @@ body {
   }
   .sidebar {
     height: 65vh;
+    height: 65dvh;
   }
   .globe-legend {
     font-size: 10px;
@@ -1983,6 +2000,7 @@ body {
   max-width: 680px;
   width: 90vw;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
   box-shadow: var(--shadow-strong);
   animation: fadeIn 0.2s ease;
@@ -2199,6 +2217,7 @@ body {
 
 .share-page {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 32px 20px;
