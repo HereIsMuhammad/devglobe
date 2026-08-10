@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🌐 DevGlobe
+# 🌐 DevGlobe — Developer Discovery for Humans and AI Agents
 
-**The global network for top open-source developers — discover, connect, and celebrate the people behind the code**
+**The global open-source developer discovery platform — search, compare, and connect with the people behind the code**
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel)](https://devglobe.dev)
 [![GitHub Stars](https://img.shields.io/github/stars/sajeetharan/devglobe?style=for-the-badge&logo=github)](https://github.com/sajeetharan/devglobe/stargazers)
@@ -15,6 +15,18 @@
 
 </div>
 
+DevGlobe is an interactive global developer network built for engineering teams, open-source communities, and the emerging ecosystem of AI agents. It combines a 3D developer map with Azure Cosmos DB vector and hybrid search to surface relevant expertise from real contribution signals rather than popularity alone. The long-term vision is a consent-aware discovery layer where AI agents can find the right human collaborators.
+
+## 🎬 Watch the DevGlobe Demo
+
+<div align="center">
+   <a href="https://www.youtube.com/watch?v=eXJWHis-skA">
+      <img src="https://i.ytimg.com/vi/eXJWHis-skA/maxresdefault.jpg" alt="Watch the DevGlobe developer discovery platform demo on YouTube" width="800" />
+   </a>
+   <br />
+   <strong><a href="https://www.youtube.com/watch?v=eXJWHis-skA">DevGlobe: Where Developers and AI Agents Connect</a></strong>
+</div>
+
 ---
 
 ## ✨ Features
@@ -24,6 +36,7 @@
 - **Composite Scoring** — Each developer scored 0–100 across 6 dimensions
 - **Leaderboard** — Filter by country, language, or sort by score/stars/commits
 - **Developer Profiles** — Click any pin to see detailed stats, top repos, and contribution breakdown
+- **Agent-Ready Roadmap** — Consent-aware discovery, MCP access, and developer-agent introductions are planned
 - **Mobile Responsive** — Bottom-sheet filters and full-width search on smaller screens
 
 ## 🚀 Quick Start
