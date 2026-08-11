@@ -16,6 +16,7 @@ const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
 
 export default function Home() {
   const [developers, setDevelopers] = useState([]);
+  const [datasetCount, setDatasetCount] = useState(null);
   const [filtered, setFiltered] = useState([]);
   const [selectedDev, setSelectedDev] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -146,6 +147,13 @@ export default function Home() {
   useEffect(() => {
     async function loadData() {
       try {
+        fetch('/api/developers/count')
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (Number.isInteger(data?.count)) setDatasetCount(data.count);
+          })
+          .catch(() => {});
+
         const res = await fetch('/api/developers');
         if (!res.ok) throw new Error(`Failed to load data: ${res.status}`);
         const raw = await res.json();
@@ -267,7 +275,7 @@ export default function Home() {
   }, [developers]);
 
   if (loading || error) {
-    return <LoadingOverlay error={error} />;
+    return <LoadingOverlay error={error} datasetCount={datasetCount} />;
   }
 
   return (

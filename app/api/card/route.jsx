@@ -15,7 +15,9 @@ async function loadRankedDevelopers() {
   if (cosmosContainer) {
     try {
       const { resources } = await cosmosContainer.items.query({
-        query: 'SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.claimed FROM c',
+        query: `SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.claimed
+          FROM c
+          WHERE NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved'`,
       }).fetchAll();
       if (resources.length > 0) return addDeveloperRanks(scoreAll(resources));
     } catch (err) {
@@ -46,7 +48,7 @@ function formatNum(n) {
   return String(n);
 }
 
-async function getAvatarDataUrl(avatarUrl) {
+async function loadAvatarDataUrl(avatarUrl) {
   if (!avatarUrl) return null;
 
   try {
@@ -60,6 +62,12 @@ async function getAvatarDataUrl(avatarUrl) {
     return null;
   }
 }
+
+const getAvatarDataUrl = unstable_cache(
+  loadAvatarDataUrl,
+  ['card-avatar-v1'],
+  { revalidate: 86400 }
+);
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -599,6 +607,9 @@ export async function GET(request) {
     {
       width: 1200,
       height: 630,
+      headers: {
+        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+      },
     }
   );
 }
