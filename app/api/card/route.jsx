@@ -85,6 +85,8 @@ export async function GET(request) {
   const hasGlobalRank = Boolean(dev.globalRank && dev.globalTotal);
   const hasCityRank = Boolean(dev.cityRank && dev.city);
   const rankCardWidth = hasCityRank ? '166' : dev.countryRank ? '255' : '522';
+  const rankValueFontSize = hasCityRank ? '29' : '34';
+  const rankTotalFontSize = hasCityRank ? '12' : '14';
 
   return new ImageResponse(
     (
@@ -332,9 +334,9 @@ export async function GET(request) {
                 borderRadius: '8',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
-                <span style={{ color: '#67e8f9', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.globalRank)}</span>
-                <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.globalTotal)}</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
+                <span style={{ color: '#67e8f9', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.globalRank)}</span>
+                <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.globalTotal)}</span>
               </div>
               <div style={{ display: 'flex', color: '#a5f3fc', fontSize: '11', fontWeight: '700', letterSpacing: '1.6' }}>GLOBAL RANK</div>
             </div>
@@ -352,9 +354,9 @@ export async function GET(request) {
                   borderRadius: '8',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
-                  <span style={{ color: '#fdba74', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.countryRank)}</span>
-                  <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.countryTotal)}</span>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
+                  <span style={{ color: '#fdba74', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.countryRank)}</span>
+                  <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.countryTotal)}</span>
                 </div>
                 <div style={{ display: 'flex', color: '#fed7aa', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.country.toUpperCase()}</div>
               </div>
@@ -373,9 +375,9 @@ export async function GET(request) {
                   borderRadius: '8',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
-                  <span style={{ color: '#c4b5fd', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.cityRank)}</span>
-                  <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.cityTotal)}</span>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
+                  <span style={{ color: '#c4b5fd', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.cityRank)}</span>
+                  <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.cityTotal)}</span>
                 </div>
                 <div style={{ display: 'flex', color: '#ddd6fe', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.city.toUpperCase()}</div>
               </div>

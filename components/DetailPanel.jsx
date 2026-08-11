@@ -471,7 +471,7 @@ function CardModal({ dev, claimSuccess, onClose }) {
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}${sharePath}` : sharePath;
 
   const rankText = dev.globalRank ? `Global #${dev.globalRank} of ${dev.globalTotal}` : 'Ranked on DevGlobe';
-  const shareText = `My DevGlobe developer card: ${rankText}.`;
+  const shareText = `I mapped my open-source identity on DevGlobe: ${rankText}. Generate yours and see where you rank.`;
   const shareHashtags = ['DevGlobe', 'OpenSource', 'DeveloperCommunity', 'GitHub'];
   const hashtagText = shareHashtags.map(hashtag => `#${hashtag}`).join(' ');
 
