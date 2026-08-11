@@ -147,14 +147,14 @@ export default function Home() {
   useEffect(() => {
     async function loadData() {
       try {
-        fetch('/api/developers/count')
+        fetch('/api/developers/count', { signal: AbortSignal.timeout(10000) })
           .then(res => res.ok ? res.json() : null)
           .then(data => {
             if (Number.isInteger(data?.count)) setDatasetCount(data.count);
           })
           .catch(() => {});
 
-        const res = await fetch('/api/developers');
+        const res = await fetch('/api/developers', { signal: AbortSignal.timeout(30000) });
         if (!res.ok) throw new Error(`Failed to load data: ${res.status}`);
         const raw = await res.json();
         const scored = addDeveloperRanks(scoreAll(raw));

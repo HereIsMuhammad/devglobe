@@ -1,5 +1,4 @@
 import { ImageResponse } from '@vercel/og';
-import { unstable_cache } from 'next/cache';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { classifyAgent, getPowerTier } from '../../../lib/agent-class.js';
@@ -10,16 +9,18 @@ import { getCosmosContainer } from '../../../lib/cosmos.js';
 
 export const runtime = 'nodejs';
 
-async function loadRankedDevelopers() {
+async function getDeveloper(login) {
   const cosmosContainer = getCosmosContainer();
   if (cosmosContainer) {
     try {
       const { resources } = await cosmosContainer.items.query({
-        query: `SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.claimed
+        query: `SELECT TOP 1 c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.publicRepos, c.claimed, c.score, c.globalRank, c.globalTotal, c.country, c.countryRank, c.countryTotal, c.city, c.cityRank, c.cityTotal
           FROM c
-          WHERE NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved'`,
+          WHERE (c.login = @login OR c.id = @login)
+            AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')`,
+        parameters: [{ name: '@login', value: login }],
       }).fetchAll();
-      if (resources.length > 0) return addDeveloperRanks(scoreAll(resources));
+      if (resources[0]) return resources[0];
     } catch (err) {
       console.error('Card: Cosmos error', err.message);
     }
@@ -28,17 +29,7 @@ async function loadRankedDevelopers() {
   const filePath = path.join(process.cwd(), 'data', 'developers-sample.json');
   const raw = await fs.readFile(filePath, 'utf-8');
   const data = JSON.parse(raw);
-  return addDeveloperRanks(scoreAll(data));
-}
-
-const getRankedDevelopers = unstable_cache(
-  loadRankedDevelopers,
-  ['card-ranked-developers-v1'],
-  { revalidate: 3600, tags: ['developers'] }
-);
-
-async function getDeveloper(login) {
-  const developers = await getRankedDevelopers();
+  const developers = addDeveloperRanks(scoreAll(data));
   return developers.find(d => d.login.toLowerCase() === login.toLowerCase()) || null;
 }
 
@@ -52,7 +43,10 @@ async function loadAvatarDataUrl(avatarUrl) {
   if (!avatarUrl) return null;
 
   try {
-    const response = await fetch(avatarUrl, { signal: AbortSignal.timeout(3000) });
+    const response = await fetch(avatarUrl, {
+      signal: AbortSignal.timeout(3000),
+      next: { revalidate: 86400 },
+    });
     if (!response.ok) return null;
 
     const contentType = response.headers.get('content-type') || 'image/png';
@@ -62,12 +56,6 @@ async function loadAvatarDataUrl(avatarUrl) {
     return null;
   }
 }
-
-const getAvatarDataUrl = unstable_cache(
-  loadAvatarDataUrl,
-  ['card-avatar-v1'],
-  { revalidate: 86400 }
-);
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -82,9 +70,10 @@ export async function GET(request) {
     return new Response('Developer not found', { status: 404 });
   }
 
-  const agent = classifyAgent(dev);
-  const power = getPowerTier(dev.score || 0);
-  const avatarDataUrl = await getAvatarDataUrl(dev.avatarUrl);
+  const score = Number.isFinite(dev.score) ? dev.score : 0;
+  const agent = classifyAgent({ ...dev, score });
+  const power = getPowerTier(score);
+  const avatarDataUrl = await loadAvatarDataUrl(dev.avatarUrl);
   const avatarInitial = (dev.name || dev.login).trim().charAt(0).toUpperCase();
   const agentMark = agent.name
     .replace(/^The\s+/, '')
@@ -93,6 +82,7 @@ export async function GET(request) {
     .join('')
     .slice(0, 2)
     .toUpperCase();
+  const hasGlobalRank = Boolean(dev.globalRank && dev.globalTotal);
   const hasCityRank = Boolean(dev.cityRank && dev.city);
   const rankCardWidth = hasCityRank ? '166' : dev.countryRank ? '255' : '522';
 
@@ -328,7 +318,7 @@ export async function GET(request) {
           </div>
 
           {/* Global and local rank */}
-          <div style={{ display: 'flex', gap: '12', marginBottom: '22' }}>
+          {hasGlobalRank && <div style={{ display: 'flex', gap: '12', marginBottom: '22' }}>
             <div
               style={{
                 display: 'flex',
@@ -390,7 +380,7 @@ export async function GET(request) {
                 <div style={{ display: 'flex', color: '#ddd6fe', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.city.toUpperCase()}</div>
               </div>
             )}
-          </div>
+          </div>}
 
           {/* Score + Tier */}
           <div
@@ -417,7 +407,7 @@ export async function GET(request) {
                   display: 'flex',
                 }}
               >
-                {dev.score}
+                {score}
               </div>
               <div
                 style={{
