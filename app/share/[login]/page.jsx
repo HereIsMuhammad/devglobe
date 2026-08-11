@@ -8,7 +8,7 @@ export async function generateMetadata({ params }) {
   const title = `@${login}'s Developer Card | DevGlobe`;
   const description = `Explore @${login}'s open-source developer identity, global rank, and impact on DevGlobe.`;
   const pageUrl = `${siteUrl}/share/${encodedLogin}`;
-  const imageUrl = `${siteUrl}/api/card?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`;
+  const imageUrl = `${siteUrl}/api/card/social?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`;
 
   return {
     title,
