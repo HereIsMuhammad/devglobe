@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { track } from '@vercel/analytics';
 import * as d3 from 'd3';
 import { formatNum, formatRelativeTime, isStaleData } from '../lib/format.js';
 import { DIMENSIONS, SCORE_METHODOLOGY } from '../lib/scoring.js';
@@ -12,6 +13,11 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
   const radarRef = useRef(null);
   const heatmapRef = useRef(null);
   const langRef = useRef(null);
+
+  const handleGenerateCard = () => {
+    track('card_generated', { login: dev.login });
+    setShowCard(true);
+  };
 
   useEffect(() => {
     if (openCardOnMount) setShowCard(true);
@@ -124,7 +130,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
               )}
               <button
                 className="btn btn--share"
-                onClick={() => setShowCard(true)}
+                onClick={handleGenerateCard}
               >
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
