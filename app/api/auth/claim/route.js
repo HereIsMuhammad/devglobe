@@ -42,6 +42,7 @@ async function buildProfileFromGitHub(login) {
 
   const topRepos = repos.slice(0, 3).map(r => ({
     name: r.name,
+    url: r.html_url || `https://github.com/${encodeURIComponent(user.login)}/${encodeURIComponent(r.name)}`,
     stars: r.stargazers_count || 0,
     forks: r.forks_count || 0,
   }));
@@ -71,6 +72,7 @@ async function buildProfileFromGitHub(login) {
     claimed: true,
     claimedAt: new Date().toISOString(),
     claimedBy: login,
+    metricsUpdatedAt: new Date().toISOString(),
   };
 }
 

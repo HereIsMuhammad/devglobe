@@ -9,7 +9,7 @@ export async function generateMetadata({ params }) {
   const description = `Explore @${login}'s open-source developer identity, global rank, and impact on DevGlobe.`;
   const pageUrl = `${siteUrl}/share/${encodedLogin}?v=${SOCIAL_PREVIEW_VERSION}`;
   const canonicalUrl = `${siteUrl}/share/${encodedLogin}`;
-  const imageUrl = `${siteUrl}/api/card?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`;
+  const imageUrl = `${siteUrl}/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}`;
 
   return {
     title,

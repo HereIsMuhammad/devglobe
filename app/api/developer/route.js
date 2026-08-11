@@ -40,7 +40,7 @@ export async function GET(request) {
     const container = client.database(DATABASE).container(CONTAINER);
 
     const { resources } = await container.items.query({
-      query: "SELECT c.id, c.login, c.name, c.avatarUrl, c.bio, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.languages, c.publicRepos, c.topRepos, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.soUserId, c.claimed, c.claimedAt FROM c WHERE c.id = @id AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')",
+      query: "SELECT c.id, c.login, c.name, c.avatarUrl, c.bio, c.githubUrl, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.languages, c.publicRepos, c.topRepos, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.soUserId, c.claimed, c.claimedAt, c.metricsUpdatedAt FROM c WHERE c.id = @id AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')",
       parameters: [{ name: '@id', value: id }]
     }).fetchAll();
 

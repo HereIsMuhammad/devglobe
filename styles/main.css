@@ -1026,6 +1026,13 @@ body {
   font-size: 13px;
   font-weight: 500;
   color: var(--accent-blue);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.repo-item__name:hover,
+.repo-item__name:focus-visible {
+  text-decoration: underline;
 }
 
 .repo-item__stats {

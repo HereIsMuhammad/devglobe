@@ -118,7 +118,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
               {SCORE_METHODOLOGY.short}
             </p>
             <div className="detail-header__links">
-              <a href={`https://github.com/${dev.login}`} target="_blank" rel="noreferrer">GitHub ↗</a>
+              <a href={merged.githubUrl || `https://github.com/${dev.login}`} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
               {merged.soUserId && (
                 <a href={`https://stackoverflow.com/users/${merged.soUserId}`} target="_blank" rel="noreferrer">StackOverflow ↗</a>
               )}
@@ -182,7 +182,15 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
           <div>
             {repos.slice(0, 5).map(repo => (
               <div className="repo-item" key={repo.name}>
-                <span className="repo-item__name">{repo.name}</span>
+                <a
+                  className="repo-item__name"
+                  href={repo.url || `https://github.com/${encodeURIComponent(merged.login)}/${encodeURIComponent(repo.name)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`Open ${repo.name} on GitHub`}
+                >
+                  {repo.name}<span aria-hidden="true"> ↗</span>
+                </a>
                 <span className="repo-item__stats">
                   <span>⭐ {formatNum(repo.stars)}</span>
                   <span>🍴 {formatNum(repo.forks)}</span>

@@ -5,6 +5,7 @@
  *   node scripts/review-nominations.js list                          # show pending/rejected nominations
  *   node scripts/review-nominations.js status <username>
  *   node scripts/review-nominations.js approve <username> [reviewer]
+ *   node scripts/review-nominations.js refresh <username>
  *   node scripts/review-nominations.js reject <username> [reviewer] [reason]
  *
  * As of issue #96, nominations live entirely inside the `developers`
@@ -53,13 +54,13 @@ async function listNominations(container) {
   }
 }
 
-async function requireNomination(container, username) {
+async function requireNomination(container, username, allowLegacy = false) {
   const dev = await findDeveloperByLogin(container, username);
   if (!dev) {
     console.error(`No developer document found for "${username}".`);
     process.exit(1);
   }
-  if (!dev.nomination) {
+  if (!dev.nomination && !allowLegacy) {
     console.error(`"${username}" has no nomination metadata (it's a pre-existing public developer, not a nomination).`);
     process.exit(1);
   }
@@ -67,8 +68,8 @@ async function requireNomination(container, username) {
 }
 
 async function approve(container, username, reviewer, refresh = false) {
-  const dev = await requireNomination(container, username);
-  if (dev.nomination.status === 'approved' && !refresh) {
+  const dev = await requireNomination(container, username, refresh);
+  if (dev.nomination?.status === 'approved' && !refresh) {
     console.error(`"${username}" is already approved.`);
     process.exit(1);
   }
@@ -78,7 +79,11 @@ async function approve(container, username, reviewer, refresh = false) {
   // Re-enrich in case the pending record has stale or partial data (e.g. it
   // was created while GitHub was rate-limiting repo lookups).
   const ghRes = await fetch(`https://api.github.com/users/${dev.login}`, {
-    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'devglobe-review' },
+    headers: {
+      Accept: 'application/vnd.github+json',
+      'User-Agent': 'devglobe-review',
+      ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+    },
   });
   if (!ghRes.ok) {
     console.error(`Could not re-fetch GitHub profile for "${username}" (status ${ghRes.status}). Aborting approval.`);
@@ -115,15 +120,16 @@ async function approve(container, username, reviewer, refresh = false) {
       topLanguage: enriched.topLanguage,
       languages: enriched.languages,
       topRepos: enriched.topRepos,
+      metricsUpdatedAt: new Date().toISOString(),
       ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
-      nomination: {
-        status: 'approved',
+      ...(dev.nomination ? { nomination: {
+        status: refresh ? dev.nomination.status : 'approved',
         reviewedAt: refresh ? dev.nomination.reviewedAt : new Date().toISOString(),
         reviewedBy: refresh ? dev.nomination.reviewedBy : reviewer || null,
         enrichmentStatus: 'complete',
         enrichedAt: new Date().toISOString(),
         enrichmentError: null,
-      },
+      } } : {}),
     });
   } catch (err) {
     if (err.code === 412) {
@@ -189,7 +195,7 @@ async function main() {
   list                                Show pending/rejected nominations
   status <u>                          Show the full developer/nomination document
   approve <u> [reviewer]              Approve and make public (same document)
-  refresh <u>                         Re-fetch details for an approved nomination
+  refresh <u>                         Re-fetch details without changing visibility status
   reject <u> [reviewer] [reason]      Reject (same document, excluded from public reads)`);
       process.exit(cmd ? 1 : 0);
   }
