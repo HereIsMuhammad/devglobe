@@ -6,7 +6,7 @@ export default function robots() {
   return {
     rules: {
       userAgent: '*',
-      allow: ['/', '/api/card'],
+      allow: ['/', '/share/', '/api/card', '/api/card/social'],
       disallow: ['/api/auth/', '/api/developer', '/api/developers', '/api/search'],
     },
     sitemap: `${siteUrl}/sitemap.xml`,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './AddMeModal.module.css';
 
-const SUCCESS_MESSAGE = "Thanks! We'll review and add you within a week.";
+const SUCCESS_MESSAGE = "Your profile is pending review. It will appear on the globe and in search after approval, usually within a week.";
 
 export default function AddMeModal({ onClose }) {
   const [username, setUsername] = useState('');
@@ -59,7 +59,7 @@ export default function AddMeModal({ onClose }) {
         {status === 'success' ? (
           <div className={styles['modal__success']}>
             <div className={styles['modal__success-icon']}>🎉</div>
-            <h2 className={styles['modal__title']}>You're on the list!</h2>
+            <h2 className={styles['modal__title']}>Nomination received</h2>
             <p className={styles['modal__message']}>{SUCCESS_MESSAGE}</p>
             <button className="btn btn--primary" onClick={onClose} type="button">Done</button>
           </div>
