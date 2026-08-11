@@ -44,7 +44,9 @@ const labelText = d => d.login;
 const labelSize = d => 0.6 + (d.score / 100) * 0.4;
 const labelColor = () => 'rgba(226, 232, 240, 0.75)';
 const noLabel = () => '';
-const avatarAltitude = d => pointAltitude(d) + 0.035;
+const avatarAltitude = () => 0.018;
+const avatarLat = d => d.markerLat;
+const avatarLng = d => d.markerLng;
 
 function createAvatarMarker(developer, onSelectDev, setAutoRotate) {
   const marker = document.createElement('div');
@@ -108,6 +110,19 @@ function mainRing(geometry) {
   return best;
 }
 
+function pointInRing(lng, lat, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [lngI, latI] = ring[i];
+    const [lngJ, latJ] = ring[j];
+    if (((latI > lat) !== (latJ > lat)) &&
+        lng < ((lngJ - lngI) * (lat - latI)) / (latJ - latI) + lngI) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
 // Centroid of a country plus a camera altitude that roughly frames it
 function countryView(feat) {
   const ring = mainRing(feat?.geometry);
@@ -150,6 +165,38 @@ function countryView(feat) {
   return { lat, lng, altitude: Math.min(2.2, Math.max(0.55, span / 40)) };
 }
 
+function countryMarkerPosition(feat) {
+  const ring = mainRing(feat?.geometry);
+  const view = countryView(feat);
+  if (!ring || !view) return null;
+  if (pointInRing(view.lng, view.lat, ring)) return view;
+
+  let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+  ring.forEach(([lng, lat]) => {
+    minLat = Math.min(minLat, lat);
+    maxLat = Math.max(maxLat, lat);
+    minLng = Math.min(minLng, lng);
+    maxLng = Math.max(maxLng, lng);
+  });
+
+  let best = null;
+  let bestDistance = Infinity;
+  for (let row = 1; row < 20; row++) {
+    const lat = minLat + ((maxLat - minLat) * row) / 20;
+    for (let column = 1; column < 20; column++) {
+      const lng = minLng + ((maxLng - minLng) * column) / 20;
+      if (!pointInRing(lng, lat, ring)) continue;
+      const distance = (lat - view.lat) ** 2 + (lng - view.lng) ** 2;
+      if (distance < bestDistance) {
+        best = { lat, lng };
+        bestDistance = distance;
+      }
+    }
+  }
+
+  return best ? { ...best, altitude: view.altitude } : { lat: ring[0][1], lng: ring[0][0], altitude: view.altitude };
+}
+
 const Globe = forwardRef(function Globe({
   developers,
   flyTarget,
@@ -184,8 +231,32 @@ const Globe = forwardRef(function Globe({
     return geoDevs.filter(d => d.score >= 80);
   }, [geoDevs]);
 
-  // Keep the people-first markers readable and inexpensive at the global view.
-  const avatarDevs = useMemo(() => geoDevs.slice(0, selectedCountry ? 80 : 40), [geoDevs, selectedCountry]);
+  // Show one top developer per represented country and use country geometry rather
+  // than unreliable profile geocodes for the avatar's visual anchor.
+  const avatarDevs = useMemo(() => {
+    if (countryFeatures.length === 0) return [];
+
+    const featureByCountry = new Map(
+      countryFeatures.map(feature => [countryKey(featureName(feature)), feature])
+    );
+    const representedCountries = new Set();
+    const markers = [];
+    const limit = selectedCountry ? 1 : 40;
+
+    for (const developer of geoDevs) {
+      const key = countryKey(extractCountry(developer.location));
+      if (!key || representedCountries.has(key)) continue;
+
+      const position = countryMarkerPosition(featureByCountry.get(key));
+      if (!position) continue;
+
+      representedCountries.add(key);
+      markers.push({ ...developer, markerLat: position.lat, markerLng: position.lng });
+      if (markers.length >= limit) break;
+    }
+
+    return markers;
+  }, [countryFeatures, geoDevs, selectedCountry]);
 
   // Pulsing rings for top 10 developers
   const ringsData = useMemo(() => {
@@ -437,8 +508,8 @@ const Globe = forwardRef(function Globe({
           pointColor={pointColor}
           pointResolution={6}
           htmlElementsData={avatarDevs}
-          htmlLat={devLat}
-          htmlLng={devLng}
+          htmlLat={avatarLat}
+          htmlLng={avatarLng}
           htmlAltitude={avatarAltitude}
           htmlElement={avatarElement}
           htmlTransitionDuration={250}
