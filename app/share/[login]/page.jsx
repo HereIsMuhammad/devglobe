@@ -7,13 +7,14 @@ export async function generateMetadata({ params }) {
   const encodedLogin = encodeURIComponent(login);
   const title = `@${login}'s Developer Card | DevGlobe`;
   const description = `Explore @${login}'s open-source developer identity, global rank, and impact on DevGlobe.`;
-  const pageUrl = `${siteUrl}/share/${encodedLogin}`;
+  const pageUrl = `${siteUrl}/share/${encodedLogin}?v=${SOCIAL_PREVIEW_VERSION}`;
+  const canonicalUrl = `${siteUrl}/share/${encodedLogin}`;
   const imageUrl = `${siteUrl}/api/card/social?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`;
 
   return {
     title,
     description,
-    alternates: { canonical: pageUrl },
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title,
       description,
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }) {
       card: 'summary_large_image',
       title,
       description,
-      images: [imageUrl],
+      images: [{ url: imageUrl, alt: `DevGlobe developer card for @${login}` }],
     },
   };
 }
@@ -71,7 +72,7 @@ export default async function DeveloperSharePage({ params }) {
         </header>
         <img
           className="share-page__card"
-          src={`/api/card?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`}
+          src={`/api/card/social?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`}
           alt={`Developer card for @${login}`}
         />
         <div className="share-page__actions">
