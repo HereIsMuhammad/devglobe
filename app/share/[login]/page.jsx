@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { getSiteUrl, SOCIAL_PREVIEW_VERSION } from '../../../lib/site.js';
 
 export async function generateMetadata({ params }) {
@@ -8,19 +9,18 @@ export async function generateMetadata({ params }) {
   const title = `@${login}'s Developer Card | DevGlobe`;
   const description = `Explore @${login}'s open-source developer identity, global rank, and impact on DevGlobe.`;
   const pageUrl = `${siteUrl}/share/${encodedLogin}?v=${SOCIAL_PREVIEW_VERSION}`;
-  const canonicalUrl = `${siteUrl}/share/${encodedLogin}`;
-  const imageUrl = `${siteUrl}/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}`;
+  const imageUrl = `${siteUrl}/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}.png`;
 
   return {
     title,
     description,
-    alternates: { canonical: canonicalUrl },
+    alternates: { canonical: pageUrl },
     openGraph: {
       title,
       description,
       url: pageUrl,
       siteName: 'DevGlobe',
-      type: 'profile',
+      type: 'website',
       images: [{ url: imageUrl, width: 1200, height: 630, type: 'image/png', alt: `DevGlobe developer card for @${login}` }],
     },
     twitter: {
@@ -34,6 +34,11 @@ export async function generateMetadata({ params }) {
 
 export default async function DeveloperSharePage({ params }) {
   const { login } = await params;
+  const requestHeaders = await headers();
+  console.info('social-preview-page', {
+    login,
+    userAgent: requestHeaders.get('user-agent') || 'unknown',
+  });
   const encodedLogin = encodeURIComponent(login);
   const siteUrl = getSiteUrl();
   const pageUrl = `${siteUrl}/share/${encodedLogin}`;
@@ -72,7 +77,7 @@ export default async function DeveloperSharePage({ params }) {
         </header>
         <img
           className="share-page__card"
-          src={`/api/card?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`}
+          src={`/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}.png`}
           alt={`Developer card for @${login}`}
         />
         <div className="share-page__actions">
