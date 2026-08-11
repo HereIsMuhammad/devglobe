@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 
 const FACTS = [
-  'Indexing 26,000+ open-source developers…',
   'Mapping contributions across 150+ countries…',
   'Calculating star power and commit velocity…',
   'Ranking the world\'s top contributors…',
@@ -31,16 +30,22 @@ function AnimatedCounter({ target, duration = 2000, suffix = '' }) {
   return <>{count.toLocaleString()}{suffix}</>;
 }
 
-export default function LoadingOverlay({ error }) {
+export default function LoadingOverlay({ error, datasetCount }) {
+  const facts = [
+    datasetCount === null
+      ? 'Counting indexed open-source developers…'
+      : `Indexing ${datasetCount.toLocaleString()} open-source developers…`,
+    ...FACTS,
+  ];
   const [factIndex, setFactIndex] = useState(0);
   const [dots, setDots] = useState('');
 
   useEffect(() => {
     const factTimer = setInterval(() => {
-      setFactIndex(prev => (prev + 1) % FACTS.length);
+      setFactIndex(prev => (prev + 1) % facts.length);
     }, 3000);
     return () => clearInterval(factTimer);
-  }, []);
+  }, [facts.length]);
 
   useEffect(() => {
     const dotTimer = setInterval(() => {
@@ -116,7 +121,9 @@ export default function LoadingOverlay({ error }) {
       {/* Stats preview */}
       <div className="loading-stats">
         <div className="loading-stat">
-          <span className="loading-stat__value"><AnimatedCounter target={26000} duration={2500} suffix="+" /></span>
+          <span className="loading-stat__value">
+            {datasetCount === null ? '…' : <AnimatedCounter target={datasetCount} duration={1800} />}
+          </span>
           <span className="loading-stat__label">Developers</span>
         </div>
         <div className="loading-stat__divider" />
@@ -133,7 +140,7 @@ export default function LoadingOverlay({ error }) {
 
       {/* Rotating facts */}
       <div className="loading-fact" key={factIndex}>
-        {FACTS[factIndex]}
+        {facts[factIndex]}
       </div>
 
       {/* Progress indicator */}
