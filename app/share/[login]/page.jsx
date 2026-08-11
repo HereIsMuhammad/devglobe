@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { getSiteUrl, SOCIAL_PREVIEW_VERSION } from '../../../lib/site.js';
 
 export async function generateMetadata({ params }) {
@@ -9,7 +10,7 @@ export async function generateMetadata({ params }) {
   const description = `Explore @${login}'s open-source developer identity, global rank, and impact on DevGlobe.`;
   const pageUrl = `${siteUrl}/share/${encodedLogin}?v=${SOCIAL_PREVIEW_VERSION}`;
   const canonicalUrl = `${siteUrl}/share/${encodedLogin}`;
-  const imageUrl = `${siteUrl}/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}`;
+  const imageUrl = `${siteUrl}/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}.png`;
 
   return {
     title,
@@ -34,6 +35,11 @@ export async function generateMetadata({ params }) {
 
 export default async function DeveloperSharePage({ params }) {
   const { login } = await params;
+  const requestHeaders = await headers();
+  console.info('social-preview-page', {
+    login,
+    userAgent: requestHeaders.get('user-agent') || 'unknown',
+  });
   const encodedLogin = encodeURIComponent(login);
   const siteUrl = getSiteUrl();
   const pageUrl = `${siteUrl}/share/${encodedLogin}`;
