@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { formatNum, formatRelativeTime, isStaleData } from '../lib/format.js';
 import { DIMENSIONS, SCORE_METHODOLOGY } from '../lib/scoring.js';
+import { SOCIAL_PREVIEW_VERSION } from '../lib/site.js';
 
 export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
   const [fullData, setFullData] = useState(null);
@@ -458,16 +459,18 @@ function CardModal({ dev, claimSuccess, onClose }) {
   const { login } = dev;
   const name = dev.name || login;
   const cardUrl = `/api/card?login=${encodeURIComponent(login)}`;
-  const sharePath = `/share/${encodeURIComponent(login)}`;
+  const sharePath = `/share/${encodeURIComponent(login)}?v=${SOCIAL_PREVIEW_VERSION}`;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}${sharePath}` : sharePath;
 
   const rankText = dev.globalRank ? `Global #${dev.globalRank} of ${dev.globalTotal}` : 'Ranked on DevGlobe';
   const shareText = `My DevGlobe developer card: ${rankText}.`;
+  const shareHashtags = ['DevGlobe', 'OpenSource', 'DeveloperCommunity', 'GitHub'];
+  const hashtagText = shareHashtags.map(hashtag => `#${hashtag}`).join(' ');
 
   const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}&hashtags=${shareHashtags.join(',')}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
-    reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(`My DevGlobe Developer Card - ${name}`)}`,
+    reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(`My DevGlobe Developer Card - ${name} ${hashtagText}`)}`,
   };
 
   const handleDownload = async () => {

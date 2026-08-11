@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getSiteUrl } from '../../../lib/site.js';
+import { getSiteUrl, SOCIAL_PREVIEW_VERSION } from '../../../lib/site.js';
 
 export async function generateMetadata({ params }) {
   const { login } = await params;
@@ -8,7 +8,7 @@ export async function generateMetadata({ params }) {
   const title = `@${login}'s Developer Card | DevGlobe`;
   const description = `Explore @${login}'s open-source developer identity, global rank, and impact on DevGlobe.`;
   const pageUrl = `${siteUrl}/share/${encodedLogin}`;
-  const imageUrl = `${siteUrl}/api/card?login=${encodedLogin}`;
+  const imageUrl = `${siteUrl}/api/card?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`;
 
   return {
     title,
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
       url: pageUrl,
       siteName: 'DevGlobe',
       type: 'profile',
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: `DevGlobe developer card for @${login}` }],
+      images: [{ url: imageUrl, width: 1200, height: 630, type: 'image/png', alt: `DevGlobe developer card for @${login}` }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -71,7 +71,7 @@ export default async function DeveloperSharePage({ params }) {
         </header>
         <img
           className="share-page__card"
-          src={`/api/card?login=${encodedLogin}`}
+          src={`/api/card?login=${encodedLogin}&v=${SOCIAL_PREVIEW_VERSION}`}
           alt={`Developer card for @${login}`}
         />
         <div className="share-page__actions">

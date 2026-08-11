@@ -133,9 +133,11 @@ body {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
   font-size: 12px;
   font-family: var(--font);
   font-weight: 500;
@@ -209,7 +211,7 @@ body {
   width: 32px;
   height: 32px;
   padding: 0;
-  border-radius: 50%;
+  border-radius: 8px;
   background: var(--overlay-subtle);
   border: 1px solid var(--border);
   color: var(--text-secondary);
@@ -1435,12 +1437,16 @@ body {
   pointer-events: none;
 }
 
-/* Animated Globe */
-.loading-globe {
-  width: 160px;
-  height: 160px;
-  margin-bottom: 24px;
-  animation: globeFloat 3s ease-in-out infinite;
+/* Animated developer network */
+.loading-scene {
+  --loading-orbit-radius: 105px;
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin-bottom: 18px;
+  color: var(--accent-blue);
+  filter: drop-shadow(0 18px 30px rgba(37, 99, 235, 0.18));
+  animation: globeFloat 4s ease-in-out infinite;
 }
 
 @keyframes globeFloat {
@@ -1448,59 +1454,115 @@ body {
   50% { transform: translateY(-10px); }
 }
 
+.loading-scene::before,
+.loading-scene::after {
+  content: '';
+  position: absolute;
+  inset: 17px;
+  border: 1px solid color-mix(in srgb, var(--accent-blue) 24%, transparent);
+  border-radius: 50%;
+  animation: scenePulse 2.8s ease-out infinite;
+}
+
+.loading-scene::after {
+  animation-delay: 1.4s;
+}
+
+@keyframes scenePulse {
+  0% { opacity: 0; transform: scale(0.78); }
+  35% { opacity: 0.55; }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+.loading-scene__orbit {
+  position: absolute;
+  inset: 5px;
+  z-index: 2;
+  border: 1px solid color-mix(in srgb, var(--accent-purple) 38%, transparent);
+  border-radius: 50%;
+  transform: rotate(-24deg) scaleY(0.38);
+}
+
+.loading-scene__orbit span {
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f472b6;
+  box-shadow: 0 0 14px #f472b6;
+  animation: orbitNode 2.4s linear infinite;
+}
+
+@keyframes orbitNode {
+  to { transform: rotate(360deg); transform-origin: var(--loading-orbit-radius) 0; }
+}
+
+.loading-globe {
+  width: 100%;
+  height: 100%;
+}
+
 .loading-globe__svg {
   width: 100%;
   height: 100%;
-  animation: globeSpin 12s linear infinite;
+  overflow: visible;
 }
 
-@keyframes globeSpin {
-  to { transform: rotate(360deg); }
+.loading-globe__surface {
+  fill: url(#loadingGlobeFill);
 }
 
 .loading-globe__outline {
   fill: none;
-  stroke: var(--accent-blue);
-  stroke-width: 1.5;
-  opacity: 0.3;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  opacity: 0.55;
 }
 
-.loading-globe__ring {
+.loading-globe__grid {
   fill: none;
-  stroke: var(--accent-blue);
-  stroke-width: 0.8;
+  stroke: currentColor;
+  stroke-width: 0.65;
   opacity: 0.2;
-}
-
-.loading-globe__ring--2 {
-  transform: rotate(30deg);
   transform-origin: center;
+  animation: gridDrift 8s ease-in-out infinite alternate;
 }
 
-.loading-globe__ring--3 {
-  opacity: 0.25;
+@keyframes gridDrift {
+  to { transform: translateX(9px); }
 }
 
-.loading-globe__line {
-  stroke: var(--accent-blue);
-  stroke-width: 0.5;
-  opacity: 0.12;
+.loading-globe__routes {
+  fill: none;
+  stroke: #f472b6;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 7 8;
+  animation: routeFlow 1.5s linear infinite;
 }
 
-.loading-globe__dot {
-  fill: var(--accent-blue);
+@keyframes routeFlow {
+  to { stroke-dashoffset: -30; }
+}
+
+.loading-globe__nodes circle {
+  fill: #f8fafc;
+  stroke: currentColor;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px currentColor);
   animation: dotPulse 2s ease-in-out infinite;
 }
 
-.loading-globe__dot--1 { animation-delay: 0s; }
-.loading-globe__dot--2 { animation-delay: 0.3s; }
-.loading-globe__dot--3 { animation-delay: 0.6s; }
-.loading-globe__dot--4 { animation-delay: 0.9s; }
-.loading-globe__dot--5 { animation-delay: 1.2s; }
+.loading-globe__nodes circle:nth-child(2) { animation-delay: 0.35s; }
+.loading-globe__nodes circle:nth-child(3) { animation-delay: 0.7s; }
+.loading-globe__nodes circle:nth-child(4) { animation-delay: 1.05s; }
+.loading-globe__nodes circle:nth-child(5) { animation-delay: 1.4s; }
 
 @keyframes dotPulse {
-  0%, 100% { opacity: 0.3; r: 3; }
-  50% { opacity: 1; r: 5; }
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
 }
 
 /* Branding */
@@ -1743,7 +1805,7 @@ body {
     width: 32px;
     height: 32px;
     padding: 0;
-    border-radius: 50%;
+    border-radius: 8px;
     background: var(--overlay-subtle);
     border: 1px solid var(--border);
     color: var(--text-secondary);
@@ -1756,9 +1818,11 @@ body {
   .btn__label {
     display: none;
   }
-  .btn--star,
-  .btn--sponsor {
-    padding: 6px 8px;
+  .header__actions > .btn,
+  .header__actions > .user-menu > .btn {
+    width: 32px;
+    min-width: 32px;
+    padding: 0;
   }
   .product-hunt-badge {
     left: 12px;
@@ -1779,6 +1843,29 @@ body {
   }
   .header__actions {
     gap: 6px;
+  }
+  .loading-scene {
+    --loading-orbit-radius: 82px;
+    width: 174px;
+    height: 174px;
+    margin-bottom: 10px;
+  }
+  .loading-tagline {
+    max-width: min(320px, calc(100vw - 32px));
+    margin-bottom: 22px;
+    text-align: center;
+  }
+  .loading-stats {
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .loading-stat__value {
+    font-size: 20px;
+  }
+  .loading-fact {
+    max-width: calc(100vw - 40px);
+    margin-bottom: 20px;
+    text-align: center;
   }
   .sidebar {
     height: 65vh;
@@ -1819,7 +1906,8 @@ body {
   gap: 4px;
   background: none;
   border: 1px solid var(--border);
-  border-radius: 20px;
+  height: 32px;
+  border-radius: 8px;
   padding: 3px 8px 3px 3px;
   cursor: pointer;
   transition: border-color 0.2s;
@@ -1880,6 +1968,29 @@ body {
 .user-menu__login {
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+@media (max-width: 380px) {
+  .header__title {
+    display: none;
+  }
+  .header__brand {
+    flex: 0 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-scene,
+  .loading-scene::before,
+  .loading-scene::after,
+  .loading-scene__orbit span,
+  .loading-globe__grid,
+  .loading-globe__routes,
+  .loading-globe__nodes circle,
+  .loading-fact,
+  .loading-progress__bar {
+    animation: none;
+  }
 }
 
 .user-menu__divider {
