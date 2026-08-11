@@ -1,5 +1,6 @@
 import { ImageResponse } from '@vercel/og';
 import { CosmosClient } from '@azure/cosmos';
+import { unstable_cache } from 'next/cache';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { classifyAgent, getPowerTier } from '../../../lib/agent-class.js';
@@ -13,13 +14,15 @@ const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
 const DATABASE = process.env.COSMOS_DATABASE || 'devglobe';
 const CONTAINER = process.env.COSMOS_CONTAINER || 'developers';
+const cosmosClient = COSMOS_ENDPOINT && COSMOS_KEY
+  ? new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY })
+  : null;
+const cosmosContainer = cosmosClient?.database(DATABASE).container(CONTAINER);
 
-async function getRankedDevelopers() {
-  if (COSMOS_ENDPOINT && COSMOS_KEY) {
+async function loadRankedDevelopers() {
+  if (cosmosContainer) {
     try {
-      const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
-      const container = client.database(DATABASE).container(CONTAINER);
-      const { resources } = await container.items.query({
+      const { resources } = await cosmosContainer.items.query({
         query: 'SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.claimed FROM c',
       }).fetchAll();
       if (resources.length > 0) return addDeveloperRanks(scoreAll(resources));
@@ -34,6 +37,12 @@ async function getRankedDevelopers() {
   return addDeveloperRanks(scoreAll(data));
 }
 
+const getRankedDevelopers = unstable_cache(
+  loadRankedDevelopers,
+  ['card-ranked-developers-v1'],
+  { revalidate: 3600, tags: ['developers'] }
+);
+
 async function getDeveloper(login) {
   const developers = await getRankedDevelopers();
   return developers.find(d => d.login.toLowerCase() === login.toLowerCase()) || null;
@@ -43,6 +52,21 @@ function formatNum(n) {
   if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
   if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
   return String(n);
+}
+
+async function getAvatarDataUrl(avatarUrl) {
+  if (!avatarUrl) return null;
+
+  try {
+    const response = await fetch(avatarUrl, { signal: AbortSignal.timeout(3000) });
+    if (!response.ok) return null;
+
+    const contentType = response.headers.get('content-type') || 'image/png';
+    const bytes = Buffer.from(await response.arrayBuffer());
+    return `data:${contentType};base64,${bytes.toString('base64')}`;
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(request) {
@@ -60,6 +84,15 @@ export async function GET(request) {
 
   const agent = classifyAgent(dev);
   const power = getPowerTier(dev.score || 0);
+  const avatarDataUrl = await getAvatarDataUrl(dev.avatarUrl);
+  const avatarInitial = (dev.name || dev.login).trim().charAt(0).toUpperCase();
+  const agentMark = agent.name
+    .replace(/^The\s+/, '')
+    .split(/\s+/)
+    .map(word => word.charAt(0))
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
   const hasCityRank = Boolean(dev.cityRank && dev.city);
   const rankCardWidth = hasCityRank ? '166' : dev.countryRank ? '255' : '522';
 
@@ -136,15 +169,25 @@ export async function GET(request) {
             padding: '76px 40px 54px',
           }}
         >
-          {/* Agent icon */}
+          {/* Agent mark */}
           <div
             style={{
-              fontSize: '48',
+              width: '52',
+              height: '52',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: `1px solid ${agent.color}88`,
+              borderRadius: '12',
+              background: `${agent.color}18`,
+              color: agent.color,
+              fontSize: '20',
+              fontWeight: '800',
+              letterSpacing: '1',
               marginBottom: '12',
               display: 'flex',
             }}
           >
-            {agent.icon}
+            {agentMark}
           </div>
 
           {/* Avatar with border */}
@@ -159,12 +202,31 @@ export async function GET(request) {
               boxShadow: `0 0 40px ${agent.color}44`,
             }}
           >
-            <img
-              src={dev.avatarUrl}
-              width="180"
-              height="180"
-              style={{ borderRadius: '50%', objectFit: 'cover' }}
-            />
+            {avatarDataUrl ? (
+              <img
+                src={avatarDataUrl}
+                width="180"
+                height="180"
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '180',
+                  height: '180',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%',
+                  background: `${agent.color}22`,
+                  color: agent.color,
+                  fontSize: '72',
+                  fontWeight: '800',
+                }}
+              >
+                {avatarInitial}
+              </div>
+            )}
           </div>
 
           {/* Name */}
@@ -203,7 +265,7 @@ export async function GET(request) {
                 marginTop: '8',
               }}
             >
-              📍 {dev.location}
+              LOCATION · {dev.location}
             </div>
           )}
         </div>
@@ -481,7 +543,7 @@ export async function GET(request) {
                     display: 'flex',
                   }}
                 >
-                  ✓ Verified
+                  VERIFIED
                 </div>
               )}
             </div>
@@ -514,7 +576,7 @@ export async function GET(request) {
               gap: '8',
             }}
           >
-            🌐 DevGlobe
+            DEVGLOBE / OPEN SOURCE IDENTITY
           </div>
           <div
             style={{
