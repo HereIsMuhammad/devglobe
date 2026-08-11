@@ -1,20 +1,12 @@
 import { ImageResponse } from '@vercel/og';
-import { CosmosClient } from '@azure/cosmos';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { getCosmosContainer } from '../../../../lib/cosmos.js';
 
 export const runtime = 'nodejs';
 
-const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
-const COSMOS_KEY = process.env.COSMOS_KEY;
-const DATABASE = process.env.COSMOS_DATABASE || 'devglobe';
-const CONTAINER = process.env.COSMOS_CONTAINER || 'developers';
-const cosmosClient = COSMOS_ENDPOINT && COSMOS_KEY
-  ? new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY })
-  : null;
-const cosmosContainer = cosmosClient?.database(DATABASE).container(CONTAINER);
-
 async function getDeveloper(login) {
+  const cosmosContainer = getCosmosContainer();
   if (cosmosContainer) {
     try {
       const { resources } = await cosmosContainer.items.query({

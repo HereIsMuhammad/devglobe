@@ -3,6 +3,9 @@
   "version": "2.0.0",
   "type": "module",
   "description": "Interactive 3D globe visualization of top GitHub developers",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
