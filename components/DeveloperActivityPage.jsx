@@ -4,12 +4,18 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { formatNum, formatRelativeTime } from '../lib/format.js';
 import { useActivityFeed } from './useActivityFeed.js';
+import SpecialTags from './SpecialTags.jsx';
 
 export default function DeveloperActivityPage({ login }) {
   const [developer, setDeveloper] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { activities, newActivityIds, lastUpdated } = useActivityFeed(login, { limit: 20 });
+  const {
+    activities,
+    loading: activitiesLoading,
+    newActivityIds,
+    lastUpdated,
+  } = useActivityFeed(login, { limit: 20 });
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +58,7 @@ export default function DeveloperActivityPage({ login }) {
             <div className="activity-profile__identity">
               <span className="activity-profile__handle">@{developer.login}</span>
               <h1>{developer.name || developer.login}</h1>
+              <SpecialTags tags={developer.specialTags} />
               <p>{developer.bio || `${developer.topLanguage || 'Open-source'} developer${developer.location ? ` from ${developer.location}` : ''}.`}</p>
               <div className="activity-profile__links">
                 <a href={developer.githubUrl || `https://github.com/${developer.login}`} target="_blank" rel="noopener noreferrer">GitHub profile</a>
@@ -79,7 +86,10 @@ export default function DeveloperActivityPage({ login }) {
                   : `${activities.length} events${lastUpdated ? ` · Updated ${lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}`}
               </span>
             </div>
-            {activities.length === 0 && <p className="activity-timeline__empty">No recent public activity found.</p>}
+            {activitiesLoading && <p className="activity-timeline__empty">Loading public GitHub activity...</p>}
+            {!activitiesLoading && activities.length === 0 && (
+              <p className="activity-timeline__empty">No recent public activity found.</p>
+            )}
             {activities.map(activity => (
               <a className={`timeline-event${newActivityIds.has(activity.id) ? ' timeline-event--new' : ''}`} href={activity.url} target="_blank" rel="noopener noreferrer" key={activity.id}>
                 <span className={`timeline-event__icon timeline-event__icon--${activity.type}`} aria-hidden="true" />

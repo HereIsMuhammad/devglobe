@@ -64,8 +64,9 @@ async function fetchUserActivity(login, eventLimit) {
     createdAt: event.created_at,
   }));
 
-  activityCache.set(`${login}:${eventLimit}`, {
+  activityCache.set(login, {
     activities,
+    eventLimit,
     expiresAt: Date.now() + (process.env.GITHUB_TOKEN && !usedAnonymousFallback
       ? AUTHENTICATED_CACHE_MS
       : ANONYMOUS_CACHE_MS),
@@ -74,22 +75,23 @@ async function fetchUserActivity(login, eventLimit) {
 }
 
 async function getUserActivity(login, eventLimit) {
-  const cacheKey = `${login}:${eventLimit}`;
-  const cached = activityCache.get(cacheKey);
-  if (cached?.expiresAt > Date.now()) return Promise.resolve(cached.activities);
+  const cached = activityCache.get(login);
+  if (cached?.expiresAt > Date.now()) return cached.activities.slice(0, eventLimit);
 
   try {
     const activities = await fetchUserActivity(login, eventLimit);
-    if (!activityCache.has(cacheKey)) {
-      activityCache.set(cacheKey, {
+    if (!activityCache.has(login)) {
+      activityCache.set(login, {
         activities,
+        eventLimit,
         expiresAt: Date.now() + ANONYMOUS_CACHE_MS,
       });
     }
     return activities;
   } catch {
-    activityCache.set(cacheKey, {
+    activityCache.set(login, {
       activities: [],
+      eventLimit,
       expiresAt: Date.now() + ANONYMOUS_CACHE_MS,
     });
     return [];

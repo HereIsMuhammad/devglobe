@@ -7,6 +7,7 @@ import { formatNum, formatRelativeTime, isStaleData } from '../lib/format.js';
 import { DIMENSIONS, SCORE_METHODOLOGY } from '../lib/scoring.js';
 import { SOCIAL_PREVIEW_VERSION } from '../lib/site.js';
 import { classifyAgent } from '../lib/agent-class.js';
+import SpecialTags from './SpecialTags.jsx';
 
 export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
   const [fullData, setFullData] = useState(null);
@@ -87,6 +88,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
               )}
             </div>
             <div className="detail-header__location">📍 {dev.location || 'Unknown location'}</div>
+            <SpecialTags tags={merged.specialTags} />
             <div className="detail-header__badges">
               <span
                 className="detail-header__score-badge"

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
+import SpecialTags from './SpecialTags.jsx';
 
 const SAMPLES_BY_MODE = {
   text: [
@@ -199,7 +200,10 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
             <div className="search-bar__card-suggestion">
               <img src={singleResult.avatarUrl} alt="" />
               <div className="search-bar__card-identity">
-                <strong>{singleResult.name || singleResult.login}</strong>
+                <strong>
+                  {singleResult.name || singleResult.login}
+                  <SpecialTags tags={singleResult.specialTags} compact />
+                </strong>
                 <span>
                   @{singleResult.login}
                   {singleResult.globalRank ? ` · Global #${singleResult.globalRank}` : ''}

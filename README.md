@@ -137,6 +137,28 @@ npm run build-data            # Run full pipeline
 npm run upload-cosmos         # Upload to Azure Cosmos DB
 ```
 
+### Developer credentials
+
+Verified community credentials are stored explicitly on each developer document. Do not infer them from stars, followers, or profile text.
+
+```json
+{
+   "login": "example",
+   "specialTags": ["github-star", "microsoft-mvp", "aws-community-builder"]
+}
+```
+
+Supported IDs: `github-star`, `microsoft-mvp`, `google-developer-expert`, `docker-champion`, `cncf-ambassador`, `aws-hero`, and `aws-community-builder`. The upload script preserves this field from source JSON, and the list, detail, and search APIs project it from Cosmos DB.
+
+Populate exact GitHub-login matches from the official GitHub Stars and CNCF Ambassadors rosters:
+
+```bash
+npm run populate-special-tags             # Dry run
+npm run populate-special-tags -- --apply  # Patch verified matches in Cosmos DB
+```
+
+The command preserves existing tags and is idempotent. Other credentials require an official profile that explicitly identifies the developer's GitHub account; do not populate them by matching display names.
+
 ## 📁 Project Structure
 
 ```

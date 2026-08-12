@@ -4,6 +4,7 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { formatNum } from '../lib/format.js';
 import { extractCountry, normalizeCountry, countryKey } from '../lib/country.js';
 import { SCORE_METHODOLOGY } from '../lib/scoring.js';
+import SpecialTags from './SpecialTags.jsx';
 
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
@@ -202,6 +203,7 @@ export default function Leaderboard({
                         <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z"/></svg>
                       </span>
                     )}
+                    <SpecialTags tags={dev.specialTags} compact />
                   </div>
                   <div className="lb-item__meta">{dev.topLanguage || ''} · {dev.location || 'Unknown'}</div>
                   <div className="lb-item__badges">
