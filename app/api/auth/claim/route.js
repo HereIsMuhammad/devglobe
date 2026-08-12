@@ -69,6 +69,7 @@ async function buildProfileFromGitHub(login) {
     soAnswers: 0,
     soAcceptRate: 0,
     soBadges: 0,
+    specialTags: [],
     claimed: true,
     claimedAt: new Date().toISOString(),
     claimedBy: login,

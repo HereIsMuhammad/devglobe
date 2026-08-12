@@ -850,6 +850,98 @@ body {
   white-space: nowrap;
 }
 
+/* Developer credentials */
+.special-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.special-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 3px 8px 3px 4px;
+  color: var(--text-primary);
+  background: var(--overlay-subtle);
+  border: 1px solid color-mix(in srgb, var(--tag-color) 55%, var(--border));
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: help;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.special-tag:hover,
+.special-tag:focus-visible {
+  background: color-mix(in srgb, var(--tag-color) 18%, var(--bg-card));
+  border-color: var(--tag-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tag-color) 20%, transparent);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.special-tag__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 3px;
+  color: #fff;
+  background: var(--tag-color);
+  border-radius: 50%;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.special-tag--github { --tag-color: #6e7681; }
+.special-tag--microsoft { --tag-color: #0078d4; }
+.special-tag--google { --tag-color: #4285f4; }
+.special-tag--docker { --tag-color: #2496ed; }
+.special-tag--cncf { --tag-color: #446ca9; }
+.special-tag--aws { --tag-color: #e07912; }
+.special-tag--aws-community { --tag-color: #8a5bdb; }
+
+.special-tags--compact {
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  gap: 3px;
+  margin: 0 0 0 6px;
+  vertical-align: middle;
+}
+
+.special-tags--compact .special-tag {
+  min-height: 20px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+}
+
+.special-tags--compact .special-tag:hover,
+.special-tags--compact .special-tag:focus-visible {
+  background: transparent;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tag-color) 35%, transparent);
+  transform: scale(1.12);
+}
+
+.special-tags--compact .special-tag__icon {
+  min-width: 19px;
+  height: 19px;
+  font-size: 7px;
+}
+
+.special-tags--compact .special-tag__label {
+  display: none;
+}
+
 /* Developer activity page */
 .activity-page {
   position: fixed;
@@ -1164,6 +1256,8 @@ body {
 }
 
 .lb-item__name {
+  display: flex;
+  align-items: center;
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
@@ -1273,6 +1367,10 @@ body {
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
+}
+
+.detail-header .special-tags {
+  margin-top: 7px;
 }
 
 .detail-header__badges {
@@ -2952,8 +3050,15 @@ body {
 }
 
 .search-bar__card-identity strong {
+  display: flex;
+  align-items: center;
   color: var(--text-primary);
   font-size: 12px;
+}
+
+.search-bar__card-identity .special-tags,
+.search-bar__card-identity .special-tag {
+  overflow: visible;
 }
 
 .search-bar__card-identity span {
