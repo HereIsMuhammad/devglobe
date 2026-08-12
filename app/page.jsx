@@ -9,7 +9,6 @@ import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
-import RecentActivity from '../components/RecentActivity.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
 import dynamic from 'next/dynamic';
@@ -31,6 +30,7 @@ export default function Home() {
   const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'claimed' | 'no_match'
   const [claimedLogins, setClaimedLogins] = useState(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarView, setSidebarView] = useState('leaderboard');
   const [cardRequest, setCardRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
@@ -256,7 +256,23 @@ export default function Home() {
   }, []);
 
   const handleToggleSidebar = useCallback(() => {
-    setSidebarOpen(prev => !prev);
+    setSidebarView('leaderboard');
+    setSidebarOpen(prev => sidebarView === 'leaderboard' ? !prev : true);
+  }, [sidebarView]);
+
+  const handleOpenActivity = useCallback(() => {
+    if (sidebarView === 'activity') {
+      setSidebarOpen(false);
+      setSidebarView('leaderboard');
+      return;
+    }
+    setSidebarView('activity');
+    setSidebarOpen(true);
+  }, [sidebarView]);
+
+  const handleCloseSidebar = useCallback(() => {
+    setSidebarOpen(false);
+    setSidebarView('leaderboard');
   }, []);
 
   const handleSelectCountry = useCallback((country, view) => {
@@ -337,6 +353,8 @@ export default function Home() {
         claimStatus={claimStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
+        activityOpen={sidebarView === 'activity'}
+        onOpenActivity={handleOpenActivity}
         onAddMe={handleAddMe}
         onStartTour={handleTourFocusSearch}
       />
@@ -390,13 +408,12 @@ export default function Home() {
           onToggleCompare={handleToggleCompare}
           claimedLogins={claimedLogins}
           open={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
+          onClose={handleCloseSidebar}
+          activeView={sidebarView}
+          onViewChange={setSidebarView}
         />
-        {!selectedDev && compareDevs.length !== 2 && (
-          <RecentActivity developers={developers} />
-        )}
         {sidebarOpen && (
-          <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+          <div className="sidebar-backdrop" onClick={handleCloseSidebar} />
         )}
         {selectedDev && (
           <DetailPanel

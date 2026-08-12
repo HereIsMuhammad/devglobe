@@ -148,9 +148,9 @@ Verified community credentials are stored explicitly on each developer document.
 }
 ```
 
-Supported IDs: `github-star`, `microsoft-mvp`, `google-developer-expert`, `docker-champion`, `cncf-ambassador`, `aws-hero`, and `aws-community-builder`. The upload script preserves this field from source JSON, and the list, detail, and search APIs project it from Cosmos DB.
+Supported IDs: `github-star`, `microsoft-mvp`, `google-developer-expert`, `docker-captain`, `cncf-ambassador`, `aws-hero`, and `aws-community-builder`. The legacy `docker-champion` ID remains supported. The upload script preserves this field from source JSON, and the list, detail, and search APIs project it from Cosmos DB.
 
-Populate exact GitHub-login matches from the official GitHub Stars and CNCF Ambassadors rosters:
+Populate exact GitHub-login matches from the official GitHub Stars, Google Developer Experts, and CNCF Ambassadors rosters:
 
 ```bash
 npm run populate-special-tags             # Dry run
@@ -200,6 +200,25 @@ Required environment variables:
 | `COSMOS_KEY` | Azure Cosmos DB key |
 | `COSMOS_DATABASE` | Database name |
 | `COSMOS_CONTAINER` | Container name |
+| `COSMOS_ACTIVITY_CONTAINER` | Rolling GitHub activity container (`activities`) |
+| `ACTIVITY_INGEST_SECRET` | Bearer secret for the activity collector endpoint |
+
+### Live developer activity
+
+The Activity tab is anonymous and shows a rolling 24-hour feed for indexed developers. Create its dedicated Cosmos container before deployment:
+
+```bash
+npm run setup-activity-container
+```
+
+Deploy `functions/activity-ingest` as an Azure Timer Function and configure these application settings:
+
+```env
+ACTIVITY_INGEST_URL=https://your-site.example/api/activities/ingest
+ACTIVITY_INGEST_SECRET=the-same-secret-configured-on-the-site
+```
+
+The timer invokes the collector every minute, matching GitHub's advertised polling interval. GitHub's public Events API is best-effort and may delay or omit events; the 15-second browser refresh does not guarantee GitHub source delivery within that interval. A valid `GITHUB_TOKEN` is required for full three-page collection; anonymous fallback inspects one page only. The Cosmos activity container uses a 48-hour TTL while the API exposes only the latest 24 hours.
 
 ## 🤝 Contributing
 

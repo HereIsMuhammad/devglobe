@@ -3,7 +3,7 @@
 import React from 'react';
 import UserMenu from './UserMenu.jsx';
 
-export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, claimStatus, sidebarOpen, onToggleSidebar, onAddMe, onStartTour }) {
+export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, claimStatus, sidebarOpen, onToggleSidebar, activityOpen, onOpenActivity, onAddMe, onStartTour }) {
   return (
     <header className="header">
       <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
@@ -23,6 +23,19 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
           <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false">
             <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-2 5c-2.97 0-6 1.49-6 3v1h12v-1c0-1.51-3.03-3-6-3zm-4.9 3c.4-1 2.2-2 4.9-2s4.5 1 4.9 2H1.1zM12.5 4h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0V5h1a.5.5 0 0 0 0-1h-1V3a.5.5 0 0 0-1 0v1z"></path>
           </svg><span className="btn__label">Add Me To Globe</span>
+        </button>
+        <button
+          type="button"
+          className={`btn btn--activity${activityOpen ? ' btn--active' : ''}`}
+          onClick={onOpenActivity}
+          aria-label={activityOpen ? 'Close live activity' : 'Open live activity'}
+          aria-expanded={activityOpen}
+          title="Live developer activity"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 12h4l2-7 4 14 2-7h6" />
+          </svg>
+          <span className="btn__label">Activity</span>
         </button>
         <button
           type="button"

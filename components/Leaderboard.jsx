@@ -5,6 +5,7 @@ import { formatNum } from '../lib/format.js';
 import { extractCountry, normalizeCountry, countryKey } from '../lib/country.js';
 import { SCORE_METHODOLOGY } from '../lib/scoring.js';
 import SpecialTags from './SpecialTags.jsx';
+import GlobalActivityFeed from './GlobalActivityFeed.jsx';
 
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
@@ -20,6 +21,8 @@ export default function Leaderboard({
   claimedLogins,
   open = false,
   onClose,
+  activeView = 'leaderboard',
+  onViewChange,
 }) {
   const listRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
@@ -123,6 +126,31 @@ export default function Leaderboard({
   return (
     <aside className={`sidebar${open ? ' open' : ''}`} id="sidebar">
       <div className="sidebar__drag-handle" onClick={onClose} aria-hidden="true" />
+      <div className="sidebar__tabs" role="tablist" aria-label="Developer views">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === 'leaderboard'}
+          className={activeView === 'leaderboard' ? 'sidebar__tab sidebar__tab--active' : 'sidebar__tab'}
+          onClick={() => onViewChange?.('leaderboard')}
+        >
+          Leaderboard
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === 'activity'}
+          className={activeView === 'activity' ? 'sidebar__tab sidebar__tab--active' : 'sidebar__tab'}
+          onClick={() => onViewChange?.('activity')}
+        >
+          Activity
+        </button>
+        <button className="sidebar__close-btn" onClick={onClose} aria-label="Close sidebar" title="Close sidebar">
+          &times;
+        </button>
+      </div>
+      {activeView === 'leaderboard' && (
+        <>
       <div className="sidebar__header">
         <div className="sidebar__header-row">
           <h2>Leaderboard</h2>
@@ -131,9 +159,6 @@ export default function Leaderboard({
               ✕ Clear filters
             </button>
           )}
-          <button className="sidebar__close-btn" onClick={onClose} aria-label="Close leaderboard" title="Close leaderboard">
-            &times;
-          </button>
         </div>
         <div className="sidebar__count">
           {filtered.length} developer{filtered.length !== 1 ? 's' : ''}
@@ -239,6 +264,9 @@ export default function Leaderboard({
           })}
         </div>
       </ul>
+        </>
+      )}
+      {activeView === 'activity' && <GlobalActivityFeed active />}
     </aside>
   );
 }

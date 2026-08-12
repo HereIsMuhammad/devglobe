@@ -1,37 +1,11 @@
 import { NextResponse } from 'next/server';
+import { normalizeGitHubEvent } from '../../../lib/github-activity.js';
 
 const MAX_USERS = 5;
 const EVENTS_PER_USER = 4;
 const AUTHENTICATED_CACHE_MS = 60 * 1000;
 const ANONYMOUS_CACHE_MS = 5 * 60 * 1000;
 const activityCache = new Map();
-
-function describeEvent(event) {
-  const repo = event.repo?.name || 'a repository';
-
-  switch (event.type) {
-    case 'PushEvent': {
-      const count = event.payload?.commits?.length || event.payload?.size || 0;
-      return `Pushed ${count || 'new'} commit${count === 1 ? '' : 's'} to ${repo}`;
-    }
-    case 'PullRequestEvent':
-      return `${event.payload?.action || 'Updated'} pull request in ${repo}`;
-    case 'IssuesEvent':
-      return `${event.payload?.action || 'Updated'} an issue in ${repo}`;
-    case 'IssueCommentEvent':
-      return `Commented on an issue in ${repo}`;
-    case 'CreateEvent':
-      return `Created ${event.payload?.ref_type || 'content'} in ${repo}`;
-    case 'ForkEvent':
-      return `Forked ${repo}`;
-    case 'WatchEvent':
-      return `Starred ${repo}`;
-    case 'ReleaseEvent':
-      return `${event.payload?.action || 'Published'} a release in ${repo}`;
-    default:
-      return `Contributed to ${repo}`;
-  }
-}
 
 async function fetchUserActivity(login, eventLimit) {
   const baseHeaders = {
@@ -53,16 +27,9 @@ async function fetchUserActivity(login, eventLimit) {
 
   if (!response.ok) return [];
   const events = await response.json();
-  const activities = events.map(event => ({
-    id: event.id,
-    login,
-    avatarUrl: event.actor?.avatar_url || null,
-    type: event.type,
-    description: describeEvent(event),
-    repo: event.repo?.name || null,
-    url: event.repo?.name ? `https://github.com/${event.repo.name}` : `https://github.com/${login}`,
-    createdAt: event.created_at,
-  }));
+  const activities = events
+    .map(event => normalizeGitHubEvent(event, login))
+    .filter(Boolean);
 
   activityCache.set(login, {
     activities,
