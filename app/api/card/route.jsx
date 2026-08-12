@@ -136,21 +136,21 @@ export async function GET(request) {
           }}
         />
 
-        {/* Glow effect behind avatar */}
+        {/* Glow effect behind hero */}
         <div
           style={{
             position: 'absolute',
-            top: '120',
-            left: '80',
-            width: '300',
-            height: '300',
+            top: '92',
+            left: '50',
+            width: '330',
+            height: '390',
             borderRadius: '50%',
             background: `radial-gradient(circle, ${agent.color}33 0%, transparent 70%)`,
             display: 'flex',
           }}
         />
 
-        {/* Left side — Avatar + Agent class */}
+        {/* Left side — Contribution hero */}
         <div
           style={{
             display: 'flex',
@@ -158,76 +158,54 @@ export async function GET(request) {
             alignItems: 'center',
             justifyContent: 'center',
             width: '400',
-            padding: '76px 40px 54px',
+            padding: '72px 34px 48px',
           }}
         >
-          {/* Agent mark */}
+          {/* Hero bust with the GitHub portrait as its head */}
           <div
             style={{
-              width: '52',
-              height: '52',
+              width: '268',
+              height: '300',
+              position: 'relative',
               alignItems: 'center',
-              justifyContent: 'center',
-              border: `1px solid ${agent.color}88`,
-              borderRadius: '12',
-              background: `${agent.color}18`,
-              color: agent.color,
-              fontSize: '20',
-              fontWeight: '800',
-              letterSpacing: '1',
-              marginBottom: '12',
+              flexDirection: 'column',
               display: 'flex',
             }}
           >
-            {agentMark}
-          </div>
-
-          {/* Avatar with border */}
-          <div
-            style={{
-              display: 'flex',
-              width: '180',
-              height: '180',
-              borderRadius: '50%',
-              border: `4px solid ${agent.color}`,
-              overflow: 'hidden',
-              boxShadow: `0 0 40px ${agent.color}44`,
-            }}
-          >
-            {avatarDataUrl ? (
-              <img
-                src={avatarDataUrl}
-                width="180"
-                height="180"
-                style={{ borderRadius: '50%', objectFit: 'cover' }}
-              />
-            ) : (
+            <div style={{ position: 'absolute', top: '108', left: '7', width: '254', height: '182', display: 'flex', background: `linear-gradient(145deg, ${agent.color}66, #090d14 72%)`, borderRadius: '126px 126px 22px 22px', border: `2px solid ${agent.color}88` }} />
+            <div style={{ position: 'absolute', top: '126', left: '68', width: '132', height: '166', display: 'flex', background: `linear-gradient(180deg, ${agent.color}, #111827 78%)`, borderRadius: '48px 48px 18px 18px', border: `2px solid ${agent.color}` }} />
+            <div style={{ position: 'absolute', top: '164', left: '101', width: '66', height: '66', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#080b10', border: `3px solid ${agent.color}`, transform: 'rotate(45deg)', boxShadow: `0 0 24px ${agent.color}99` }}>
               <div
                 style={{
-                  width: '180',
-                  height: '180',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '50%',
-                  background: `${agent.color}22`,
-                  color: agent.color,
-                  fontSize: '72',
-                  fontWeight: '800',
+                  transform: 'rotate(-45deg)',
+                  color: '#f8fafc',
+                  fontSize: '21',
+                  fontWeight: '900',
                 }}
               >
-                {avatarInitial}
+                {agentMark}
               </div>
-            )}
+            </div>
+            <div style={{ position: 'absolute', top: '4', width: '142', height: '142', display: 'flex', borderRadius: '50%', border: `5px solid ${agent.color}`, overflow: 'hidden', background: '#111827', boxShadow: `0 0 38px ${agent.color}66` }}>
+              {avatarDataUrl ? (
+                <img src={avatarDataUrl} width="142" height="142" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: '142', height: '142', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: `${agent.color}22`, color: agent.color, fontSize: '58', fontWeight: '800' }}>
+                  {avatarInitial}
+                </div>
+              )}
+            </div>
+            <div style={{ position: 'absolute', top: '132', width: '116', height: '18', display: 'flex', background: agent.color, borderRadius: '2px 2px 12px 12px', boxShadow: `0 5px 16px ${agent.color}66` }} />
           </div>
 
           {/* Name */}
           <div
             style={{
               color: '#e2e8f0',
-              fontSize: '28',
+              fontSize: '25',
               fontWeight: '700',
-              marginTop: '16',
+              marginTop: '4',
               display: 'flex',
               textAlign: 'center',
             }}
@@ -239,9 +217,9 @@ export async function GET(request) {
           <div
             style={{
               color: '#64748b',
-              fontSize: '18',
+              fontSize: '16',
               display: 'flex',
-              marginTop: '4',
+              marginTop: '3',
             }}
           >
             @{dev.login}
@@ -252,9 +230,9 @@ export async function GET(request) {
             <div
               style={{
                 color: '#94a3b8',
-                fontSize: '14',
+                fontSize: '12',
                 display: 'flex',
-                marginTop: '8',
+                marginTop: '6',
               }}
             >
               LOCATION · {dev.location}
@@ -570,14 +548,13 @@ export async function GET(request) {
           >
             DEVGLOBE / OPEN SOURCE IDENTITY
           </div>
-          <div
-            style={{
-              color: '#475569',
-              fontSize: '13',
-              display: 'flex',
-            }}
-          >
-            {getSiteHostname()}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '18' }}>
+            <div style={{ color: '#22d3ee', fontSize: '13', fontWeight: '700', display: 'flex' }}>
+              #buildinpublic
+            </div>
+            <div style={{ color: '#475569', fontSize: '13', display: 'flex' }}>
+              {getSiteHostname()}
+            </div>
           </div>
         </div>
 
