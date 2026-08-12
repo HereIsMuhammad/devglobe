@@ -678,6 +678,12 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  transition: width 0.2s ease, max-height 0.2s ease;
+}
+
+.recent-activity.recent-activity--minimized {
+  width: 220px;
+  max-height: 58px;
 }
 
 .recent-activity__header,
@@ -690,6 +696,16 @@ body {
 .recent-activity__header {
   padding: 14px 16px 12px;
   border-bottom: 1px solid var(--border);
+}
+
+.recent-activity--minimized .recent-activity__header {
+  border-bottom: 0;
+}
+
+.recent-activity__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .recent-activity__eyebrow,
@@ -721,6 +737,33 @@ body {
   margin-right: 6px;
   border-radius: 50%;
   background: currentColor;
+}
+
+.recent-activity__size-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  background: var(--overlay-subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.recent-activity__size-btn:hover,
+.recent-activity__size-btn:focus-visible {
+  color: var(--text-primary);
+  background: var(--overlay-subtle-strong);
+}
+
+.recent-activity--minimized .recent-activity__list,
+.recent-activity--minimized .recent-activity__updated {
+  display: none;
 }
 
 .recent-activity__list {
@@ -2129,6 +2172,12 @@ body {
     left: 12px;
     width: auto;
     max-height: 210px;
+  }
+  .recent-activity.recent-activity--minimized {
+    right: 12px;
+    left: auto;
+    width: 220px;
+    max-height: 58px;
   }
   .recent-activity__list { max-height: 130px; }
   .activity-row { grid-template-columns: 105px 1fr; }
