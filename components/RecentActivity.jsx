@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { formatRelativeTime } from '../lib/format.js';
 import { useActivityFeed } from './useActivityFeed.js';
 
 export default function RecentActivity({ developers }) {
+  const [minimized, setMinimized] = useState(false);
   const topDevelopers = useMemo(
     () => [...developers].sort((left, right) => right.score - left.score).slice(0, 5),
     [developers]
@@ -13,8 +14,14 @@ export default function RecentActivity({ developers }) {
   const logins = topDevelopers.map(developer => developer.login).join(',');
   const { activities, loading, newActivityIds, lastUpdated } = useActivityFeed(logins);
   const visibleActivities = useMemo(() => {
+    const now = new Date();
     const seenLogins = new Set();
     return activities.filter(activity => {
+      const createdAt = new Date(activity.createdAt);
+      const isToday = createdAt.getFullYear() === now.getFullYear()
+        && createdAt.getMonth() === now.getMonth()
+        && createdAt.getDate() === now.getDate();
+      if (!isToday) return false;
       if (seenLogins.has(activity.login)) return false;
       seenLogins.add(activity.login);
       return true;
@@ -25,21 +32,34 @@ export default function RecentActivity({ developers }) {
   const developerByLogin = new Map(topDevelopers.map(developer => [developer.login, developer]));
 
   return (
-    <section className="recent-activity" aria-labelledby="recent-activity-title">
+    <section className={`recent-activity${minimized ? ' recent-activity--minimized' : ''}`} aria-labelledby="recent-activity-title">
       <div className="recent-activity__header">
         <div>
           <span className="recent-activity__eyebrow">Top developers</span>
-          <h2 id="recent-activity-title">Recent activity</h2>
+          <h2 id="recent-activity-title">Today&apos;s activity</h2>
         </div>
-        <span className="recent-activity__live" role="status" aria-live="polite">
-          {visibleNewCount > 0 ? `${visibleNewCount} new` : 'Live'}
-        </span>
+        <div className="recent-activity__actions">
+          <span className="recent-activity__live" role="status" aria-live="polite">
+            {visibleNewCount > 0 ? `${visibleNewCount} new` : 'Live'}
+          </span>
+          <button
+            type="button"
+            className="recent-activity__size-btn"
+            aria-expanded={!minimized}
+            aria-controls="recent-activity-content"
+            aria-label={minimized ? 'Maximize recent activity' : 'Minimize recent activity'}
+            title={minimized ? 'Maximize' : 'Minimize'}
+            onClick={() => setMinimized(current => !current)}
+          >
+            <span aria-hidden="true">{minimized ? '□' : '−'}</span>
+          </button>
+        </div>
       </div>
 
-      <div className="recent-activity__list">
+      <div className="recent-activity__list" id="recent-activity-content">
         {loading && <p className="recent-activity__status">Loading public GitHub activity...</p>}
         {!loading && visibleActivities.length === 0 && (
-          <p className="recent-activity__status">Recent public activity is unavailable.</p>
+          <p className="recent-activity__status">No public activity from top developers today.</p>
         )}
         {visibleActivities.map(activity => {
           const developer = developerByLogin.get(activity.login);
