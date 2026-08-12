@@ -116,11 +116,11 @@ npm run dev
 
 | Dimension | Weight | Source |
 |-----------|--------|--------|
-| GitHub Stars | 25% | Total stars across repos |
-| GitHub Commits | 25% | Yearly commit activity |
-| Repo Reach | 20% | Forks + watchers |
-| SO Reputation | 15% | StackOverflow reputation |
-| SO Engagement | 10% | Answer acceptance × count |
+| GitHub Stars | 20% | Total stars across repos |
+| GitHub Commits | 20% | Yearly commit activity |
+| Repo Reach | 15% | Forks + watchers |
+| SO Reputation | 25% | StackOverflow reputation |
+| SO Engagement | 15% | Answer acceptance × count |
 | Community | 5% | Followers + badges |
 
 All dimensions are log-normalized to prevent outlier domination.

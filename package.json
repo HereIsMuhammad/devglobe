@@ -16,6 +16,7 @@
     "fetch-stackoverflow": "node scripts/fetch-stackoverflow.js",
     "geocode": "node scripts/geocode.js",
     "upload-cosmos": "node scripts/upload-cosmosdb.js",
+    "rescore-developers": "node scripts/rescore-developers.js",
     "review-nominations": "node scripts/review-nominations.js",
     "seed-emulator": "node scripts/seed-emulator.js"
   },
