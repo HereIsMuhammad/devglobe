@@ -166,6 +166,20 @@ body {
   box-shadow: none;
 }
 
+.btn--tour {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--overlay-subtle);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.btn--tour:hover {
+  background: var(--overlay-subtle-strong);
+  color: var(--text-primary);
+}
+
 .btn--primary {
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
   color: #fff;
@@ -430,6 +444,130 @@ body {
 .search-bar__reset:hover {
   background: rgba(239, 68, 68, 0.25);
   border-color: #f87171;
+}
+
+/* First-visit quick tour */
+.quick-tour {
+  position: fixed;
+  left: 24px;
+  bottom: 140px;
+  z-index: 450;
+  width: min(360px, calc(100vw - 48px));
+  padding: 20px;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-strong);
+  animation: fadeIn 0.2s ease;
+}
+
+.quick-tour__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.quick-tour__step {
+  margin-bottom: 7px;
+  color: #0891b2;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.quick-tour h2 {
+  padding-right: 24px;
+  font-size: 19px;
+  line-height: 1.25;
+}
+
+.quick-tour p {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.quick-tour__match {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.quick-tour__match img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.quick-tour__match span {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.quick-tour__match strong {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.quick-tour__action {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 6px;
+  background: #0891b2;
+  color: #fff;
+  font: 700 13px var(--font);
+  cursor: pointer;
+}
+
+.quick-tour__action:hover {
+  background: #0e7490;
+}
+
+.quick-tour__support {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.quick-tour__support a {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--overlay-subtle);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.quick-tour__support a:hover {
+  border-color: #0891b2;
+  background: var(--overlay-subtle-strong);
+}
+
+.tour-active .product-hunt-badge {
+  visibility: hidden;
 }
 
 /* Main layout */
@@ -2287,6 +2425,8 @@ body {
   height: 36px;
   border-radius: 50%;
   border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
 
@@ -2316,6 +2456,13 @@ body {
 .card-modal__social--reddit:hover {
   background: rgba(255, 69, 0, 0.12);
   border-color: rgba(255, 69, 0, 0.4);
+}
+
+.card-modal__share-status {
+  max-width: 250px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 /* =============== Public Share Page =============== */
@@ -2404,6 +2551,22 @@ body {
 }
 
 @media (max-width: 520px) {
+  .quick-tour {
+    left: 12px;
+    right: 12px;
+    bottom: 140px;
+    width: auto;
+  }
+
+  .card-modal__share {
+    flex-wrap: wrap;
+  }
+
+  .card-modal__share-status {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
   .share-page__actions {
     flex-direction: column;
   }

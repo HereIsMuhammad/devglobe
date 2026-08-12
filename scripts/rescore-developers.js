@@ -45,6 +45,28 @@ function changedScoreFields(before, after) {
   return SCORE_FIELDS.filter(field => JSON.stringify(before[field]) !== JSON.stringify(after[field]));
 }
 
+function isTransient(error) {
+  return ['ECONNRESET', 'ETIMEDOUT', 'EAI_AGAIN'].includes(error.code) ||
+    error.code === 408 || error.code === 429 || error.code >= 500;
+}
+
+async function patchWithRetry(item, operations, etag) {
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    try {
+      await item.patch(
+        { operations },
+        { accessCondition: { type: 'IfMatch', condition: etag } }
+      );
+      return;
+    } catch (error) {
+      if (!isTransient(error) || attempt === 5) throw error;
+      const delay = error.retryAfterInMs || attempt * 1000;
+      console.warn(`Transient Cosmos error; retrying in ${delay}ms (${attempt}/5)...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
 async function main() {
   const { endpoint, key } = requireConfiguration();
   const client = new CosmosClient({ endpoint, key });
@@ -86,10 +108,8 @@ async function main() {
   let updated = 0;
   for (const { before, after, fields } of changes) {
     const operations = fields.map(field => ({ op: 'set', path: `/${field}`, value: after[field] }));
-    await container.item(before.id, getPartitionKey(before, partitionPaths)).patch(
-      { operations },
-      { accessCondition: { type: 'IfMatch', condition: before._etag } }
-    );
+    const item = container.item(before.id, getPartitionKey(before, partitionPaths));
+    await patchWithRetry(item, operations, before._etag);
     updated++;
     if (updated % 100 === 0) console.log(`Updated ${updated}/${changes.length} records...`);
   }
