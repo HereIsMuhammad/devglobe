@@ -12,8 +12,10 @@ const DATABASE = process.env.COSMOS_DATABASE || 'devglobe';
 const CONTAINER = process.env.COSMOS_CONTAINER || 'developers';
 const SOURCES = {
   'github-star': 'https://stars.github.com/profiles/',
+  'google-developer-expert': 'https://developers.google.com/community/experts/directory/',
   'cncf-ambassador': 'https://raw.githubusercontent.com/cncf/people/main/people.json',
 };
+const GOOGLE_PROFILES_API = 'https://developerprofiles-pa.clients6.google.com/v1/content:searchProfiles';
 
 function normalizeLogin(value) {
   if (typeof value !== 'string') return null;
@@ -70,16 +72,69 @@ async function fetchCNCFAmbassadors() {
   return ambassadors;
 }
 
+async function fetchGoogleDeveloperExperts() {
+  const directoryResponse = await fetch(SOURCES['google-developer-expert'], {
+    headers: { 'User-Agent': 'DevGlobe credential enricher' },
+  });
+  if (!directoryResponse.ok) throw new Error(`Google Experts directory returned ${directoryResponse.status}`);
+
+  const html = await directoryResponse.text();
+  const catalog = html.match(/<devsite-catalog\b[\s\S]*?<\/devsite-catalog>/i)?.[0] || '';
+  const specializations = [...catalog.matchAll(/<option\s+value="([a-z0-9-]+)"/gi)].map(match => match[1]);
+  const apiKey = html.match(/AIza[\w-]{30,}/)?.[0];
+  if (specializations.length === 0 || !apiKey) {
+    throw new Error('Google Experts directory configuration was not found');
+  }
+
+  const experts = new Set();
+  for (const specialization of specializations) {
+    let pageToken;
+    do {
+      const params = new URLSearchParams({
+        access_token: '',
+        anyBadgePaths: `developers.google.com/profile/badges/community/gde/specialization/${specialization}`,
+        pageSize: '250',
+        key: apiKey,
+      });
+      if (pageToken) params.set('pageToken', pageToken);
+
+      const response = await fetch(`${GOOGLE_PROFILES_API}?${params}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          Origin: 'https://developers.google.com',
+          Referer: 'https://developers.google.com/',
+          'User-Agent': 'DevGlobe credential enricher',
+        },
+      });
+      if (!response.ok) throw new Error(`Google Developer Profiles returned ${response.status}`);
+
+      const data = await response.json();
+      (data.profiles || []).forEach(profile => {
+        const login = normalizeLogin(profile.githubId);
+        if (login) experts.add(login);
+      });
+      pageToken = data.pageToken;
+    } while (pageToken);
+  }
+
+  return experts;
+}
+
 async function main() {
   if (!process.env.COSMOS_ENDPOINT || !process.env.COSMOS_KEY) {
     throw new Error('COSMOS_ENDPOINT and COSMOS_KEY are required');
   }
 
-  const [githubStars, cncfAmbassadors] = await Promise.all([
+  const [githubStars, googleDeveloperExperts, cncfAmbassadors] = await Promise.all([
     fetchGitHubStars(),
+    fetchGoogleDeveloperExperts(),
     fetchCNCFAmbassadors(),
   ]);
-  console.log(`Official rosters: ${githubStars.size} GitHub Stars, ${cncfAmbassadors.size} CNCF Ambassadors`);
+  console.log(
+    `Official rosters: ${githubStars.size} GitHub Stars, ${googleDeveloperExperts.size} Google Developer Experts, ` +
+    `${cncfAmbassadors.size} CNCF Ambassadors`
+  );
 
   const client = new CosmosClient({
     endpoint: process.env.COSMOS_ENDPOINT,
@@ -96,6 +151,7 @@ async function main() {
 
     const verifiedTags = [];
     if (githubStars.has(login)) verifiedTags.push('github-star');
+    if (googleDeveloperExperts.has(login)) verifiedTags.push('google-developer-expert');
     if (cncfAmbassadors.has(login)) verifiedTags.push('cncf-ambassador');
     if (verifiedTags.length === 0) return [];
 

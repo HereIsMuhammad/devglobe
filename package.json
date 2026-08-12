@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test": "node --test tests/*.test.js",
     "start": "next start",
     "lint": "next lint",
     "build-data": "node scripts/build-dataset.js",
@@ -18,6 +19,7 @@
     "upload-cosmos": "node scripts/upload-cosmosdb.js",
     "rescore-developers": "node scripts/rescore-developers.js",
     "populate-special-tags": "node scripts/populate-special-tags.js",
+    "setup-activity-container": "node scripts/setup-activity-container.js",
     "review-nominations": "node scripts/review-nominations.js",
     "seed-emulator": "node scripts/seed-emulator.js"
   },
@@ -32,7 +34,8 @@
     "node-fetch": "^3.3.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-globe.gl": "^2.38.0"
+    "react-globe.gl": "^2.38.0",
+    "simple-icons": "^16.28.0"
   },
   "devDependencies": {
     "eslint": "^9.0.0",
