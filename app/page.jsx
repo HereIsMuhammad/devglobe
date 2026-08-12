@@ -9,6 +9,7 @@ import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
+import RecentActivity from '../components/RecentActivity.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
 import dynamic from 'next/dynamic';
@@ -391,6 +392,9 @@ export default function Home() {
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
+        {!selectedDev && compareDevs.length !== 2 && (
+          <RecentActivity developers={developers} />
+        )}
         {sidebarOpen && (
           <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
         )}
