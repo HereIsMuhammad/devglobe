@@ -3,7 +3,7 @@
 import React from 'react';
 import UserMenu from './UserMenu.jsx';
 
-export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, claimStatus, sidebarOpen, onToggleSidebar, onAddMe }) {
+export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, claimStatus, sidebarOpen, onToggleSidebar, onAddMe, onStartTour }) {
   return (
     <header className="header">
       <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
@@ -12,6 +12,13 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
         <span className="header__subtitle">Where Developers and AI Agents Connect</span>
       </div>
       <div className="header__actions">
+        <button type="button" onClick={onStartTour} className="btn btn--tour" aria-label="Start quick tour" title="Quick tour">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4" />
+            <path d="M12 18h.01" />
+          </svg>
+        </button>
         <button type="button" onClick={onAddMe} className="btn btn--join" aria-label="Add me to the globe" title="Add me to the globe">
           <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false">
             <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-2 5c-2.97 0-6 1.49-6 3v1h12v-1c0-1.51-3.03-3-6-3zm-4.9 3c.4-1 2.2-2 4.9-2s4.5 1 4.9 2H1.1zM12.5 4h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0V5h1a.5.5 0 0 0 0-1h-1V3a.5.5 0 0 0-1 0v1z"></path>

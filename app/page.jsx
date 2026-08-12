@@ -8,6 +8,7 @@ import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
+import QuickTour from '../components/QuickTour.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
 import dynamic from 'next/dynamic';
@@ -32,6 +33,8 @@ export default function Home() {
   const [cardRequest, setCardRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
+  const [tourStep, setTourStep] = useState(null);
+  const [tourMatch, setTourMatch] = useState(null);
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -47,6 +50,12 @@ export default function Home() {
     } catch (err) {
       // localStorage unavailable (e.g. private browsing) — fall back to dark
     }
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem('devglobe-tour-complete')) setTourStep('search');
+    } catch { /* localStorage unavailable; leave the tour closed */ }
   }, []);
 
   // Fetch session on mount
@@ -194,6 +203,43 @@ export default function Home() {
     }
   }, [developers]);
 
+  const completeTour = useCallback(() => {
+    setTourStep(null);
+    setTourMatch(null);
+    try { localStorage.setItem('devglobe-tour-complete', '1'); } catch { /* ignore persistence failures */ }
+  }, []);
+
+  const handleTourSearchState = useCallback(({ results }) => {
+    if (!tourStep) return;
+    if (results.length === 0) {
+      setTourMatch(null);
+      setTourStep('missing');
+    } else if (results.length === 1) {
+      setTourMatch(results[0]);
+      setTourStep('found');
+    } else {
+      setTourMatch(null);
+      setTourStep('refine');
+    }
+  }, [tourStep]);
+
+  const handleTourFocusSearch = useCallback(() => {
+    setTourStep('search');
+    requestAnimationFrame(() => document.querySelector('#search-bar input')?.focus());
+  }, []);
+
+  const handleTourAddMe = useCallback(() => {
+    setTourMatch(null);
+    setTourStep('support');
+    setShowAddMe(true);
+  }, []);
+
+  const handleTourGenerateCard = useCallback((developer) => {
+    setTourMatch(null);
+    setTourStep('support');
+    handleGenerateCard(developer);
+  }, [handleGenerateCard]);
+
   const handleResetFilter = useCallback(() => {
     setFiltered(developers);
   }, [developers]);
@@ -279,7 +325,7 @@ export default function Home() {
   }
 
   return (
-    <div id="app">
+    <div id="app" className={tourStep ? 'tour-active' : ''}>
       <Header
         onHome={handleHome}
         theme={theme}
@@ -291,12 +337,22 @@ export default function Home() {
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
         onAddMe={handleAddMe}
+        onStartTour={handleTourFocusSearch}
       />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
         onReset={handleResetFilter}
         onGenerateCard={handleGenerateCard}
+        onSearchState={handleTourSearchState}
+      />
+      <QuickTour
+        step={tourStep}
+        matchedDeveloper={tourMatch}
+        onFocusSearch={handleTourFocusSearch}
+        onAddMe={handleTourAddMe}
+        onGenerateCard={handleTourGenerateCard}
+        onClose={completeTour}
       />
       <a
         className="product-hunt-badge"
