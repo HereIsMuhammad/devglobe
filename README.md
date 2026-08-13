@@ -224,6 +224,16 @@ The timer invokes the collector every minute, matching GitHub's advertised polli
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and areas where help is needed.
 
+## 🤖 MCP Server
+
+DevGlobe includes a stdio MCP server for public developer discovery and consent-gated agent introductions. It exposes developer search, public profile lookup, introduction requests, and request status polling.
+
+```bash
+npm run mcp
+```
+
+See [docs/mcp-server.md](docs/mcp-server.md) for credential provisioning, Cosmos DB setup, client configuration, and the consent lifecycle.
+
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE) for details.

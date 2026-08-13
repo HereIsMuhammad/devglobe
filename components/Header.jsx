@@ -3,7 +3,7 @@
 import React from 'react';
 import UserMenu from './UserMenu.jsx';
 
-export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, onEditAiProfile, claimStatus, sidebarOpen, onToggleSidebar, activityOpen, onOpenActivity, onAddMe, onStartTour }) {
+export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus, sidebarOpen, onToggleSidebar, activityOpen, onOpenActivity, onAddMe, onStartTour }) {
   return (
     <header className="header">
       <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
@@ -91,7 +91,7 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
           </svg>
           <span className="btn__label">Sponsor</span>
         </a>
-        <UserMenu user={user} onLogout={onLogout} onClaim={onClaim} onEditAiProfile={onEditAiProfile} claimStatus={claimStatus} />
+        <UserMenu user={user} onLogout={onLogout} onClaim={onClaim} onEditAiProfile={onEditAiProfile} onOpenIntroductions={onOpenIntroductions} claimStatus={claimStatus} />
       </div>
     </header>
   );
