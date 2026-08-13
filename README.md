@@ -17,6 +17,9 @@
 
 DevGlobe is an interactive global developer network built for engineering teams, open-source communities, and the emerging ecosystem of AI agents. It combines a 3D developer map with Azure Cosmos DB vector and hybrid search to surface relevant expertise from real contribution signals rather than popularity alone. The long-term vision is a consent-aware discovery layer where AI agents can find the right human collaborators.
 
+> [!IMPORTANT]
+> **Connect an AI agent to DevGlobe:** MCP-compatible agents can use the hosted endpoint at `https://www.devglobe.dev/mcp` to search public developer profiles without credentials. Verified agents can also request developer-approved introductions. See the [MCP setup guide](docs/mcp-server.md).
+
 ## 🎬 Watch the DevGlobe Demo
 
 <div align="center">
@@ -36,7 +39,7 @@ DevGlobe is an interactive global developer network built for engineering teams,
 - **Composite Scoring** — Each developer scored 0–100 across 6 dimensions
 - **Leaderboard** — Filter by country, language, or sort by score/stars/commits
 - **Developer Profiles** — Click any pin to see detailed stats, top repos, and contribution breakdown
-- **Agent-Ready Roadmap** — Consent-aware discovery, MCP access, and developer-agent introductions are planned
+- **Remote MCP Access** — Agents can discover developers and request consent-gated introductions through hosted tools
 - **Mobile Responsive** — Bottom-sheet filters and full-width search on smaller screens
 
 ## 🚀 Quick Start
@@ -116,11 +119,11 @@ npm run dev
 
 | Dimension | Weight | Source |
 |-----------|--------|--------|
-| GitHub Stars | 25% | Total stars across repos |
-| GitHub Commits | 25% | Yearly commit activity |
-| Repo Reach | 20% | Forks + watchers |
-| SO Reputation | 15% | StackOverflow reputation |
-| SO Engagement | 10% | Answer acceptance × count |
+| GitHub Stars | 20% | Total stars across repos |
+| GitHub Commits | 20% | Yearly commit activity |
+| Repo Reach | 15% | Forks + watchers |
+| SO Reputation | 25% | StackOverflow reputation |
+| SO Engagement | 15% | Answer acceptance × count |
 | Community | 5% | Followers + badges |
 
 All dimensions are log-normalized to prevent outlier domination.
@@ -136,6 +139,28 @@ npm run geocode               # Convert locations to lat/lng
 npm run build-data            # Run full pipeline
 npm run upload-cosmos         # Upload to Azure Cosmos DB
 ```
+
+### Developer credentials
+
+Verified community credentials are stored explicitly on each developer document. Do not infer them from stars, followers, or profile text.
+
+```json
+{
+   "login": "example",
+   "specialTags": ["github-star", "microsoft-mvp", "aws-community-builder"]
+}
+```
+
+Supported IDs: `github-star`, `microsoft-mvp`, `google-developer-expert`, `docker-captain`, `cncf-ambassador`, `aws-hero`, and `aws-community-builder`. The legacy `docker-champion` ID remains supported. The upload script preserves this field from source JSON, and the list, detail, and search APIs project it from Cosmos DB.
+
+Populate exact GitHub-login matches from the official GitHub Stars, Google Developer Experts, and CNCF Ambassadors rosters:
+
+```bash
+npm run populate-special-tags             # Dry run
+npm run populate-special-tags -- --apply  # Patch verified matches in Cosmos DB
+```
+
+The command preserves existing tags and is idempotent. Other credentials require an official profile that explicitly identifies the developer's GitHub account; do not populate them by matching display names.
 
 ## 📁 Project Structure
 
@@ -178,10 +203,45 @@ Required environment variables:
 | `COSMOS_KEY` | Azure Cosmos DB key |
 | `COSMOS_DATABASE` | Database name |
 | `COSMOS_CONTAINER` | Container name |
+| `COSMOS_ACTIVITY_CONTAINER` | Rolling GitHub activity container (`activities`) |
+| `ACTIVITY_INGEST_SECRET` | Bearer secret for the activity collector endpoint |
+
+### Live developer activity
+
+The Activity tab is anonymous and shows a rolling 24-hour feed for indexed developers. Create its dedicated Cosmos container before deployment:
+
+```bash
+npm run setup-activity-container
+```
+
+Deploy `functions/activity-ingest` as an Azure Timer Function and configure these application settings:
+
+```env
+ACTIVITY_INGEST_URL=https://your-site.example/api/activities/ingest
+ACTIVITY_INGEST_SECRET=the-same-secret-configured-on-the-site
+```
+
+The timer invokes the collector every minute, matching GitHub's advertised polling interval. GitHub's public Events API is best-effort and may delay or omit events; the 15-second browser refresh does not guarantee GitHub source delivery within that interval. A valid `GITHUB_TOKEN` is required for full three-page collection; anonymous fallback inspects one page only. The Cosmos activity container uses a 48-hour TTL while the API exposes only the latest 24 hours.
 
 ## 🤝 Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and areas where help is needed.
+
+## 🤖 MCP Server
+
+DevGlobe exposes a hosted Streamable HTTP MCP endpoint for public developer discovery and consent-gated agent introductions:
+
+```text
+https://www.devglobe.dev/mcp
+```
+
+Public search and profile lookup work anonymously. Introduction requests and status polling require an issued agent credential. A local stdio connector remains available for clients that do not support remote MCP:
+
+```bash
+npm run mcp
+```
+
+See [docs/mcp-server.md](docs/mcp-server.md) for credential provisioning, Cosmos DB setup, client configuration, and the consent lifecycle.
 
 ## 📄 License
 

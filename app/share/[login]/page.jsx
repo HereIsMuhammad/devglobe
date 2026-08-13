@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getSiteUrl } from '../../../lib/site.js';
+import { headers } from 'next/headers';
+import { getSiteUrl, SOCIAL_PREVIEW_VERSION } from '../../../lib/site.js';
 
 export async function generateMetadata({ params }) {
   const { login } = await params;
@@ -7,8 +8,8 @@ export async function generateMetadata({ params }) {
   const encodedLogin = encodeURIComponent(login);
   const title = `@${login}'s Developer Card | DevGlobe`;
   const description = `Explore @${login}'s open-source developer identity, global rank, and impact on DevGlobe.`;
-  const pageUrl = `${siteUrl}/share/${encodedLogin}`;
-  const imageUrl = `${siteUrl}/api/card?login=${encodedLogin}`;
+  const pageUrl = `${siteUrl}/share/${encodedLogin}?v=${SOCIAL_PREVIEW_VERSION}`;
+  const imageUrl = `${siteUrl}/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}.png`;
 
   return {
     title,
@@ -19,20 +20,25 @@ export async function generateMetadata({ params }) {
       description,
       url: pageUrl,
       siteName: 'DevGlobe',
-      type: 'profile',
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: `DevGlobe developer card for @${login}` }],
+      type: 'website',
+      images: [{ url: imageUrl, width: 1200, height: 630, type: 'image/png', alt: `DevGlobe developer card for @${login}` }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [imageUrl],
+      images: [{ url: imageUrl, alt: `DevGlobe developer card for @${login}` }],
     },
   };
 }
 
 export default async function DeveloperSharePage({ params }) {
   const { login } = await params;
+  const requestHeaders = await headers();
+  console.info('social-preview-page', {
+    login,
+    userAgent: requestHeaders.get('user-agent') || 'unknown',
+  });
   const encodedLogin = encodeURIComponent(login);
   const siteUrl = getSiteUrl();
   const pageUrl = `${siteUrl}/share/${encodedLogin}`;
@@ -71,7 +77,7 @@ export default async function DeveloperSharePage({ params }) {
         </header>
         <img
           className="share-page__card"
-          src={`/api/card?login=${encodedLogin}`}
+          src={`/api/preview/v${SOCIAL_PREVIEW_VERSION}/${encodedLogin}.png`}
           alt={`Developer card for @${login}`}
         />
         <div className="share-page__actions">

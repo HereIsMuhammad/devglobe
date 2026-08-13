@@ -85,7 +85,7 @@ export async function GET(request) {
         query: `
           SELECT TOP ${limit}
             c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
-            c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation,
+            c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation, c.specialTags,
             VectorDistance(c.embedding, @embedding) AS relevance
           FROM c
           WHERE ${PUBLIC_FILTER}
@@ -101,7 +101,7 @@ export async function GET(request) {
         query: `
           SELECT TOP ${limit}
             c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
-            c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation
+            c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation, c.specialTags
           FROM c
           WHERE (
              CONTAINS(LOWER(c.login), @q)
@@ -132,7 +132,7 @@ export async function GET(request) {
           query: `
             SELECT TOP ${limit}
               c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
-              c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation
+              c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation, c.specialTags
             FROM c
             WHERE ${PUBLIC_FILTER}
             ORDER BY VectorDistance(c.embedding, @embedding)
@@ -143,7 +143,7 @@ export async function GET(request) {
           query: `
             SELECT TOP ${limit}
               c.id, c.login, c.name, c.avatarUrl, c.location, c.lat, c.lng,
-              c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation
+              c.topLanguage, c.score, c.totalStars, c.followers, c.soReputation, c.specialTags
             FROM c
             WHERE (
                CONTAINS(LOWER(c.login), @q)

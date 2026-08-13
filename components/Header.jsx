@@ -3,7 +3,7 @@
 import React from 'react';
 import UserMenu from './UserMenu.jsx';
 
-export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, claimStatus, sidebarOpen, onToggleSidebar, onAddMe }) {
+export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus, sidebarOpen, onToggleSidebar, activityOpen, onOpenActivity, onAddMe, onStartTour }) {
   return (
     <header className="header">
       <div className="header__brand" onClick={onHome} style={{ cursor: 'pointer' }}>
@@ -12,10 +12,30 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
         <span className="header__subtitle">Search beyond traditional professional networks</span>
       </div>
       <div className="header__actions">
-        <button type="button" onClick={onAddMe} className="btn btn--join">
+        <button type="button" onClick={onStartTour} className="btn btn--tour" aria-label="Start quick tour" title="Quick tour">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4" />
+            <path d="M12 18h.01" />
+          </svg>
+        </button>
+        <button type="button" onClick={onAddMe} className="btn btn--join" aria-label="Add me to the globe" title="Add me to the globe">
           <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false">
             <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-2 5c-2.97 0-6 1.49-6 3v1h12v-1c0-1.51-3.03-3-6-3zm-4.9 3c.4-1 2.2-2 4.9-2s4.5 1 4.9 2H1.1zM12.5 4h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0V5h1a.5.5 0 0 0 0-1h-1V3a.5.5 0 0 0-1 0v1z"></path>
           </svg><span className="btn__label">Add Me To Globe</span>
+        </button>
+        <button
+          type="button"
+          className={`btn btn--activity${activityOpen ? ' btn--active' : ''}`}
+          onClick={onOpenActivity}
+          aria-label={activityOpen ? 'Close live activity' : 'Open live activity'}
+          aria-expanded={activityOpen}
+          title="Live developer activity"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 12h4l2-7 4 14 2-7h6" />
+          </svg>
+          <span className="btn__label">Activity</span>
         </button>
         <button
           type="button"
@@ -59,19 +79,19 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
             </svg>
           )}
         </button>
-        <a href="https://github.com/sajeetharan/devglobe" target="_blank" rel="noreferrer" className="btn btn--star">
-          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+        <a href="https://github.com/sajeetharan/devglobe" target="_blank" rel="noreferrer" className="btn btn--star" aria-label="Star DevGlobe on GitHub" title="Star DevGlobe on GitHub">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
             <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z" />
           </svg>
           <span className="btn__label">Star on GitHub</span>
         </a>
-        <a href="https://github.com/sponsors/sajeetharan" target="_blank" rel="noreferrer" className="btn btn--sponsor">
-          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+        <a href="https://github.com/sponsors/sajeetharan" target="_blank" rel="noreferrer" className="btn btn--sponsor" aria-label="Sponsor DevGlobe on GitHub" title="Sponsor DevGlobe on GitHub">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
             <path d="m8 14.25.345.666a.75.75 0 0 1-.69 0l-.008-.004-.018-.01a7.152 7.152 0 0 1-.31-.17 22.055 22.055 0 0 1-3.434-2.414C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.045 5.231-3.885 6.818a22.066 22.066 0 0 1-3.744 2.584l-.018.01-.006.003h-.002z" />
           </svg>
           <span className="btn__label">Sponsor</span>
         </a>
-        <UserMenu user={user} onLogout={onLogout} onClaim={onClaim} claimStatus={claimStatus} />
+        <UserMenu user={user} onLogout={onLogout} onClaim={onClaim} onEditAiProfile={onEditAiProfile} onOpenIntroductions={onOpenIntroductions} claimStatus={claimStatus} />
       </div>
     </header>
   );

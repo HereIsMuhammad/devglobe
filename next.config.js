@@ -6,7 +6,7 @@ const nextConfig = {
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'dev-globe-viz.vercel.app' }],
-        destination: 'https://devglobe.dev/:path*',
+        destination: 'https://www.devglobe.dev/:path*',
         permanent: true,
       },
     ];

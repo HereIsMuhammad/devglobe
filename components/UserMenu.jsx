@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function UserMenu({ user, onLogout, onClaim, claimStatus }) {
+export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -18,11 +18,11 @@ export default function UserMenu({ user, onLogout, onClaim, claimStatus }) {
 
   if (!user) {
     return (
-      <a href="/api/auth/github" className="btn btn--signin">
-        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+      <a href="/api/auth/github" className="btn btn--signin" aria-label="Sign in with GitHub" title="Sign in with GitHub">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
         </svg>
-        Sign in with GitHub
+        <span className="btn__label">Sign in with GitHub</span>
       </a>
     );
   }
@@ -63,12 +63,31 @@ export default function UserMenu({ user, onLogout, onClaim, claimStatus }) {
             </button>
           )}
           {claimStatus === 'claimed' && (
-            <div className="user-menu__item user-menu__item--claimed">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-                <path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z" />
-              </svg>
-              Profile claimed ✓
-            </div>
+            <>
+              <div className="user-menu__item user-menu__item--claimed">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+                  <path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z" />
+                </svg>
+                Profile claimed ✓
+              </div>
+              <button className="user-menu__item" onClick={() => { onEditAiProfile(); setOpen(false); }}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 8V4H8" />
+                  <rect width="16" height="12" x="4" y="8" rx="2" />
+                  <path d="M2 14h2" />
+                  <path d="M20 14h2" />
+                  <path d="M9 13v2" />
+                  <path d="M15 13v2" />
+                </svg>
+                AI collaboration settings
+              </button>
+              <button className="user-menu__item" onClick={() => { onOpenIntroductions(); setOpen(false); }}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4z" />
+                </svg>
+                Agent requests
+              </button>
+            </>
           )}
           {claimStatus === 'no_match' && (
             <div className="user-menu__item user-menu__item--no-match">

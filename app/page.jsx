@@ -8,6 +8,9 @@ import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
+import AiProfileModal from '../components/AiProfileModal.jsx';
+import IntroductionInboxModal from '../components/IntroductionInboxModal.jsx';
+import QuickTour from '../components/QuickTour.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
 import dynamic from 'next/dynamic';
@@ -16,6 +19,7 @@ const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
 
 export default function Home() {
   const [developers, setDevelopers] = useState([]);
+  const [datasetCount, setDatasetCount] = useState(null);
   const [filtered, setFiltered] = useState([]);
   const [selectedDev, setSelectedDev] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,9 +32,14 @@ export default function Home() {
   const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'claimed' | 'no_match'
   const [claimedLogins, setClaimedLogins] = useState(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarView, setSidebarView] = useState('leaderboard');
   const [cardRequest, setCardRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
+  const [showAiProfile, setShowAiProfile] = useState(false);
+  const [showIntroductions, setShowIntroductions] = useState(false);
+  const [tourStep, setTourStep] = useState(null);
+  const [tourMatch, setTourMatch] = useState(null);
   const globeRef = useRef(null);
 
   useEffect(() => {
@@ -46,6 +55,12 @@ export default function Home() {
     } catch (err) {
       // localStorage unavailable (e.g. private browsing) — fall back to dark
     }
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem('devglobe-tour-complete')) setTourStep('search');
+    } catch { /* localStorage unavailable; leave the tour closed */ }
   }, []);
 
   // Fetch session on mount
@@ -78,7 +93,13 @@ export default function Home() {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
     setClaimStatus('unclaimed');
+    setShowAiProfile(false);
+    setShowIntroductions(false);
   }, []);
+
+  const handleAiProfileSaved = useCallback((aiProfile) => {
+    setSelectedDev(current => current?.login === user?.login ? { ...current, aiProfile } : current);
+  }, [user]);
 
   const handleClaim = useCallback(async () => {
     try {
@@ -146,7 +167,14 @@ export default function Home() {
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch('/api/developers');
+        fetch('/api/developers/count', { signal: AbortSignal.timeout(10000) })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (Number.isInteger(data?.count)) setDatasetCount(data.count);
+          })
+          .catch(() => {});
+
+        const res = await fetch('/api/developers', { signal: AbortSignal.timeout(30000) });
         if (!res.ok) throw new Error(`Failed to load data: ${res.status}`);
         const raw = await res.json();
         const scored = addDeveloperRanks(scoreAll(raw));
@@ -186,6 +214,43 @@ export default function Home() {
     }
   }, [developers]);
 
+  const completeTour = useCallback(() => {
+    setTourStep(null);
+    setTourMatch(null);
+    try { localStorage.setItem('devglobe-tour-complete', '1'); } catch { /* ignore persistence failures */ }
+  }, []);
+
+  const handleTourSearchState = useCallback(({ results }) => {
+    if (!tourStep) return;
+    if (results.length === 0) {
+      setTourMatch(null);
+      setTourStep('missing');
+    } else if (results.length === 1) {
+      setTourMatch(results[0]);
+      setTourStep('found');
+    } else {
+      setTourMatch(null);
+      setTourStep('refine');
+    }
+  }, [tourStep]);
+
+  const handleTourFocusSearch = useCallback(() => {
+    setTourStep('search');
+    requestAnimationFrame(() => document.querySelector('#search-bar input')?.focus());
+  }, []);
+
+  const handleTourAddMe = useCallback(() => {
+    setTourMatch(null);
+    setTourStep('support');
+    setShowAddMe(true);
+  }, []);
+
+  const handleTourGenerateCard = useCallback((developer) => {
+    setTourMatch(null);
+    setTourStep('support');
+    handleGenerateCard(developer);
+  }, [handleGenerateCard]);
+
   const handleResetFilter = useCallback(() => {
     setFiltered(developers);
   }, [developers]);
@@ -201,7 +266,23 @@ export default function Home() {
   }, []);
 
   const handleToggleSidebar = useCallback(() => {
-    setSidebarOpen(prev => !prev);
+    setSidebarView('leaderboard');
+    setSidebarOpen(prev => sidebarView === 'leaderboard' ? !prev : true);
+  }, [sidebarView]);
+
+  const handleOpenActivity = useCallback(() => {
+    if (sidebarView === 'activity') {
+      setSidebarOpen(false);
+      setSidebarView('leaderboard');
+      return;
+    }
+    setSidebarView('activity');
+    setSidebarOpen(true);
+  }, [sidebarView]);
+
+  const handleCloseSidebar = useCallback(() => {
+    setSidebarOpen(false);
+    setSidebarView('leaderboard');
   }, []);
 
   const handleSelectCountry = useCallback((country, view) => {
@@ -267,11 +348,11 @@ export default function Home() {
   }, [developers]);
 
   if (loading || error) {
-    return <LoadingOverlay error={error} />;
+    return <LoadingOverlay error={error} datasetCount={datasetCount} />;
   }
 
   return (
-    <div id="app">
+    <div id="app" className={tourStep ? 'tour-active' : ''}>
       <Header
         onHome={handleHome}
         theme={theme}
@@ -279,16 +360,30 @@ export default function Home() {
         user={user}
         onLogout={handleLogout}
         onClaim={handleClaim}
+        onEditAiProfile={() => setShowAiProfile(true)}
+        onOpenIntroductions={() => setShowIntroductions(true)}
         claimStatus={claimStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
+        activityOpen={sidebarView === 'activity'}
+        onOpenActivity={handleOpenActivity}
         onAddMe={handleAddMe}
+        onStartTour={handleTourFocusSearch}
       />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
         onReset={handleResetFilter}
         onGenerateCard={handleGenerateCard}
+        onSearchState={handleTourSearchState}
+      />
+      <QuickTour
+        step={tourStep}
+        matchedDeveloper={tourMatch}
+        onFocusSearch={handleTourFocusSearch}
+        onAddMe={handleTourAddMe}
+        onGenerateCard={handleTourGenerateCard}
+        onClose={completeTour}
       />
       <a
         className="product-hunt-badge"
@@ -325,10 +420,12 @@ export default function Home() {
           onToggleCompare={handleToggleCompare}
           claimedLogins={claimedLogins}
           open={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
+          onClose={handleCloseSidebar}
+          activeView={sidebarView}
+          onViewChange={setSidebarView}
         />
         {sidebarOpen && (
-          <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+          <div className="sidebar-backdrop" onClick={handleCloseSidebar} />
         )}
         {selectedDev && (
           <DetailPanel
@@ -344,6 +441,13 @@ export default function Home() {
           <ComparePanel devs={compareDevs} onClose={handleCloseCompare} />
         )}
         {showAddMe && <AddMeModal onClose={handleCloseAddMe} />}
+        {showAiProfile && (
+          <AiProfileModal
+            onClose={() => setShowAiProfile(false)}
+            onSaved={handleAiProfileSaved}
+          />
+        )}
+        {showIntroductions && <IntroductionInboxModal onClose={() => setShowIntroductions(false)} />}
       </main>
     </div>
   );

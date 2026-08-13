@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
+import SpecialTags from './SpecialTags.jsx';
 
 const SAMPLES_BY_MODE = {
   text: [
@@ -23,7 +24,7 @@ const SAMPLES_BY_MODE = {
   ],
 };
 
-export default function SearchBar({ developers, onResults, onReset, onGenerateCard }) {
+export default function SearchBar({ developers, onResults, onReset, onGenerateCard, onSearchState }) {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState('text');
   const [topN, setTopN] = useState(50);
@@ -44,14 +45,37 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
 
     if (m === 'text') {
       const lower = q.trim().toLowerCase();
-      const results = developers.filter(d =>
+      let results = developers.filter(d =>
         (d.login && d.login.toLowerCase().includes(lower)) ||
         (d.name && d.name.toLowerCase().includes(lower)) ||
         (d.location && d.location.toLowerCase().includes(lower))
       );
+
+      if (results.length === 0) {
+        if (abortRef.current) abortRef.current.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+        setSearching(true);
+        try {
+          const response = await fetch(
+            `/api/search?q=${encodeURIComponent(q)}&mode=text&top=${topN}`,
+            { signal: controller.signal }
+          );
+          const data = await response.json();
+          if (controller.signal.aborted) return;
+          results = data.results || [];
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+          console.error('Text search fallback failed:', error);
+        } finally {
+          if (!controller.signal.aborted) setSearching(false);
+        }
+      }
+
       onResults(results);
       setResultCount(results.length);
       setSingleResult(results.length === 1 ? results[0] : null);
+      onSearchState?.({ query: q.trim(), results });
       return;
     }
 
@@ -74,13 +98,14 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
           ? developers.find(developer => developer.login === results[0].login) || results[0]
           : null;
         setSingleResult(matchedDeveloper);
+        onSearchState?.({ query: q.trim(), results });
       }
     } catch (e) {
       if (e.name !== 'AbortError') console.error('Search failed:', e);
     } finally {
       if (!controller.signal.aborted) setSearching(false);
     }
-  }, [developers, onResults, onReset, topN]);
+  }, [developers, onResults, onReset, onSearchState, topN]);
 
   const handleInput = (e) => {
     const val = e.target.value;
@@ -175,7 +200,10 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
             <div className="search-bar__card-suggestion">
               <img src={singleResult.avatarUrl} alt="" />
               <div className="search-bar__card-identity">
-                <strong>{singleResult.name || singleResult.login}</strong>
+                <strong>
+                  {singleResult.name || singleResult.login}
+                  <SpecialTags tags={singleResult.specialTags} compact />
+                </strong>
                 <span>
                   @{singleResult.login}
                   {singleResult.globalRank ? ` · Global #${singleResult.globalRank}` : ''}

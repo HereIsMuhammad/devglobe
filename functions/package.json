@@ -1,0 +1,8 @@
+{
+  "name": "devglobe-activity-functions",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=24"
+  }
+}

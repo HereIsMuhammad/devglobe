@@ -7,6 +7,7 @@
 import 'dotenv/config';
 import { CosmosClient } from '@azure/cosmos';
 import { writeFileSync, readFileSync, existsSync, mkdirSync, appendFileSync } from 'fs';
+import { scoreAll } from '../lib/scoring.js';
 
 // ─── Config ─────────────────────────────────────────────────────────────────
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -288,33 +289,6 @@ async function geocode(location) {
   return null;
 }
 
-// ─── Scoring ────────────────────────────────────────────────────────────────
-function scoreDevelopers(developers) {
-  const maxVals = {
-    stars: Math.max(1, ...developers.map(d => d.totalStars || 0)),
-    commits: Math.max(1, ...developers.map(d => d.totalCommits || 0)),
-    repoReach: Math.max(1, ...developers.map(d => (d.totalForks || 0) + (d.totalWatchers || 0))),
-    soReputation: Math.max(1, ...developers.map(d => d.soReputation || 0)),
-    soEngagement: Math.max(1, ...developers.map(d => ((d.soAcceptRate || 0) / 100) * (d.soAnswers || 0))),
-    community: Math.max(1, ...developers.map(d => (d.followers || 0) + (d.soBadges || 0)))
-  };
-
-  const WEIGHTS = { stars: 0.25, commits: 0.25, repoReach: 0.20, soReputation: 0.15, soEngagement: 0.10, community: 0.05 };
-
-  return developers.map(dev => {
-    const dims = {
-      stars: Math.log(1 + (dev.totalStars || 0)) / Math.log(1 + maxVals.stars),
-      commits: Math.log(1 + (dev.totalCommits || 0)) / Math.log(1 + maxVals.commits),
-      repoReach: Math.log(1 + (dev.totalForks || 0) + (dev.totalWatchers || 0)) / Math.log(1 + maxVals.repoReach),
-      soReputation: Math.log(1 + (dev.soReputation || 0)) / Math.log(1 + maxVals.soReputation),
-      soEngagement: Math.log(1 + ((dev.soAcceptRate || 0) / 100) * (dev.soAnswers || 0)) / Math.log(1 + maxVals.soEngagement),
-      community: Math.log(1 + (dev.followers || 0) + (dev.soBadges || 0)) / Math.log(1 + maxVals.community)
-    };
-    const score = Math.round(Object.entries(WEIGHTS).reduce((s, [k, w]) => s + dims[k] * w, 0) * 100);
-    return { ...dev, score, scoreDimensions: dims };
-  }).sort((a, b) => b.score - a.score);
-}
-
 // ─── Cosmos DB Upload ───────────────────────────────────────────────────────
 async function uploadToCosmos(developers) {
   const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
@@ -437,7 +411,7 @@ async function main() {
 
   // STEP 4: Score
   log('\n📌 STEP 4: Computing scores...');
-  developers = scoreDevelopers(developers);
+  developers = scoreAll(developers);
   log(`✓ Scored ${developers.length} developers (top score: ${developers[0]?.score})`);
 
   // Save local copy

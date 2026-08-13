@@ -5,6 +5,7 @@
  *   node scripts/review-nominations.js list                          # show pending/rejected nominations
  *   node scripts/review-nominations.js status <username>
  *   node scripts/review-nominations.js approve <username> [reviewer]
+ *   node scripts/review-nominations.js refresh <username>
  *   node scripts/review-nominations.js reject <username> [reviewer] [reason]
  *
  * As of issue #96, nominations live entirely inside the `developers`
@@ -14,17 +15,21 @@
  * this concurrently on the same username can't silently overwrite each
  * other's review.
  */
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import {
   getDevelopersContainer,
   findDeveloperByLogin,
   patchDeveloperNomination,
   normalizeUsername,
   enrichFromGitHub,
+  geocodeLocation,
 } from '../lib/nominate.js';
 
+dotenv.config({ path: '.env.local' });
+dotenv.config();
+
 if (!process.env.COSMOS_ENDPOINT || !process.env.COSMOS_KEY) {
-  console.error('Error: COSMOS_ENDPOINT and COSMOS_KEY are required in .env');
+  console.error('Error: COSMOS_ENDPOINT and COSMOS_KEY are required in .env.local or .env');
   process.exit(1);
 }
 
@@ -49,72 +54,36 @@ async function listNominations(container) {
   }
 }
 
-async function requireNomination(container, username) {
+async function requireNomination(container, username, allowLegacy = false) {
   const dev = await findDeveloperByLogin(container, username);
   if (!dev) {
     console.error(`No developer document found for "${username}".`);
     process.exit(1);
   }
-  if (!dev.nomination) {
+  if (!dev.nomination && !allowLegacy) {
     console.error(`"${username}" has no nomination metadata (it's a pre-existing public developer, not a nomination).`);
     process.exit(1);
   }
   return dev;
 }
 
-function fallbackGeocode(location) {
-  const known = {
-    'san francisco': { lat: 37.7749, lng: -122.4194 },
-    'new york': { lat: 40.7128, lng: -74.006 },
-    'london': { lat: 51.5074, lng: -0.1278 },
-    'berlin': { lat: 52.52, lng: 13.405 },
-    'toronto': { lat: 43.6532, lng: -79.3832 },
-    'seattle': { lat: 47.6062, lng: -122.3321 },
-    'bangalore': { lat: 12.9716, lng: 77.5946 },
-    'singapore': { lat: 1.3521, lng: 103.8198 },
-    'sydney': { lat: -33.8688, lng: 151.2093 },
-    'usa': { lat: 39.8283, lng: -98.5795 },
-    'united states': { lat: 39.8283, lng: -98.5795 },
-  };
-  const normalized = (location || '').toLowerCase();
-  for (const [key, coords] of Object.entries(known)) {
-    if (normalized.includes(key)) return coords;
-  }
-  return null;
-}
-
-async function geocode(location) {
-  if (!location) return null;
-  const fallback = fallbackGeocode(location);
-  if (fallback) return fallback;
-
-  if (process.env.GEOCODE_API_KEY) {
-    try {
-      const params = new URLSearchParams({ q: location, key: process.env.GEOCODE_API_KEY, limit: '1', no_annotations: '1' });
-      const res = await fetch(`https://api.opencagedata.com/geocode/v1/json?${params}`);
-      const data = await res.json();
-      if (data.results?.[0]?.geometry) {
-        const { lat, lng } = data.results[0].geometry;
-        return { lat, lng };
-      }
-    } catch { /* fall through */ }
-  }
-  return null;
-}
-
-async function approve(container, username, reviewer) {
-  const dev = await requireNomination(container, username);
-  if (dev.nomination.status === 'approved') {
+async function approve(container, username, reviewer, refresh = false) {
+  const dev = await requireNomination(container, username, refresh);
+  if (dev.nomination?.status === 'approved' && !refresh) {
     console.error(`"${username}" is already approved.`);
     process.exit(1);
   }
 
-  console.log(`Approving "${username}"...`);
+  console.log(`${refresh ? 'Refreshing' : 'Approving'} "${username}"...`);
 
   // Re-enrich in case the pending record has stale or partial data (e.g. it
   // was created while GitHub was rate-limiting repo lookups).
   const ghRes = await fetch(`https://api.github.com/users/${dev.login}`, {
-    headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'devglobe-review' },
+    headers: {
+      Accept: 'application/vnd.github+json',
+      'User-Agent': 'devglobe-review',
+      ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+    },
   });
   if (!ghRes.ok) {
     console.error(`Could not re-fetch GitHub profile for "${username}" (status ${ghRes.status}). Aborting approval.`);
@@ -134,7 +103,7 @@ async function approve(container, username, reviewer) {
   // Geocode using the location resolved at submission time. `location`
   // itself (the partition key) is intentionally never changed here — only
   // lat/lng and other non-partition fields are updated.
-  const coords = await geocode(dev.location);
+  const coords = await geocodeLocation(dev.location);
 
   try {
     await patchDeveloperNomination(container, dev, {
@@ -147,18 +116,20 @@ async function approve(container, username, reviewer) {
       totalStars: enriched.totalStars,
       totalForks: enriched.totalForks,
       totalWatchers: enriched.totalWatchers,
+      totalCommits: enriched.totalCommits,
       topLanguage: enriched.topLanguage,
       languages: enriched.languages,
       topRepos: enriched.topRepos,
+      metricsUpdatedAt: new Date().toISOString(),
       ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
-      nomination: {
-        status: 'approved',
-        reviewedAt: new Date().toISOString(),
-        reviewedBy: reviewer || null,
+      ...(dev.nomination ? { nomination: {
+        status: refresh ? dev.nomination.status : 'approved',
+        reviewedAt: refresh ? dev.nomination.reviewedAt : new Date().toISOString(),
+        reviewedBy: refresh ? dev.nomination.reviewedBy : reviewer || null,
         enrichmentStatus: 'complete',
         enrichedAt: new Date().toISOString(),
         enrichmentError: null,
-      },
+      } } : {}),
     });
   } catch (err) {
     if (err.code === 412) {
@@ -168,7 +139,7 @@ async function approve(container, username, reviewer) {
     throw err;
   }
 
-  console.log(`  ✓ "${username}" approved and now public.`);
+  console.log(`  ✓ "${username}" ${refresh ? 'details refreshed' : 'approved and now public'}.`);
 }
 
 async function reject(container, username, reviewer, reason) {
@@ -211,6 +182,10 @@ async function main() {
       if (!username) { console.error('Usage: review-nominations.js approve <username> [reviewer]'); process.exit(1); }
       await approve(container, username, rest[0]);
       break;
+    case 'refresh':
+      if (!username) { console.error('Usage: review-nominations.js refresh <username>'); process.exit(1); }
+      await approve(container, username, null, true);
+      break;
     case 'reject':
       if (!username) { console.error('Usage: review-nominations.js reject <username> [reviewer] [reason]'); process.exit(1); }
       await reject(container, username, rest[0], rest[1]);
@@ -220,6 +195,7 @@ async function main() {
   list                                Show pending/rejected nominations
   status <u>                          Show the full developer/nomination document
   approve <u> [reviewer]              Approve and make public (same document)
+  refresh <u>                         Re-fetch details without changing visibility status
   reject <u> [reviewer] [reason]      Reject (same document, excluded from public reads)`);
       process.exit(cmd ? 1 : 0);
   }

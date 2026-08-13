@@ -1,28 +1,26 @@
 import { ImageResponse } from '@vercel/og';
-import { CosmosClient } from '@azure/cosmos';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { classifyAgent, getPowerTier } from '../../../lib/agent-class.js';
 import { scoreAll } from '../../../lib/scoring.js';
 import { getSiteHostname } from '../../../lib/site.js';
 import { addDeveloperRanks } from '../../../lib/ranking.js';
+import { getCosmosContainer } from '../../../lib/cosmos.js';
 
 export const runtime = 'nodejs';
 
-const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
-const COSMOS_KEY = process.env.COSMOS_KEY;
-const DATABASE = process.env.COSMOS_DATABASE || 'devglobe';
-const CONTAINER = process.env.COSMOS_CONTAINER || 'developers';
-
-async function getRankedDevelopers() {
-  if (COSMOS_ENDPOINT && COSMOS_KEY) {
+async function getDeveloper(login) {
+  const cosmosContainer = getCosmosContainer();
+  if (cosmosContainer) {
     try {
-      const client = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
-      const container = client.database(DATABASE).container(CONTAINER);
-      const { resources } = await container.items.query({
-        query: 'SELECT c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.claimed FROM c',
+      const { resources } = await cosmosContainer.items.query({
+        query: `SELECT TOP 1 c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.publicRepos, c.claimed, c.score, c.globalRank, c.globalTotal, c.country, c.countryRank, c.countryTotal, c.city, c.cityRank, c.cityTotal
+          FROM c
+          WHERE (c.login = @login OR c.id = @login)
+            AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')`,
+        parameters: [{ name: '@login', value: login }],
       }).fetchAll();
-      if (resources.length > 0) return addDeveloperRanks(scoreAll(resources));
+      if (resources[0]) return resources[0];
     } catch (err) {
       console.error('Card: Cosmos error', err.message);
     }
@@ -31,11 +29,7 @@ async function getRankedDevelopers() {
   const filePath = path.join(process.cwd(), 'data', 'developers-sample.json');
   const raw = await fs.readFile(filePath, 'utf-8');
   const data = JSON.parse(raw);
-  return addDeveloperRanks(scoreAll(data));
-}
-
-async function getDeveloper(login) {
-  const developers = await getRankedDevelopers();
+  const developers = addDeveloperRanks(scoreAll(data));
   return developers.find(d => d.login.toLowerCase() === login.toLowerCase()) || null;
 }
 
@@ -43,6 +37,24 @@ function formatNum(n) {
   if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
   if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
   return String(n);
+}
+
+async function loadAvatarDataUrl(avatarUrl) {
+  if (!avatarUrl) return null;
+
+  try {
+    const response = await fetch(avatarUrl, {
+      signal: AbortSignal.timeout(3000),
+      next: { revalidate: 86400 },
+    });
+    if (!response.ok) return null;
+
+    const contentType = response.headers.get('content-type') || 'image/png';
+    const bytes = Buffer.from(await response.arrayBuffer());
+    return `data:${contentType};base64,${bytes.toString('base64')}`;
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(request) {
@@ -58,10 +70,23 @@ export async function GET(request) {
     return new Response('Developer not found', { status: 404 });
   }
 
-  const agent = classifyAgent(dev);
-  const power = getPowerTier(dev.score || 0);
+  const score = Number.isFinite(dev.score) ? dev.score : 0;
+  const agent = classifyAgent({ ...dev, score });
+  const power = getPowerTier(score);
+  const avatarDataUrl = await loadAvatarDataUrl(dev.avatarUrl);
+  const avatarInitial = (dev.name || dev.login).trim().charAt(0).toUpperCase();
+  const agentMark = agent.name
+    .replace(/^The\s+/, '')
+    .split(/\s+/)
+    .map(word => word.charAt(0))
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+  const hasGlobalRank = Boolean(dev.globalRank && dev.globalTotal);
   const hasCityRank = Boolean(dev.cityRank && dev.city);
   const rankCardWidth = hasCityRank ? '166' : dev.countryRank ? '255' : '522';
+  const rankValueFontSize = hasCityRank ? '29' : '34';
+  const rankTotalFontSize = hasCityRank ? '12' : '14';
 
   return new ImageResponse(
     (
@@ -111,21 +136,21 @@ export async function GET(request) {
           }}
         />
 
-        {/* Glow effect behind avatar */}
+        {/* Glow effect behind hero */}
         <div
           style={{
             position: 'absolute',
-            top: '120',
-            left: '80',
-            width: '300',
-            height: '300',
+            top: '92',
+            left: '50',
+            width: '330',
+            height: '390',
             borderRadius: '50%',
             background: `radial-gradient(circle, ${agent.color}33 0%, transparent 70%)`,
             display: 'flex',
           }}
         />
 
-        {/* Left side — Avatar + Agent class */}
+        {/* Left side — Contribution hero */}
         <div
           style={{
             display: 'flex',
@@ -133,47 +158,54 @@ export async function GET(request) {
             alignItems: 'center',
             justifyContent: 'center',
             width: '400',
-            padding: '76px 40px 54px',
+            padding: '72px 34px 48px',
           }}
         >
-          {/* Agent icon */}
+          {/* Hero bust with the GitHub portrait as its head */}
           <div
             style={{
-              fontSize: '48',
-              marginBottom: '12',
+              width: '268',
+              height: '300',
+              position: 'relative',
+              alignItems: 'center',
+              flexDirection: 'column',
               display: 'flex',
             }}
           >
-            {agent.icon}
-          </div>
-
-          {/* Avatar with border */}
-          <div
-            style={{
-              display: 'flex',
-              width: '180',
-              height: '180',
-              borderRadius: '50%',
-              border: `4px solid ${agent.color}`,
-              overflow: 'hidden',
-              boxShadow: `0 0 40px ${agent.color}44`,
-            }}
-          >
-            <img
-              src={dev.avatarUrl}
-              width="180"
-              height="180"
-              style={{ borderRadius: '50%', objectFit: 'cover' }}
-            />
+            <div style={{ position: 'absolute', top: '108', left: '7', width: '254', height: '182', display: 'flex', background: `linear-gradient(145deg, ${agent.color}66, #090d14 72%)`, borderRadius: '126px 126px 22px 22px', border: `2px solid ${agent.color}88` }} />
+            <div style={{ position: 'absolute', top: '126', left: '68', width: '132', height: '166', display: 'flex', background: `linear-gradient(180deg, ${agent.color}, #111827 78%)`, borderRadius: '48px 48px 18px 18px', border: `2px solid ${agent.color}` }} />
+            <div style={{ position: 'absolute', top: '164', left: '101', width: '66', height: '66', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#080b10', border: `3px solid ${agent.color}`, transform: 'rotate(45deg)', boxShadow: `0 0 24px ${agent.color}99` }}>
+              <div
+                style={{
+                  display: 'flex',
+                  transform: 'rotate(-45deg)',
+                  color: '#f8fafc',
+                  fontSize: '21',
+                  fontWeight: '900',
+                }}
+              >
+                {agentMark}
+              </div>
+            </div>
+            <div style={{ position: 'absolute', top: '4', width: '142', height: '142', display: 'flex', borderRadius: '50%', border: `5px solid ${agent.color}`, overflow: 'hidden', background: '#111827', boxShadow: `0 0 38px ${agent.color}66` }}>
+              {avatarDataUrl ? (
+                <img src={avatarDataUrl} width="142" height="142" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: '142', height: '142', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: `${agent.color}22`, color: agent.color, fontSize: '58', fontWeight: '800' }}>
+                  {avatarInitial}
+                </div>
+              )}
+            </div>
+            <div style={{ position: 'absolute', top: '132', width: '116', height: '18', display: 'flex', background: agent.color, borderRadius: '2px 2px 12px 12px', boxShadow: `0 5px 16px ${agent.color}66` }} />
           </div>
 
           {/* Name */}
           <div
             style={{
               color: '#e2e8f0',
-              fontSize: '28',
+              fontSize: '25',
               fontWeight: '700',
-              marginTop: '16',
+              marginTop: '4',
               display: 'flex',
               textAlign: 'center',
             }}
@@ -185,9 +217,9 @@ export async function GET(request) {
           <div
             style={{
               color: '#64748b',
-              fontSize: '18',
+              fontSize: '16',
               display: 'flex',
-              marginTop: '4',
+              marginTop: '3',
             }}
           >
             @{dev.login}
@@ -198,12 +230,12 @@ export async function GET(request) {
             <div
               style={{
                 color: '#94a3b8',
-                fontSize: '14',
+                fontSize: '12',
                 display: 'flex',
-                marginTop: '8',
+                marginTop: '6',
               }}
             >
-              📍 {dev.location}
+              LOCATION · {dev.location}
             </div>
           )}
         </div>
@@ -266,7 +298,7 @@ export async function GET(request) {
           </div>
 
           {/* Global and local rank */}
-          <div style={{ display: 'flex', gap: '12', marginBottom: '22' }}>
+          {hasGlobalRank && <div style={{ display: 'flex', gap: '12', marginBottom: '22' }}>
             <div
               style={{
                 display: 'flex',
@@ -280,9 +312,9 @@ export async function GET(request) {
                 borderRadius: '8',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
-                <span style={{ color: '#67e8f9', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.globalRank)}</span>
-                <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.globalTotal)}</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
+                <span style={{ color: '#67e8f9', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.globalRank)}</span>
+                <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.globalTotal)}</span>
               </div>
               <div style={{ display: 'flex', color: '#a5f3fc', fontSize: '11', fontWeight: '700', letterSpacing: '1.6' }}>GLOBAL RANK</div>
             </div>
@@ -300,9 +332,9 @@ export async function GET(request) {
                   borderRadius: '8',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
-                  <span style={{ color: '#fdba74', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.countryRank)}</span>
-                  <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.countryTotal)}</span>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
+                  <span style={{ color: '#fdba74', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.countryRank)}</span>
+                  <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.countryTotal)}</span>
                 </div>
                 <div style={{ display: 'flex', color: '#fed7aa', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.country.toUpperCase()}</div>
               </div>
@@ -321,14 +353,14 @@ export async function GET(request) {
                   borderRadius: '8',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '7' }}>
-                  <span style={{ color: '#c4b5fd', fontSize: '34', fontWeight: '800' }}>#{formatNum(dev.cityRank)}</span>
-                  <span style={{ color: '#64748b', fontSize: '14' }}>of {formatNum(dev.cityTotal)}</span>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
+                  <span style={{ color: '#c4b5fd', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.cityRank)}</span>
+                  <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.cityTotal)}</span>
                 </div>
                 <div style={{ display: 'flex', color: '#ddd6fe', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.city.toUpperCase()}</div>
               </div>
             )}
-          </div>
+          </div>}
 
           {/* Score + Tier */}
           <div
@@ -355,7 +387,7 @@ export async function GET(request) {
                   display: 'flex',
                 }}
               >
-                {dev.score}
+                {score}
               </div>
               <div
                 style={{
@@ -481,7 +513,7 @@ export async function GET(request) {
                     display: 'flex',
                   }}
                 >
-                  ✓ Verified
+                  VERIFIED
                 </div>
               )}
             </div>
@@ -514,16 +546,15 @@ export async function GET(request) {
               gap: '8',
             }}
           >
-            🌐 DevGlobe
+            DEVGLOBE / OPEN SOURCE IDENTITY
           </div>
-          <div
-            style={{
-              color: '#475569',
-              fontSize: '13',
-              display: 'flex',
-            }}
-          >
-            {getSiteHostname()}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '18' }}>
+            <div style={{ color: '#22d3ee', fontSize: '13', fontWeight: '700', display: 'flex' }}>
+              #buildinpublic
+            </div>
+            <div style={{ color: '#475569', fontSize: '13', display: 'flex' }}>
+              {getSiteHostname()}
+            </div>
           </div>
         </div>
 
@@ -545,6 +576,9 @@ export async function GET(request) {
     {
       width: 1200,
       height: 630,
+      headers: {
+        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+      },
     }
   );
 }
