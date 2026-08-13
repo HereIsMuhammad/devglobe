@@ -2652,6 +2652,11 @@ body {
   .header__subtitle {
     display: none;
   }
+  .btn--tour,
+  .btn--star,
+  .btn--sponsor {
+    display: none;
+  }
   .btn--join {
     width: 32px;
     height: 32px;
@@ -2685,6 +2690,19 @@ body {
   }
   .activity-banner__label {
     display: none;
+  }
+  .activity-banner__actor img,
+  .activity-banner__actor > span,
+  .activity-banner time {
+    display: none;
+  }
+  .activity-banner__actor {
+    max-width: 38%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .activity-banner__detail {
+    min-width: 0;
   }
   .globe-avatar-marker {
     width: 20px;

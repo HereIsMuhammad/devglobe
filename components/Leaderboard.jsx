@@ -6,7 +6,6 @@ import { extractCountry, normalizeCountry, countryKey } from '../lib/country.js'
 import { SCORE_METHODOLOGY } from '../lib/scoring.js';
 import SpecialTags from './SpecialTags.jsx';
 import GlobalActivityFeed from './GlobalActivityFeed.jsx';
-import AgentNetworkPanel from './AgentNetworkPanel.jsx';
 
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
@@ -125,7 +124,7 @@ export default function Leaderboard({
   };
 
   return (
-    <aside className={`sidebar${open ? ' open' : ''}`} id="sidebar">
+    <aside className={`sidebar${open ? ' open' : ''}${activeView === 'activity' ? ' sidebar--activity' : ''}`} id="sidebar">
       <div className="sidebar__drag-handle" onClick={onClose} aria-hidden="true" />
       <div className="sidebar__tabs" role="tablist" aria-label="Developer views">
         <button
@@ -145,15 +144,6 @@ export default function Leaderboard({
           onClick={() => onViewChange?.('activity')}
         >
           Activity
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeView === 'agents'}
-          className={activeView === 'agents' ? 'sidebar__tab sidebar__tab--active' : 'sidebar__tab'}
-          onClick={() => onViewChange?.('agents')}
-        >
-          Agents
         </button>
         <button className="sidebar__close-btn" onClick={onClose} aria-label="Close sidebar" title="Close sidebar">
           &times;
@@ -277,7 +267,6 @@ export default function Leaderboard({
         </>
       )}
       {activeView === 'activity' && <GlobalActivityFeed active />}
-      {activeView === 'agents' && <AgentNetworkPanel />}
     </aside>
   );
 }
