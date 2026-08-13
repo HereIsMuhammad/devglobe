@@ -90,7 +90,16 @@ export default function AgentNetworkPanel() {
         )}
       </section>
 
-      <p className="agent-network__privacy">Small cohorts are hidden to protect developer privacy.</p>
+      <footer className="agent-network__footer">
+        <p className="agent-network__privacy">Small cohorts are hidden to protect developer privacy.</p>
+        <a
+          href="https://github.com/sajeetharan/devglobe/blob/main/docs/mcp-server.md"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Connect your agent <span aria-hidden="true">↗</span>
+        </a>
+      </footer>
     </div>
   );
 }

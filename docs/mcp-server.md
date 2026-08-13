@@ -1,6 +1,41 @@
 # DevGlobe MCP Server
 
-DevGlobe provides a stdio Model Context Protocol server for developer discovery and consent-gated introductions.
+DevGlobe provides a hosted Model Context Protocol server for developer discovery and consent-gated introductions. It uses stateless Streamable HTTP so agents can connect without cloning or running DevGlobe locally.
+
+## Remote Endpoint
+
+```text
+https://www.devglobe.dev/mcp
+```
+
+For an anonymous discovery-only connection, use this VS Code `mcp.json` entry:
+
+```json
+{
+  "servers": {
+    "devglobe": {
+      "type": "http",
+      "url": "https://www.devglobe.dev/mcp"
+    }
+  }
+}
+```
+
+Public search and profile lookup do not require credentials. To use introduction tools, add an issued token using your MCP client's secure secret or environment-variable support:
+
+```json
+{
+  "servers": {
+    "devglobe": {
+      "type": "http",
+      "url": "https://www.devglobe.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:DEVGLOBE_AGENT_TOKEN}"
+      }
+    }
+  }
+}
+```
 
 ## Tools
 
@@ -35,9 +70,9 @@ DEVGLOBE_AGENT_RATE_LIMIT=10
 
 Restart the application after changing credentials. Never store raw agent tokens in the application environment or repository.
 
-## MCP Client Setup
+## Local Stdio Setup
 
-Install dependencies in this repository, then configure a stdio MCP server. A VS Code `mcp.json` entry can use:
+For clients without remote MCP support, install dependencies in this repository and configure the included stdio bridge:
 
 ```json
 {
@@ -56,6 +91,16 @@ Install dependencies in this repository, then configure a stdio MCP server. A VS
 ```
 
 The token is required only for introduction tools. Public search and profile lookup work without one.
+
+## Hosted Endpoint Configuration
+
+The hosted application accepts stateless MCP requests at `/mcp`. Browser-based MCP clients must send an allowed `Origin`. The canonical site is allowed by default; additional trusted origins can be configured as a comma-separated list:
+
+```env
+DEVGLOBE_MCP_ALLOWED_ORIGINS=https://trusted-agent-console.example
+```
+
+The endpoint does not create server-side MCP sessions. `GET` and `DELETE` session operations are intentionally unsupported, while tool calls use `POST` requests.
 
 ## Consent Lifecycle
 

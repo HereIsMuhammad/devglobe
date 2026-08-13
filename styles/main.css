@@ -1394,9 +1394,27 @@ body {
   background: #0891b2;
 }
 
-.agent-network__privacy {
+.agent-network__footer {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
   padding: 11px 14px;
+}
+
+.agent-network__privacy {
+  padding: 0;
   text-align: center;
+}
+
+.agent-network__footer a {
+  color: #22d3ee;
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.agent-network__footer a:hover {
+  text-decoration: underline;
 }
 
 .global-activity {
