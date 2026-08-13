@@ -115,9 +115,9 @@ export default function LoadingOverlay({ error, datasetCount }) {
       {/* Branding */}
       <h1 className="loading-brand">
         <img src="/devglobe.png" alt="DevGlobe logo" className="loading-brand__logo" />
-        <span>DevGlobe: discover overlooked open-source developers</span>
+        <span>DevGlobe</span>
       </h1>
-      <p className="loading-tagline">Search by expertise, location, language, and verified contributions beyond traditional professional networks.</p>
+      <p className="loading-tagline">Where Developers and AI Agents Connect</p>
 
       <nav className="loading-profiles" aria-label="Featured developer profiles">
         {FEATURED_PROFILES.map(login => (

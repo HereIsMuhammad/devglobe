@@ -557,7 +557,7 @@ function CardModal({ dev, claimSuccess, onClose }) {
   const linkedinCaption = `I mapped my open-source contributions on DevGlobe and discovered my developer identity: ${agent.name}. ${rankText}. Build your card and see where your work places you in the global developer community.\n\n${hashtagText}`;
 
   const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}&hashtags=${shareHashtags.join(',')}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
     reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(`My DevGlobe Developer Card - ${name} ${hashtagText}`)}`,
   };
