@@ -8,6 +8,7 @@ import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
+import AiProfileModal from '../components/AiProfileModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
@@ -34,6 +35,7 @@ export default function Home() {
   const [cardRequest, setCardRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
+  const [showAiProfile, setShowAiProfile] = useState(false);
   const [tourStep, setTourStep] = useState(null);
   const [tourMatch, setTourMatch] = useState(null);
   const globeRef = useRef(null);
@@ -89,7 +91,12 @@ export default function Home() {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
     setClaimStatus('unclaimed');
+    setShowAiProfile(false);
   }, []);
+
+  const handleAiProfileSaved = useCallback((aiProfile) => {
+    setSelectedDev(current => current?.login === user?.login ? { ...current, aiProfile } : current);
+  }, [user]);
 
   const handleClaim = useCallback(async () => {
     try {
@@ -350,6 +357,7 @@ export default function Home() {
         user={user}
         onLogout={handleLogout}
         onClaim={handleClaim}
+        onEditAiProfile={() => setShowAiProfile(true)}
         claimStatus={claimStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
@@ -412,7 +420,7 @@ export default function Home() {
           activeView={sidebarView}
           onViewChange={setSidebarView}
         />
-        {sidebarOpen && sidebarView === 'leaderboard' && (
+        {sidebarOpen && (
           <div className="sidebar-backdrop" onClick={handleCloseSidebar} />
         )}
         {selectedDev && (
@@ -429,6 +437,12 @@ export default function Home() {
           <ComparePanel devs={compareDevs} onClose={handleCloseCompare} />
         )}
         {showAddMe && <AddMeModal onClose={handleCloseAddMe} />}
+        {showAiProfile && (
+          <AiProfileModal
+            onClose={() => setShowAiProfile(false)}
+            onSaved={handleAiProfileSaved}
+          />
+        )}
       </main>
     </div>
   );

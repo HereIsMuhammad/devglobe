@@ -124,7 +124,7 @@ export default function Leaderboard({
   };
 
   return (
-    <aside className={`sidebar${open ? ' open' : ''}${activeView === 'activity' ? ' sidebar--activity' : ''}`} id="sidebar">
+    <aside className={`sidebar${open ? ' open' : ''}`} id="sidebar">
       <div className="sidebar__drag-handle" onClick={onClose} aria-hidden="true" />
       <div className="sidebar__tabs" role="tablist" aria-label="Developer views">
         <button

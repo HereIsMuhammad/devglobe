@@ -2,6 +2,7 @@ import { CosmosClient } from '@azure/cosmos';
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { getPublicAiProfile } from '../../../lib/ai-profile.js';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
@@ -12,6 +13,15 @@ async function getSampleData() {
   const filePath = path.join(process.cwd(), 'data', 'developers-sample.json');
   const raw = await fs.readFile(filePath, 'utf-8');
   return JSON.parse(raw);
+}
+
+function withPublicAiProfile(developer) {
+  const aiProfile = getPublicAiProfile(developer.aiProfile);
+  if (!aiProfile) {
+    const { aiProfile: omitted, ...publicDeveloper } = developer;
+    return publicDeveloper;
+  }
+  return { ...developer, aiProfile };
 }
 
 export async function GET(request) {
@@ -32,7 +42,7 @@ export async function GET(request) {
     if (!dev) {
       return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
     }
-    return NextResponse.json(dev);
+    return NextResponse.json(withPublicAiProfile(dev));
   }
 
   try {
@@ -40,7 +50,7 @@ export async function GET(request) {
     const container = client.database(DATABASE).container(CONTAINER);
 
     const { resources } = await container.items.query({
-      query: "SELECT c.id, c.login, c.name, c.avatarUrl, c.bio, c.githubUrl, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.languages, c.publicRepos, c.topRepos, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.soUserId, c.specialTags, c.claimed, c.claimedAt, c.metricsUpdatedAt FROM c WHERE (c.id = @id OR c.login = @id) AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')",
+      query: "SELECT c.id, c.login, c.name, c.avatarUrl, c.bio, c.githubUrl, c.location, c.lat, c.lng, c.followers, c.totalStars, c.totalForks, c.totalCommits, c.topLanguage, c.languages, c.publicRepos, c.topRepos, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.soUserId, c.specialTags, c.claimed, c.claimedAt, c.metricsUpdatedAt, c.aiProfile FROM c WHERE (c.id = @id OR c.login = @id) AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')",
       parameters: [{ name: '@id', value: id }]
     }).fetchAll();
 
@@ -51,7 +61,7 @@ export async function GET(request) {
       );
     }
 
-    return NextResponse.json(resources[0], {
+    return NextResponse.json(withPublicAiProfile(resources[0]), {
       headers: {
         'Cache-Control': 's-maxage=3600, stale-while-revalidate=600',
       },
@@ -64,6 +74,6 @@ export async function GET(request) {
     if (!dev) {
       return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
     }
-    return NextResponse.json(dev);
+    return NextResponse.json(withPublicAiProfile(dev));
   }
 }

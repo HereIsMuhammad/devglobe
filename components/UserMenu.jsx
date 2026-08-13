@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function UserMenu({ user, onLogout, onClaim, claimStatus }) {
+export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, claimStatus }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -63,12 +63,25 @@ export default function UserMenu({ user, onLogout, onClaim, claimStatus }) {
             </button>
           )}
           {claimStatus === 'claimed' && (
-            <div className="user-menu__item user-menu__item--claimed">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-                <path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z" />
-              </svg>
-              Profile claimed ✓
-            </div>
+            <>
+              <div className="user-menu__item user-menu__item--claimed">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+                  <path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z" />
+                </svg>
+                Profile claimed ✓
+              </div>
+              <button className="user-menu__item" onClick={() => { onEditAiProfile(); setOpen(false); }}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 8V4H8" />
+                  <rect width="16" height="12" x="4" y="8" rx="2" />
+                  <path d="M2 14h2" />
+                  <path d="M20 14h2" />
+                  <path d="M9 13v2" />
+                  <path d="M15 13v2" />
+                </svg>
+                AI collaboration settings
+              </button>
+            </>
           )}
           {claimStatus === 'no_match' && (
             <div className="user-menu__item user-menu__item--no-match">
