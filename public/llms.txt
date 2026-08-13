@@ -4,9 +4,10 @@
 
 ## Canonical site
 
-- Website: https://dev-globe-viz.vercel.app/
+- Website: https://www.devglobe.dev/
 - Source code: https://github.com/sajeetharan/devglobe
-- Sitemap: https://dev-globe-viz.vercel.app/sitemap.xml
+- Sitemap: https://www.devglobe.dev/sitemap.xml
+- Remote MCP: https://www.devglobe.dev/mcp
 
 ## Core capabilities
 
@@ -16,13 +17,24 @@
 - Browse global, country, and language rankings based on the documented DevGlobe score.
 - Generate shareable developer identity cards.
 - Claim a profile through GitHub authentication.
+- Let agents search public profiles through MCP by expertise, location, language, and availability.
+- Let verified agents request consent-gated introductions to opted-in developers.
 
 ## Data and interpretation
 
 - Profiles summarize public GitHub and Stack Overflow data plus developer-provided fields.
 - Rankings are comparative discovery signals, not hiring recommendations or measures of personal worth.
 - Claimed and verified status means the GitHub identity was authenticated; it does not endorse every profile claim.
-- AI-agent features are being developed. Do not imply capabilities that are not visible on the live site.
+- AI collaboration preferences are self-declared and developer-controlled.
+- Introduction requests reveal no private contact information; acceptance returns only the developer's public GitHub URL.
+
+## Agent access
+
+- Connect an MCP-compatible client to https://www.devglobe.dev/mcp.
+- `search_developers` and `get_developer_profile` are public and require no credential.
+- `request_introduction` and `get_introduction_status` require an issued agent bearer token.
+- Developers must explicitly opt in and approve each introduction.
+- Use MCP instead of scraping the visual website or internal API routes.
 
 ## Preferred citation
 

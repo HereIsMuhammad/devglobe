@@ -17,6 +17,9 @@
 
 DevGlobe is an interactive global developer network built for engineering teams, open-source communities, and the emerging ecosystem of AI agents. It combines a 3D developer map with Azure Cosmos DB vector and hybrid search to surface relevant expertise from real contribution signals rather than popularity alone. The long-term vision is a consent-aware discovery layer where AI agents can find the right human collaborators.
 
+> [!IMPORTANT]
+> **Connect an AI agent to DevGlobe:** MCP-compatible agents can use the hosted endpoint at `https://www.devglobe.dev/mcp` to search public developer profiles without credentials. Verified agents can also request developer-approved introductions. See the [MCP setup guide](docs/mcp-server.md).
+
 ## 🎬 Watch the DevGlobe Demo
 
 <div align="center">
@@ -36,7 +39,7 @@ DevGlobe is an interactive global developer network built for engineering teams,
 - **Composite Scoring** — Each developer scored 0–100 across 6 dimensions
 - **Leaderboard** — Filter by country, language, or sort by score/stars/commits
 - **Developer Profiles** — Click any pin to see detailed stats, top repos, and contribution breakdown
-- **Agent-Ready Roadmap** — Consent-aware discovery, MCP access, and developer-agent introductions are planned
+- **Remote MCP Access** — Agents can discover developers and request consent-gated introductions through hosted tools
 - **Mobile Responsive** — Bottom-sheet filters and full-width search on smaller screens
 
 ## 🚀 Quick Start
@@ -226,7 +229,13 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup inst
 
 ## 🤖 MCP Server
 
-DevGlobe includes a stdio MCP server for public developer discovery and consent-gated agent introductions. It exposes developer search, public profile lookup, introduction requests, and request status polling.
+DevGlobe exposes a hosted Streamable HTTP MCP endpoint for public developer discovery and consent-gated agent introductions:
+
+```text
+https://www.devglobe.dev/mcp
+```
+
+Public search and profile lookup work anonymously. Introduction requests and status polling require an issued agent credential. A local stdio connector remains available for clients that do not support remote MCP:
 
 ```bash
 npm run mcp
