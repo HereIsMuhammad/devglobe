@@ -11,6 +11,7 @@
     "build": "next build",
     "test": "node --test tests/*.test.js",
     "start": "next start",
+    "mcp": "node scripts/devglobe-mcp-server.js",
     "lint": "next lint",
     "build-data": "node scripts/build-dataset.js",
     "fetch-github": "node scripts/fetch-github.js",
@@ -20,11 +21,14 @@
     "rescore-developers": "node scripts/rescore-developers.js",
     "populate-special-tags": "node scripts/populate-special-tags.js",
     "setup-activity-container": "node scripts/setup-activity-container.js",
+    "setup-introductions-container": "node scripts/setup-introductions-container.js",
+    "create-agent-key": "node scripts/create-agent-key.js",
     "review-nominations": "node scripts/review-nominations.js",
     "seed-emulator": "node scripts/seed-emulator.js"
   },
   "dependencies": {
     "@azure/cosmos": "^4.10.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/og": "^0.11.1",
     "d3": "^7.9.0",
@@ -35,7 +39,8 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-globe.gl": "^2.38.0",
-    "simple-icons": "^16.28.0"
+    "simple-icons": "^16.28.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "eslint": "^9.0.0",

@@ -1,6 +1,6 @@
 # PRD: AI Collaboration Profiles
 
-**Status:** MVP implementation  
+**Status:** MCP connection phase implemented
 **Issue:** [#135](https://github.com/sajeetharan/devglobe/issues/135)  
 **Owner:** DevGlobe  
 **Last updated:** 2026-08-13
@@ -101,15 +101,16 @@ Usage levels are `experimenting`, `regular`, and `daily`.
 4. Saving updates the claimed Cosmos DB developer document.
 5. Public settings appear in the developer detail panel.
 
-## Future Connection Flow
+## MCP Connection Flow
 
-An authenticated MCP server will eventually expose:
+The authenticated MCP server exposes:
 
 - `search_developers(skills, location, language, availability)`
 - `get_developer_profile(login)`
 - `request_introduction(login, reason, project)`
+- `get_introduction_status(id, developerLogin)`
 
-Introduction requests will be stored separately, rate-limited, audited, and shown to the developer for explicit acceptance. No email address or private contact method will be returned to an agent.
+Introduction requests are stored separately, rate-limited, audited, and shown to the developer for explicit acceptance. Accepted requests return only the developer's public GitHub URL. No email address or private contact method is stored or returned to an agent.
 
 ## Success Metrics
 
@@ -126,10 +127,14 @@ Introduction requests will be stored separately, rate-limited, audited, and show
 - Public developer responses include only public AI profiles.
 - The detail panel renders self-declared tools and opt-in status.
 - The application test suite and production build pass.
+- MCP discovery tools return only public developer data.
+- Only issued agent credentials can create or inspect introduction requests.
+- Developers can accept or decline requests addressed to their GitHub identity.
+- Accepted requests reveal only the developer's public GitHub URL.
 
 ## Rollout
 
 1. Ship the profile schema, authenticated editor, and public display.
 2. Measure adoption and refine the tool catalog.
-3. Add verified agent identities and introduction request storage.
+3. Add issued agent identities and introduction request storage.
 4. Publish read-only discovery and consent-gated introductions through MCP.

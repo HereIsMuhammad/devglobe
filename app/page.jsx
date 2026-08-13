@@ -9,6 +9,7 @@ import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
 import AiProfileModal from '../components/AiProfileModal.jsx';
+import IntroductionInboxModal from '../components/IntroductionInboxModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
@@ -36,6 +37,7 @@ export default function Home() {
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
   const [showAiProfile, setShowAiProfile] = useState(false);
+  const [showIntroductions, setShowIntroductions] = useState(false);
   const [tourStep, setTourStep] = useState(null);
   const [tourMatch, setTourMatch] = useState(null);
   const globeRef = useRef(null);
@@ -92,6 +94,7 @@ export default function Home() {
     setUser(null);
     setClaimStatus('unclaimed');
     setShowAiProfile(false);
+    setShowIntroductions(false);
   }, []);
 
   const handleAiProfileSaved = useCallback((aiProfile) => {
@@ -358,6 +361,7 @@ export default function Home() {
         onLogout={handleLogout}
         onClaim={handleClaim}
         onEditAiProfile={() => setShowAiProfile(true)}
+        onOpenIntroductions={() => setShowIntroductions(true)}
         claimStatus={claimStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
@@ -443,6 +447,7 @@ export default function Home() {
             onSaved={handleAiProfileSaved}
           />
         )}
+        {showIntroductions && <IntroductionInboxModal onClose={() => setShowIntroductions(false)} />}
       </main>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, claimStatus }) {
+export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -80,6 +80,12 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, cla
                   <path d="M15 13v2" />
                 </svg>
                 AI collaboration settings
+              </button>
+              <button className="user-menu__item" onClick={() => { onOpenIntroductions(); setOpen(false); }}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4z" />
+                </svg>
+                Agent requests
               </button>
             </>
           )}
