@@ -15,3 +15,6 @@ app/promo/
 public/promo/
 *.log
 dist/
+dashboards/
+docs/adx-growth-dashboard.md
+scripts/build-devglobe-growth-dashboard.cjs

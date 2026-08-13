@@ -6,6 +6,7 @@ import { scoreAll } from '../../../lib/scoring.js';
 import { getSiteHostname } from '../../../lib/site.js';
 import { addDeveloperRanks } from '../../../lib/ranking.js';
 import { getCosmosContainer } from '../../../lib/cosmos.js';
+import { getPublicAiToolNames } from '../../../lib/ai-profile.js';
 
 export const runtime = 'nodejs';
 
@@ -14,7 +15,7 @@ async function getDeveloper(login) {
   if (cosmosContainer) {
     try {
       const { resources } = await cosmosContainer.items.query({
-        query: `SELECT TOP 1 c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.publicRepos, c.claimed, c.score, c.globalRank, c.globalTotal, c.country, c.countryRank, c.countryTotal, c.city, c.cityRank, c.cityTotal
+        query: `SELECT TOP 1 c.id, c.login, c.name, c.avatarUrl, c.location, c.followers, c.totalStars, c.totalForks, c.totalWatchers, c.totalCommits, c.topLanguage, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges, c.publicRepos, c.claimed, c.score, c.globalRank, c.globalTotal, c.country, c.countryRank, c.countryTotal, c.city, c.cityRank, c.cityTotal, c.aiProfile
           FROM c
           WHERE (c.login = @login OR c.id = @login)
             AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')`,
@@ -87,6 +88,7 @@ export async function GET(request) {
   const rankCardWidth = hasCityRank ? '166' : dev.countryRank ? '255' : '522';
   const rankValueFontSize = hasCityRank ? '29' : '34';
   const rankTotalFontSize = hasCityRank ? '12' : '14';
+  const aiToolNames = getPublicAiToolNames(dev.aiProfile);
 
   return new ImageResponse(
     (
@@ -477,12 +479,33 @@ export async function GET(request) {
             ))}
           </div>
 
+          {aiToolNames.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '10',
+                marginTop: '14',
+                color: '#94a3b8',
+                fontSize: '12',
+                lineHeight: '1.4',
+              }}
+            >
+              <div style={{ display: 'flex', flexShrink: '0', color: '#67e8f9', fontSize: '10', fontWeight: '800', letterSpacing: '1.4' }}>
+                AI TOOLKIT
+              </div>
+              <div style={{ display: 'flex', flex: '1' }}>
+                {aiToolNames.join('  ·  ')}
+              </div>
+            </div>
+          )}
+
           {/* Language badge */}
           {dev.topLanguage && (
             <div
               style={{
                 display: 'flex',
-                marginTop: '20',
+                marginTop: aiToolNames.length > 0 ? '10' : '20',
                 gap: '8',
                 alignItems: 'center',
               }}

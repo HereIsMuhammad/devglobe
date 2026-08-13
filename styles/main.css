@@ -130,6 +130,79 @@ body {
   flex-shrink: 0;
 }
 
+.activity-banner {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  z-index: 95;
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel-92);
+  backdrop-filter: blur(12px);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.activity-banner__pulse {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent-github);
+  box-shadow: 0 0 0 4px rgba(46, 164, 79, 0.14);
+}
+
+.activity-banner__label {
+  color: var(--accent-github);
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.activity-banner__actor {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.activity-banner__actor img,
+.activity-banner__actor > span {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--overlay-subtle-strong);
+  object-fit: cover;
+  font-size: 10px;
+}
+
+.activity-banner__detail {
+  overflow: hidden;
+  color: var(--text-secondary);
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+
+.activity-banner time {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -273,7 +346,7 @@ body {
 /* Centered search bar */
 .search-bar {
   position: fixed;
-  top: 72px;
+  top: 112px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 90;
@@ -1100,11 +1173,11 @@ body {
 /* Sidebar */
 .sidebar {
   position: fixed;
-  top: 56px;
+  top: 96px;
   right: 0;
   width: 320px;
-  height: calc(100vh - 56px);
-  height: calc(100dvh - 56px);
+  height: calc(100vh - 96px);
+  height: calc(100dvh - 96px);
   background: var(--bg-panel-92);
   backdrop-filter: blur(12px);
   border-left: 1px solid var(--border);
@@ -1112,6 +1185,11 @@ body {
   flex-direction: column;
   z-index: 50;
   transition: transform 0.3s ease;
+}
+
+.sidebar--activity {
+  background: var(--bg-secondary);
+  backdrop-filter: none;
 }
 
 .sidebar__header {
@@ -1416,7 +1494,6 @@ body {
 .agent-network__footer a:hover {
   text-decoration: underline;
 }
-
 .global-activity {
   display: flex;
   min-height: 0;
@@ -2910,6 +2987,11 @@ body {
   .header {
     padding: 0 12px;
   }
+  .btn--tour,
+  .btn--star,
+  .btn--sponsor {
+    display: none;
+  }
   .btn--join {
     width: 32px;
     height: 32px;
@@ -2937,6 +3019,26 @@ body {
 }
 
 @media (max-width: 480px) {
+  .activity-banner {
+    justify-content: flex-start;
+    padding: 0 12px;
+  }
+  .activity-banner__label {
+    display: none;
+  }
+  .activity-banner__actor img,
+  .activity-banner__actor > span,
+  .activity-banner time {
+    display: none;
+  }
+  .activity-banner__actor {
+    max-width: 38%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .activity-banner__detail {
+    min-width: 0;
+  }
   .globe-avatar-marker {
     width: 20px;
     height: 20px;

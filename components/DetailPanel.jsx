@@ -10,7 +10,7 @@ import { classifyAgent } from '../lib/agent-class.js';
 import { AI_TOOLS } from '../lib/ai-profile.js';
 import SpecialTags from './SpecialTags.jsx';
 
-export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
+export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
   const [fullData, setFullData] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const radarRef = useRef(null);
@@ -19,6 +19,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
 
   const handleGenerateCard = () => {
     track('card_generated', { login: dev.login });
+    onCardGenerated?.(dev.login);
     setShowCard(true);
   };
 
@@ -550,9 +551,9 @@ function CardModal({ dev, claimSuccess, onClose }) {
 
   const rankText = dev.globalRank ? `Global #${dev.globalRank} of ${dev.globalTotal}` : 'Ranked on DevGlobe';
   const agent = classifyAgent(dev);
-  const shareText = `I mapped my open-source identity on DevGlobe: ${rankText}. Generate yours and see where you rank.`;
   const shareHashtags = ['buildinpublic', 'DevGlobe', 'OpenSource', 'DeveloperCommunity', 'GitHub'];
   const hashtagText = shareHashtags.map(hashtag => `#${hashtag}`).join(' ');
+  const shareText = `I mapped my open-source identity on DevGlobe: ${rankText}. Generate yours and see where you rank.\n\n${hashtagText}`;
   const linkedinCaption = `I mapped my open-source contributions on DevGlobe and discovered my developer identity: ${agent.name}. ${rankText}. Build your card and see where your work places you in the global developer community.\n\n${hashtagText}`;
 
   const shareLinks = {
