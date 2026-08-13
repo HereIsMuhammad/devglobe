@@ -9,6 +9,8 @@ const FACTS = [
   'Building your interactive 3D globe…',
 ];
 
+const FEATURED_PROFILES = ['torvalds', 'gaearon', 'sindresorhus', 'tj', 'addyosmani'];
+
 function AnimatedCounter({ target, duration = 2000, suffix = '' }) {
   const [count, setCount] = useState(0);
 
@@ -112,10 +114,16 @@ export default function LoadingOverlay({ error, datasetCount }) {
 
       {/* Branding */}
       <h1 className="loading-brand">
-        <img src="/devglobe.png" alt="" className="loading-brand__logo" />
-        DevGlobe
+        <img src="/devglobe.png" alt="DevGlobe logo" className="loading-brand__logo" />
+        <span>DevGlobe: discover overlooked open-source developers</span>
       </h1>
-      <p className="loading-tagline">The global discovery platform for open-source developers and AI agents</p>
+      <p className="loading-tagline">Search by expertise, location, language, and verified contributions beyond traditional professional networks.</p>
+
+      <nav className="loading-profiles" aria-label="Featured developer profiles">
+        {FEATURED_PROFILES.map(login => (
+          <a key={login} href={`/share/${login}`}>@{login}</a>
+        ))}
+      </nav>
 
       {/* Stats preview */}
       <div className="loading-stats">

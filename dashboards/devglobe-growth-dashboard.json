@@ -1,0 +1,861 @@
+{
+  "$schema": "https://dataexplorer.azure.com/static/d/schema/75/dashboard.json",
+  "id": "337f0ad1-daf9-45de-abb2-8f3a17fd360e",
+  "eTag": "321d84fa-7b53-4d8b-b544-32f0fe40a264",
+  "title": "DevGlobe Platform Growth",
+  "schema_version": 75,
+  "tiles": [
+    {
+      "id": "391dd024-fa48-461a-8ce8-b4306328127c",
+      "title": "DevGlobe Growth",
+      "visualType": "markdownCard",
+      "pageId": "219932ce-5435-49ce-a835-d5b950901dad",
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 18,
+        "height": 2
+      },
+      "markdownText": "## DevGlobe Growth\nCurrent reach, verified adoption, and recent conversion signals. Historical trends use explicit lifecycle timestamps; legacy profile creation dates cannot be reconstructed from current-state documents.",
+      "visualOptions": {}
+    },
+    {
+      "id": "02d59ddf-60e7-4528-9e1b-c8507d70a38b",
+      "title": "Platform KPIs",
+      "visualType": "multistat",
+      "pageId": "219932ce-5435-49ce-a835-d5b950901dad",
+      "layout": {
+        "x": 0,
+        "y": 2,
+        "width": 18,
+        "height": 4
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "7feff033-1887-4cbc-af36-9fe6d223eca5"
+      },
+      "visualOptions": {
+        "multiStat__textSize": "auto",
+        "multiStat__valueColumn": null,
+        "colorRulesDisabled": false,
+        "multiStat__displayOrientation": "horizontal",
+        "multiStat__labelColumn": null,
+        "multiStat__slot": {
+          "width": 18,
+          "height": 4
+        },
+        "colorRules": []
+      }
+    },
+    {
+      "id": "ee9dea8f-58b0-4b47-a6f5-b1dd7644791e",
+      "title": "Daily Profile Claims",
+      "visualType": "line",
+      "pageId": "219932ce-5435-49ce-a835-d5b950901dad",
+      "layout": {
+        "x": 0,
+        "y": 6,
+        "width": 9,
+        "height": 5
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "fc57edc6-be13-4815-ae65-1a9a9a74e0fa"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "Day",
+        "yColumns": [
+          "Claims"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "64630ad0-b756-478f-bc51-f825c723d4e7",
+      "title": "Daily Nominations",
+      "visualType": "column",
+      "pageId": "219932ce-5435-49ce-a835-d5b950901dad",
+      "layout": {
+        "x": 9,
+        "y": 6,
+        "width": 9,
+        "height": 5
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "77ccf905-fcb8-4298-ae0e-958d30c29b91"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "Day",
+        "yColumns": [
+          "Nominations"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "67fda7ba-7d4b-4094-84af-8cd4c9f49a33",
+      "title": "Completed Weekly Claims",
+      "visualType": "column",
+      "pageId": "219932ce-5435-49ce-a835-d5b950901dad",
+      "layout": {
+        "x": 0,
+        "y": 11,
+        "width": 12,
+        "height": 5
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "b97bd03d-20ad-4cb6-ad18-5960530facb0"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "Week",
+        "yColumns": [
+          "Claims"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "f336fce2-68be-40dd-a820-4fb02d580524",
+      "title": "Claimed Share",
+      "visualType": "pie",
+      "pageId": "219932ce-5435-49ce-a835-d5b950901dad",
+      "layout": {
+        "x": 12,
+        "y": 11,
+        "width": 6,
+        "height": 5
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "84b93d04-2238-4596-923c-d26c31485e2b"
+      },
+      "visualOptions": {
+        "hideLegend": false,
+        "legendLocation": "bottom",
+        "xColumn": null,
+        "yColumns": null,
+        "seriesColumns": null,
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "labelDisabled": false,
+        "pie__label": [
+          "name",
+          "percentage"
+        ],
+        "tooltipDisabled": false,
+        "pie__tooltip": [
+          "name",
+          "percentage",
+          "value"
+        ],
+        "pie__orderBy": "size",
+        "pie__kind": "donut",
+        "pie__topNSlices": null,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "e4479321-c704-4ea2-a251-32a814b4d8c8",
+      "title": "Developer Adoption",
+      "visualType": "markdownCard",
+      "pageId": "2a5ded3d-00bf-4870-b37f-f9711856dd03",
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 18,
+        "height": 2
+      },
+      "markdownText": "## Developer Adoption\nWhere the public community is represented, what technologies are visible, and which profiles need enrichment.",
+      "visualOptions": {}
+    },
+    {
+      "id": "6f89490c-3088-4fdc-80d2-f050a55b4151",
+      "title": "Coverage KPIs",
+      "visualType": "multistat",
+      "pageId": "2a5ded3d-00bf-4870-b37f-f9711856dd03",
+      "layout": {
+        "x": 0,
+        "y": 2,
+        "width": 18,
+        "height": 4
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "38cb7dbf-e137-44d7-801f-fcf8ef38c9bc"
+      },
+      "visualOptions": {
+        "multiStat__textSize": "auto",
+        "multiStat__valueColumn": null,
+        "colorRulesDisabled": false,
+        "multiStat__displayOrientation": "horizontal",
+        "multiStat__labelColumn": null,
+        "multiStat__slot": {
+          "width": 18,
+          "height": 4
+        },
+        "colorRules": []
+      }
+    },
+    {
+      "id": "4c9f49be-3916-4636-9f4b-dfd5f2fa61e1",
+      "title": "Top Locations",
+      "visualType": "bar",
+      "pageId": "2a5ded3d-00bf-4870-b37f-f9711856dd03",
+      "layout": {
+        "x": 0,
+        "y": 6,
+        "width": 9,
+        "height": 6
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "ae76e07c-527c-49ca-8d4f-193ce9e81e8e"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "Location",
+        "yColumns": [
+          "Developers"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "6b83aaf0-059a-4a8b-a4c3-a017dbce7ab9",
+      "title": "Top Languages",
+      "visualType": "bar",
+      "pageId": "2a5ded3d-00bf-4870-b37f-f9711856dd03",
+      "layout": {
+        "x": 9,
+        "y": 6,
+        "width": 9,
+        "height": 6
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "ef72c08b-d6b4-4729-b19b-86339336fea7"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "TopLanguage",
+        "yColumns": [
+          "Developers"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "272eea46-7ee2-4939-83f3-c2e80112db6a",
+      "title": "Recent Claims",
+      "visualType": "table",
+      "pageId": "2a5ded3d-00bf-4870-b37f-f9711856dd03",
+      "layout": {
+        "x": 0,
+        "y": 12,
+        "width": 10,
+        "height": 6
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "3ed54779-ca47-4cd6-829f-a381212832d4"
+      },
+      "visualOptions": {
+        "table__enableRenderLinks": false,
+        "colorRulesDisabled": true,
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "crossFilter": [],
+        "drillthrough": [],
+        "table__renderLinks": [],
+        "colorRules": []
+      }
+    },
+    {
+      "id": "2f728cd4-7cc4-4a65-acae-783d88b132aa",
+      "title": "Nomination Outcomes",
+      "visualType": "pie",
+      "pageId": "2a5ded3d-00bf-4870-b37f-f9711856dd03",
+      "layout": {
+        "x": 10,
+        "y": 12,
+        "width": 8,
+        "height": 6
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "02cd9bcd-0fbb-4bbc-83aa-3a6082dea368"
+      },
+      "visualOptions": {
+        "hideLegend": false,
+        "legendLocation": "bottom",
+        "xColumn": null,
+        "yColumns": null,
+        "seriesColumns": null,
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "labelDisabled": false,
+        "pie__label": [
+          "name",
+          "percentage"
+        ],
+        "tooltipDisabled": false,
+        "pie__tooltip": [
+          "name",
+          "percentage",
+          "value"
+        ],
+        "pie__orderBy": "size",
+        "pie__kind": "donut",
+        "pie__topNSlices": null,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "37bc6eda-aff8-48c7-b6ea-b922a3d6faea",
+      "title": "Agent Network",
+      "visualType": "markdownCard",
+      "pageId": "735a065a-caad-445d-9a6c-6a63c3a7efcd",
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 18,
+        "height": 2
+      },
+      "markdownText": "## Agent Network\nConsent-based AI profile adoption and verified-agent introduction outcomes.",
+      "visualOptions": {}
+    },
+    {
+      "id": "d5fb2ea8-aafc-4f7a-80fc-5990a2049dd7",
+      "title": "Agent Network KPIs",
+      "visualType": "multistat",
+      "pageId": "735a065a-caad-445d-9a6c-6a63c3a7efcd",
+      "layout": {
+        "x": 0,
+        "y": 2,
+        "width": 18,
+        "height": 4
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "0b086996-8bde-4cb4-9eb6-fe7ed090078d"
+      },
+      "visualOptions": {
+        "multiStat__textSize": "auto",
+        "multiStat__valueColumn": null,
+        "colorRulesDisabled": false,
+        "multiStat__displayOrientation": "horizontal",
+        "multiStat__labelColumn": null,
+        "multiStat__slot": {
+          "width": 18,
+          "height": 4
+        },
+        "colorRules": []
+      }
+    },
+    {
+      "id": "3a635744-c2b7-49ba-b359-5966ca040dc4",
+      "title": "AI Profile Updates",
+      "visualType": "line",
+      "pageId": "735a065a-caad-445d-9a6c-6a63c3a7efcd",
+      "layout": {
+        "x": 0,
+        "y": 6,
+        "width": 9,
+        "height": 5
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "0c3db487-1b22-4f5c-9b61-f5361c442546"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "Day",
+        "yColumns": [
+          "Profiles"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "640f1137-5b9b-46e1-b2ed-8fa39330fa66",
+      "title": "Introduction Requests",
+      "visualType": "column",
+      "pageId": "735a065a-caad-445d-9a6c-6a63c3a7efcd",
+      "layout": {
+        "x": 9,
+        "y": 6,
+        "width": 9,
+        "height": 5
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "25b9278f-6341-4be3-b46c-b98668a57d32"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "Day",
+        "yColumns": [
+          "Requests"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "7faa4ec9-b1f7-4330-8c2b-db49b137b812",
+      "title": "Self-Declared AI Tools",
+      "visualType": "bar",
+      "pageId": "735a065a-caad-445d-9a6c-6a63c3a7efcd",
+      "layout": {
+        "x": 0,
+        "y": 11,
+        "width": 9,
+        "height": 6
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "3fb15175-6415-4e48-ae22-9537138184a8"
+      },
+      "visualOptions": {
+        "multipleYAxes": {
+          "base": {
+            "id": "-1",
+            "label": "",
+            "columns": [],
+            "yAxisMaximumValue": null,
+            "yAxisMinimumValue": null,
+            "yAxisScale": "linear",
+            "horizontalLines": []
+          },
+          "additional": [],
+          "showMultiplePanels": false
+        },
+        "hideLegend": true,
+        "legendLocation": "bottom",
+        "xColumnTitle": "",
+        "xColumn": "ToolId",
+        "yColumns": [
+          "Developers"
+        ],
+        "seriesColumns": null,
+        "xAxisScale": "linear",
+        "verticalLine": "",
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "forceAxisTicks": false,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "15747463-f6d5-450d-9ee0-b0d2d3e85752",
+      "title": "Introduction Outcomes",
+      "visualType": "pie",
+      "pageId": "735a065a-caad-445d-9a6c-6a63c3a7efcd",
+      "layout": {
+        "x": 9,
+        "y": 11,
+        "width": 9,
+        "height": 6
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "5b0f1b2a-1188-4fd8-8c7d-01ac13b89824"
+      },
+      "visualOptions": {
+        "hideLegend": false,
+        "legendLocation": "bottom",
+        "xColumn": null,
+        "yColumns": null,
+        "seriesColumns": null,
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "labelDisabled": false,
+        "pie__label": [
+          "name",
+          "percentage"
+        ],
+        "tooltipDisabled": false,
+        "pie__tooltip": [
+          "name",
+          "percentage",
+          "value"
+        ],
+        "pie__orderBy": "size",
+        "pie__kind": "donut",
+        "pie__topNSlices": null,
+        "seriesColors": {},
+        "crossFilter": [],
+        "drillthrough": []
+      }
+    },
+    {
+      "id": "26c94ae3-32d9-42be-a8fc-e2f226d3a8bd",
+      "title": "Recent Introduction Requests",
+      "visualType": "table",
+      "pageId": "735a065a-caad-445d-9a6c-6a63c3a7efcd",
+      "layout": {
+        "x": 0,
+        "y": 17,
+        "width": 18,
+        "height": 6
+      },
+      "queryRef": {
+        "kind": "query",
+        "queryId": "ccd08ad8-113e-4f1c-b4a1-8b5aae778ec0"
+      },
+      "visualOptions": {
+        "table__enableRenderLinks": false,
+        "colorRulesDisabled": true,
+        "crossFilterDisabled": false,
+        "drillthroughDisabled": false,
+        "crossFilter": [],
+        "drillthrough": [],
+        "table__renderLinks": [],
+        "colorRules": []
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "Growth Overview",
+      "id": "219932ce-5435-49ce-a835-d5b950901dad"
+    },
+    {
+      "name": "Developer Adoption",
+      "id": "2a5ded3d-00bf-4870-b37f-f9711856dd03"
+    },
+    {
+      "name": "Agent Network",
+      "id": "735a065a-caad-445d-9a6c-6a63c3a7efcd"
+    }
+  ],
+  "dataSources": [
+    {
+      "id": "487a0e1a-7428-42cf-b060-397b2da3ab2b",
+      "kind": "manual-kusto",
+      "name": "DevGlobe Analytics",
+      "clusterUri": "https://devlglobe.eastus2.kusto.windows.net",
+      "database": "devglobe-analytics"
+    }
+  ],
+  "queries": [
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nlet D = LatestDevelopers;\nunion\n  (D | where IsPublic | summarize Value=count() | extend Metric=\"Public developers\"),\n  (D | where Claimed | summarize Value=count() | extend Metric=\"Claimed profiles\"),\n  (D | where AiProfilePublic | summarize Value=count() | extend Metric=\"Public AI profiles\"),\n  (D | where AcceptsAgentRequests | summarize Value=count() | extend Metric=\"Open to agents\")\n| project Metric, Value",
+      "id": "7feff033-1887-4cbc-af36-9fe6d223eca5",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where Claimed and ClaimedAt between (ago(90d) .. now())\n| summarize Claims=count() by Day=startofday(ClaimedAt)\n| order by Day asc",
+      "id": "fc57edc6-be13-4815-ae65-1a9a9a74e0fa",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where isnotnull(SubmittedAt) and SubmittedAt between (ago(90d) .. now())\n| summarize Nominations=count() by Day=startofday(SubmittedAt)\n| order by Day asc",
+      "id": "77ccf905-fcb8-4298-ae0e-958d30c29b91",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where Claimed and ClaimedAt >= ago(180d)\n| summarize Claims=count() by Week=startofweek(ClaimedAt)\n| where Week < startofweek(now())\n| order by Week asc",
+      "id": "b97bd03d-20ad-4cb6-ad18-5960530facb0",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where IsPublic\n| summarize Value=count() by Status=iff(Claimed, \"Claimed\", \"Unclaimed\")\n| project Status, Value",
+      "id": "84b93d04-2238-4596-923c-d26c31485e2b",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nlet D = LatestDevelopers | where IsPublic;\nunion\n  (D | summarize Value=dcount(Location) | extend Metric=\"Locations\"),\n  (D | summarize Value=dcount(TopLanguage) | extend Metric=\"Languages\"),\n  (D | where HasCoordinates | summarize Value=count() | extend Metric=\"Mapped profiles\"),\n  (D | where isempty(Location) or Location in (\"Unknown\", \"undefined\") | summarize Value=count() | extend Metric=\"Missing location\")\n| project Metric, Value",
+      "id": "38cb7dbf-e137-44d7-801f-fcf8ef38c9bc",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where IsPublic and isnotempty(Location) and Location !in (\"Unknown\", \"undefined\")\n| summarize Developers=count() by Location\n| top 15 by Developers desc",
+      "id": "ae76e07c-527c-49ca-8d4f-193ce9e81e8e",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where IsPublic and isnotempty(TopLanguage)\n| summarize Developers=count() by TopLanguage\n| top 15 by Developers desc",
+      "id": "ef72c08b-d6b4-4729-b19b-86339336fea7",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where Claimed\n| top 25 by ClaimedAt desc\n| project ClaimedAt, Login, Name, Location, TopLanguage",
+      "id": "3ed54779-ca47-4cd6-829f-a381212832d4",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where isnotempty(NominationStatus)\n| summarize Value=count() by Status=NominationStatus\n| project Status, Value",
+      "id": "02cd9bcd-0fbb-4bbc-83aa-3a6082dea368",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nlet LatestIntroductions = () {\n  DevGlobeIntroductionsRaw\n  | extend RequestId = tostring(Document.id), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(RequestId)\n  | summarize arg_max(UpdatedAt, *) by RequestId\n  | extend\n      Status = tostring(Document.status),\n      AgentId = tostring(Document.agentId),\n      DeveloperLogin = tostring(Document.developerLogin),\n      CreatedAt = todatetime(Document.createdAt),\n      ExpiresAt = todatetime(Document.expiresAt);\n};\nlet D = LatestDevelopers;\nlet I = LatestIntroductions;\nunion\n  (D | where AiProfilePublic | summarize Value=count() | extend Metric=\"Public AI profiles\"),\n  (D | where AcceptsAgentRequests | summarize Value=count() | extend Metric=\"Open developers\"),\n  (I | summarize Value=count() | extend Metric=\"Introduction requests\"),\n  (I | where Status == \"accepted\" | summarize Value=count() | extend Metric=\"Accepted connections\")\n| project Metric, Value",
+      "id": "0b086996-8bde-4cb4-9eb6-fe7ed090078d",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where AiProfilePublic and AiProfileUpdatedAt between (ago(90d) .. now())\n| summarize Profiles=count() by Day=startofday(AiProfileUpdatedAt)\n| order by Day asc",
+      "id": "0c3db487-1b22-4f5c-9b61-f5361c442546",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestIntroductions = () {\n  DevGlobeIntroductionsRaw\n  | extend RequestId = tostring(Document.id), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(RequestId)\n  | summarize arg_max(UpdatedAt, *) by RequestId\n  | extend\n      Status = tostring(Document.status),\n      AgentId = tostring(Document.agentId),\n      DeveloperLogin = tostring(Document.developerLogin),\n      CreatedAt = todatetime(Document.createdAt),\n      ExpiresAt = todatetime(Document.expiresAt);\n};\nLatestIntroductions\n| where CreatedAt between (ago(90d) .. now())\n| summarize Requests=count() by Day=startofday(CreatedAt)\n| order by Day asc",
+      "id": "25b9278f-6341-4be3-b46c-b98668a57d32",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestDevelopers = () {\n  DevGlobeDevelopersRaw\n  | extend Login = tostring(Document.login), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(Login)\n  | summarize arg_max(UpdatedAt, *) by Login\n  | extend\n      Name = tostring(Document.name),\n      Location = tostring(Document.location),\n      TopLanguage = tostring(Document.topLanguage),\n      Claimed = tobool(Document.claimed),\n      ClaimedAt = todatetime(Document.claimedAt),\n      NominationStatus = tostring(Document.nomination.status),\n      SubmittedAt = todatetime(Document.nomination.submittedAt),\n      ReviewedAt = todatetime(Document.nomination.reviewedAt),\n      AiProfilePublic = tostring(Document.aiProfile.visibility) == \"public\",\n      AcceptsAgentRequests = tobool(Document.aiProfile.acceptsAgentRequests),\n      AiProfileUpdatedAt = todatetime(Document.aiProfile.updatedAt),\n      Tools = todynamic(Document.aiProfile.tools),\n      HasCoordinates = isnotnull(todouble(Document.lat)) and isnotnull(todouble(Document.lng)),\n      IsPublic = isempty(NominationStatus) or NominationStatus == \"approved\";\n};\nLatestDevelopers\n| where AiProfilePublic and isnotnull(Tools)\n| mv-expand Tool=Tools\n| extend ToolId=tostring(Tool.id)\n| where isnotempty(ToolId)\n| summarize Developers=dcount(Login) by ToolId\n| order by Developers desc",
+      "id": "3fb15175-6415-4e48-ae22-9537138184a8",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestIntroductions = () {\n  DevGlobeIntroductionsRaw\n  | extend RequestId = tostring(Document.id), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(RequestId)\n  | summarize arg_max(UpdatedAt, *) by RequestId\n  | extend\n      Status = tostring(Document.status),\n      AgentId = tostring(Document.agentId),\n      DeveloperLogin = tostring(Document.developerLogin),\n      CreatedAt = todatetime(Document.createdAt),\n      ExpiresAt = todatetime(Document.expiresAt);\n};\nLatestIntroductions\n| extend EffectiveStatus=iff(Status == \"pending\" and ExpiresAt < now(), \"expired\", Status)\n| summarize Value=count() by Status=EffectiveStatus\n| project Status, Value",
+      "id": "5b0f1b2a-1188-4fd8-8c7d-01ac13b89824",
+      "usedVariables": []
+    },
+    {
+      "dataSource": {
+        "kind": "inline",
+        "dataSourceId": "487a0e1a-7428-42cf-b060-397b2da3ab2b"
+      },
+      "text": "let LatestIntroductions = () {\n  DevGlobeIntroductionsRaw\n  | extend RequestId = tostring(Document.id), UpdatedAt = coalesce(CosmosTimestamp, unixtime_seconds_todatetime(tolong(Document._ts)))\n  | where isnotempty(RequestId)\n  | summarize arg_max(UpdatedAt, *) by RequestId\n  | extend\n      Status = tostring(Document.status),\n      AgentId = tostring(Document.agentId),\n      DeveloperLogin = tostring(Document.developerLogin),\n      CreatedAt = todatetime(Document.createdAt),\n      ExpiresAt = todatetime(Document.expiresAt);\n};\nLatestIntroductions\n| top 25 by CreatedAt desc\n| project CreatedAt, DeveloperLogin, AgentId, Status, ExpiresAt",
+      "id": "ccd08ad8-113e-4f1c-b4a1-8b5aae778ec0",
+      "usedVariables": []
+    }
+  ],
+  "baseQueries": [],
+  "embeddedApps": [],
+  "parameters": []
+}

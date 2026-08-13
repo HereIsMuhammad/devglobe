@@ -2389,10 +2389,13 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 32px;
+  max-width: 720px;
+  padding: 0 24px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 6px;
+  text-align: center;
 }
 
 .loading-brand__logo {
@@ -2404,7 +2407,29 @@ body {
 .loading-tagline {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: 32px;
+  max-width: 620px;
+  padding: 0 24px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.loading-profiles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  margin-bottom: 28px;
+  font-size: 12px;
+}
+
+.loading-profiles a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.loading-profiles a:hover {
+  color: var(--accent-blue);
+  text-decoration: underline;
 }
 
 /* Stats counters */
