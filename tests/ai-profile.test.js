@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   AiProfileValidationError,
   getPublicAiProfile,
+  getPublicAiToolNames,
   normalizeAiProfile,
 } from '../lib/ai-profile.js';
 
@@ -67,4 +68,20 @@ test('projects only valid public AI profiles', () => {
   assert.deepEqual(getPublicAiProfile(profile), profile);
   assert.equal(getPublicAiProfile({ ...profile, visibility: 'private' }), null);
   assert.equal(getPublicAiProfile({ ...profile, tools: [{ id: 'invalid', usage: 'daily' }] }), null);
+});
+
+test('projects tool names only from public AI profiles', () => {
+  const profile = {
+    tools: [
+      { id: 'github-copilot', usage: 'daily', source: 'self-declared' },
+      { id: 'claude-code', usage: 'regular', source: 'self-declared' },
+    ],
+    acceptsAgentRequests: false,
+    visibility: 'public',
+    contactPolicy: 'nobody',
+    updatedAt: timestamp,
+  };
+
+  assert.deepEqual(getPublicAiToolNames(profile), ['GitHub Copilot', 'Claude Code']);
+  assert.deepEqual(getPublicAiToolNames({ ...profile, visibility: 'private' }), []);
 });

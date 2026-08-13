@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { createSessionToken, buildSessionCookie } from '../../../../lib/auth.js';
+import { saveActivities } from '../../../../lib/activity-store.js';
+import { createPlatformActivity } from '../../../../lib/platform-activity.js';
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
@@ -73,6 +75,15 @@ export async function GET(request) {
 
     const response = NextResponse.redirect(baseUrl);
     response.cookies.set(cookie);
+    try {
+      await saveActivities([createPlatformActivity({
+        type: 'logged_in',
+        login: session.login,
+        avatarUrl: session.avatarUrl,
+      })]);
+    } catch (activityError) {
+      console.error('Login activity write failed:', activityError.message);
+    }
     return response;
   } catch (err) {
     console.error('OAuth callback error:', err);

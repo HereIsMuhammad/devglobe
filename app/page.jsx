@@ -8,9 +8,8 @@ import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
-import AiProfileModal from '../components/AiProfileModal.jsx';
-import IntroductionInboxModal from '../components/IntroductionInboxModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
+import PlatformActivityBanner from '../components/PlatformActivityBanner.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
 import dynamic from 'next/dynamic';
@@ -36,8 +35,6 @@ export default function Home() {
   const [cardRequest, setCardRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
-  const [showAiProfile, setShowAiProfile] = useState(false);
-  const [showIntroductions, setShowIntroductions] = useState(false);
   const [tourStep, setTourStep] = useState(null);
   const [tourMatch, setTourMatch] = useState(null);
   const globeRef = useRef(null);
@@ -93,13 +90,7 @@ export default function Home() {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
     setClaimStatus('unclaimed');
-    setShowAiProfile(false);
-    setShowIntroductions(false);
   }, []);
-
-  const handleAiProfileSaved = useCallback((aiProfile) => {
-    setSelectedDev(current => current?.login === user?.login ? { ...current, aiProfile } : current);
-  }, [user]);
 
   const handleClaim = useCallback(async () => {
     try {
@@ -203,8 +194,17 @@ export default function Home() {
     setFiltered(rankedResults);
   }, [developers]);
 
+  const recordCardActivity = useCallback((targetLogin) => {
+    fetch('/api/activities/platform', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'generated_card', targetLogin }),
+    }).catch(() => {});
+  }, []);
+
   const handleGenerateCard = useCallback((developer) => {
     const rankedDeveloper = developers.find(item => item.login === developer.login) || developer;
+    recordCardActivity(rankedDeveloper.login);
     setSelectedDev(rankedDeveloper);
     setCardContext('generate');
     setCardRequest(request => request + 1);
@@ -212,7 +212,7 @@ export default function Home() {
     if (rankedDeveloper.lat != null && rankedDeveloper.lng != null) {
       setFlyTarget({ lat: rankedDeveloper.lat, lng: rankedDeveloper.lng });
     }
-  }, [developers]);
+  }, [developers, recordCardActivity]);
 
   const completeTour = useCallback(() => {
     setTourStep(null);
@@ -360,8 +360,6 @@ export default function Home() {
         user={user}
         onLogout={handleLogout}
         onClaim={handleClaim}
-        onEditAiProfile={() => setShowAiProfile(true)}
-        onOpenIntroductions={() => setShowIntroductions(true)}
         claimStatus={claimStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
@@ -370,6 +368,7 @@ export default function Home() {
         onAddMe={handleAddMe}
         onStartTour={handleTourFocusSearch}
       />
+      <PlatformActivityBanner />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
@@ -424,7 +423,7 @@ export default function Home() {
           activeView={sidebarView}
           onViewChange={setSidebarView}
         />
-        {sidebarOpen && (
+        {sidebarOpen && sidebarView === 'leaderboard' && (
           <div className="sidebar-backdrop" onClick={handleCloseSidebar} />
         )}
         {selectedDev && (
@@ -432,6 +431,7 @@ export default function Home() {
             key={`${selectedDev.login}-${cardRequest}`}
             dev={selectedDev}
             onClose={handleCloseDetail}
+            onCardGenerated={recordCardActivity}
             claimedLogins={claimedLogins}
             openCardOnMount={cardRequest > 0}
             claimSuccess={cardContext === 'claim'}
@@ -441,13 +441,6 @@ export default function Home() {
           <ComparePanel devs={compareDevs} onClose={handleCloseCompare} />
         )}
         {showAddMe && <AddMeModal onClose={handleCloseAddMe} />}
-        {showAiProfile && (
-          <AiProfileModal
-            onClose={() => setShowAiProfile(false)}
-            onSaved={handleAiProfileSaved}
-          />
-        )}
-        {showIntroductions && <IntroductionInboxModal onClose={() => setShowIntroductions(false)} />}
       </main>
     </div>
   );
