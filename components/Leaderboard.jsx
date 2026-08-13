@@ -6,6 +6,7 @@ import { extractCountry, normalizeCountry, countryKey } from '../lib/country.js'
 import { SCORE_METHODOLOGY } from '../lib/scoring.js';
 import SpecialTags from './SpecialTags.jsx';
 import GlobalActivityFeed from './GlobalActivityFeed.jsx';
+import AgentNetworkPanel from './AgentNetworkPanel.jsx';
 
 const ITEM_HEIGHT = 62;
 const BUFFER = 10;
@@ -145,6 +146,15 @@ export default function Leaderboard({
         >
           Activity
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeView === 'agents'}
+          className={activeView === 'agents' ? 'sidebar__tab sidebar__tab--active' : 'sidebar__tab'}
+          onClick={() => onViewChange?.('agents')}
+        >
+          Agents
+        </button>
         <button className="sidebar__close-btn" onClick={onClose} aria-label="Close sidebar" title="Close sidebar">
           &times;
         </button>
@@ -267,6 +277,7 @@ export default function Leaderboard({
         </>
       )}
       {activeView === 'activity' && <GlobalActivityFeed active />}
+      {activeView === 'agents' && <AgentNetworkPanel />}
     </aside>
   );
 }

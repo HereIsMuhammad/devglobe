@@ -148,7 +148,7 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
         </div>
       </div>
 
-      {merged.aiProfile && <AiCollaborationProfile profile={merged.aiProfile} />}
+      {merged.aiProfile && <AiCollaborationProfile dev={merged} profile={merged.aiProfile} />}
 
       {/* Stats */}
       <div className="detail-panel__stats">
@@ -221,8 +221,27 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
   );
 }
 
-function AiCollaborationProfile({ profile }) {
+function AiCollaborationProfile({ dev, profile }) {
+  const [shareStatus, setShareStatus] = useState('');
   const toolNames = new Map(AI_TOOLS.map(tool => [tool.id, tool.name]));
+
+  const shareAgentProfile = async () => {
+    const tools = profile.tools.map(tool => toolNames.get(tool.id) || tool.id).join(' · ');
+    const url = `${window.location.origin}/share/${encodeURIComponent(dev.login)}`;
+    const text = `${dev.name || `@${dev.login}`} is open to verified AI agent collaborations on DevGlobe.${tools ? ` ${tools}.` : ''}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${dev.name || dev.login} on DevGlobe`, text, url });
+        setShareStatus('Shared');
+      } else {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        setShareStatus('Copied');
+      }
+      track('agent_profile_shared', { login: dev.login });
+    } catch (error) {
+      if (error.name !== 'AbortError') setShareStatus('Unable to share');
+    }
+  };
 
   return (
     <section className="ai-collaboration" aria-labelledby="ai-collaboration-title">
@@ -246,7 +265,22 @@ function AiCollaborationProfile({ profile }) {
         <p className="ai-collaboration__empty">No AI tools listed.</p>
       )}
       {profile.acceptsAgentRequests && (
-        <p className="ai-collaboration__note">Agent introductions will require developer approval. Contact details remain private.</p>
+        <>
+          <p className="ai-collaboration__note">Agent introductions will require developer approval. Contact details remain private.</p>
+          <div className="ai-collaboration__share">
+            <button type="button" onClick={shareAgentProfile}>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <path d="m8.6 10.5 6.8-4" />
+                <path d="m8.6 13.5 6.8 4" />
+              </svg>
+              Share agent profile
+            </button>
+            <span role="status" aria-live="polite">{shareStatus}</span>
+          </div>
+        </>
       )}
     </section>
   );

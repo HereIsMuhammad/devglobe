@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getIntroductionLifecycle } from '../lib/agent-network.js';
 
 export default function IntroductionInboxModal({ onClose }) {
   const [requests, setRequests] = useState([]);
@@ -70,6 +71,14 @@ export default function IntroductionInboxModal({ onClose }) {
                   </div>
                   <small className={`introduction-request__status introduction-request__status--${status}`}>{status}</small>
                 </header>
+                <ol className="introduction-request__timeline" aria-label={`Request status: ${status}`}>
+                  {getIntroductionLifecycle(request.status, request.expiresAt).map(stage => (
+                    <li className={`introduction-request__stage introduction-request__stage--${stage.state}`} key={stage.id}>
+                      <i aria-hidden="true" />
+                      <span>{stage.label}</span>
+                    </li>
+                  ))}
+                </ol>
                 <dl>
                   <div><dt>Project</dt><dd>{request.project}</dd></div>
                   <div><dt>Reason</dt><dd>{request.reason}</dd></div>
