@@ -2910,9 +2910,6 @@ body {
   .header {
     padding: 0 12px;
   }
-  .header__subtitle {
-    display: none;
-  }
   .btn--join {
     width: 32px;
     height: 32px;
@@ -3619,6 +3616,10 @@ body {
 }
 
 @media (max-width: 620px) {
+  .header__subtitle {
+    display: none;
+  }
+
   .ai-profile-modal {
     padding: 22px 16px;
   }
