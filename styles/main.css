@@ -1114,6 +1114,11 @@ body {
   transition: transform 0.3s ease;
 }
 
+.sidebar--activity {
+  background: var(--bg-secondary);
+  backdrop-filter: none;
+}
+
 .sidebar__header {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border);

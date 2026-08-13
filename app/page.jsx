@@ -412,7 +412,7 @@ export default function Home() {
           activeView={sidebarView}
           onViewChange={setSidebarView}
         />
-        {sidebarOpen && (
+        {sidebarOpen && sidebarView === 'leaderboard' && (
           <div className="sidebar-backdrop" onClick={handleCloseSidebar} />
         )}
         {selectedDev && (
