@@ -7,6 +7,7 @@ import { formatNum, formatRelativeTime, isStaleData } from '../lib/format.js';
 import { DIMENSIONS, SCORE_METHODOLOGY } from '../lib/scoring.js';
 import { SOCIAL_PREVIEW_VERSION } from '../lib/site.js';
 import { classifyAgent } from '../lib/agent-class.js';
+import { AI_TOOLS } from '../lib/ai-profile.js';
 import SpecialTags from './SpecialTags.jsx';
 
 export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
@@ -147,6 +148,8 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
         </div>
       </div>
 
+      {merged.aiProfile && <AiCollaborationProfile profile={merged.aiProfile} />}
+
       {/* Stats */}
       <div className="detail-panel__stats">
         <div className="stats-grid">
@@ -215,6 +218,37 @@ export default function DetailPanel({ dev, onClose, claimedLogins, openCardOnMou
         <CardModal dev={dev} claimSuccess={claimSuccess} onClose={() => setShowCard(false)} />
       )}
     </div>
+  );
+}
+
+function AiCollaborationProfile({ profile }) {
+  const toolNames = new Map(AI_TOOLS.map(tool => [tool.id, tool.name]));
+
+  return (
+    <section className="ai-collaboration" aria-labelledby="ai-collaboration-title">
+      <div className="ai-collaboration__heading">
+        <div>
+          <span>SELF-DECLARED</span>
+          <h3 id="ai-collaboration-title">AI collaboration</h3>
+        </div>
+        {profile.acceptsAgentRequests && <strong>Open to verified agents</strong>}
+      </div>
+      {profile.tools.length > 0 ? (
+        <div className="ai-collaboration__tools">
+          {profile.tools.map(tool => (
+            <div className="ai-collaboration__tool" key={tool.id}>
+              <span>{toolNames.get(tool.id) || tool.id}</span>
+              <small>{tool.usage}</small>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="ai-collaboration__empty">No AI tools listed.</p>
+      )}
+      {profile.acceptsAgentRequests && (
+        <p className="ai-collaboration__note">Agent introductions will require developer approval. Contact details remain private.</p>
+      )}
+    </section>
   );
 }
 
