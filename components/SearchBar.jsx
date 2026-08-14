@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import SpecialTags from './SpecialTags.jsx';
+import { countryKey } from '../lib/country.js';
 
 const SAMPLES_BY_MODE = {
   text: [
@@ -45,10 +46,11 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
 
     if (m === 'text') {
       const lower = q.trim().toLowerCase();
+      const locationKey = countryKey(q.trim());
       let results = developers.filter(d =>
         (d.login && d.login.toLowerCase().includes(lower)) ||
         (d.name && d.name.toLowerCase().includes(lower)) ||
-        (d.location && d.location.toLowerCase().includes(lower))
+        (d.location && countryKey(d.location).includes(locationKey))
       );
 
       if (results.length === 0) {
