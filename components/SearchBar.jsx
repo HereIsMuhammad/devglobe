@@ -6,22 +6,22 @@ import { countryKey } from '../lib/country.js';
 
 const SAMPLES_BY_MODE = {
   text: [
-    { query: 'Colombo', label: 'Colombo' },
+    { query: 'torvalds', label: '@torvalds' },
+    { query: 'sindresorhus', label: '@sindresorhus' },
     { query: 'San Francisco', label: 'San Francisco' },
-    { query: 'torvalds', label: 'torvalds' },
-    { query: 'London', label: 'London' },
+    { query: 'Bengaluru', label: 'Bengaluru' },
   ],
   vector: [
-    { query: 'open source contributors in San Francisco', label: 'SF contributors' },
-    { query: 'Python developer working on AI and deep learning', label: 'AI & deep learning' },
-    { query: 'full stack JavaScript developer', label: 'full stack JS dev' },
-    { query: 'Linux kernel and systems programming in C', label: 'Linux kernel devs' },
+    { query: 'developer building AI agents and MCP tools', label: 'AI agent builders' },
+    { query: 'open source maintainer looking for collaborators', label: 'Open-source maintainers' },
+    { query: 'developer working on LLM infrastructure and evaluation', label: 'LLM infrastructure' },
+    { query: 'developer advocate growing technical communities', label: 'Community builders' },
   ],
   hybrid: [
-    { query: 'React developer in India', label: 'React devs in India' },
-    { query: 'cloud infrastructure and DevOps engineer', label: 'DevOps engineers' },
-    { query: 'machine learning researcher in Europe', label: 'ML in Europe' },
-    { query: 'Rust systems programmer', label: 'Rust systems' },
+    { query: 'MCP and TypeScript developer in Europe', label: 'MCP + TypeScript' },
+    { query: 'AI agent builder in India', label: 'AI builders in India' },
+    { query: 'Python open source maintainer', label: 'Python maintainers' },
+    { query: 'cloud native developer open to collaboration', label: 'Cloud collaborators' },
   ],
 };
 
@@ -166,7 +166,7 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
         <input
           ref={inputRef}
           type="text"
-          placeholder={mode === 'text' ? 'Search by name, username, or location...' : mode === 'vector' ? 'Describe the developer you\'re looking for...' : 'Combine keywords and semantic search...'}
+          placeholder={mode === 'text' ? 'Find a developer by name, username, or location...' : mode === 'vector' ? 'Describe your ideal developer or agent collaborator...' : 'Combine skills, interests, and location...'}
           autoComplete="off"
           value={query}
           onChange={handleInput}
