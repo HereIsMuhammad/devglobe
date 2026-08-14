@@ -210,6 +210,8 @@ const Globe = forwardRef(function Globe({
   const globeEl = useRef();
   const tooltipRef = useRef(null);
   const pointerDownPos = useRef(null);
+  const tooltipFrame = useRef(null);
+  const reducedMotion = useRef(false);
   const [countryFeatures, setCountryFeatures] = useState([]);
   const [hoverCountry, setHoverCountry] = useState(null);
   const isLight = theme === 'light';
@@ -308,13 +310,21 @@ const Globe = forwardRef(function Globe({
     return () => { cancelled = true; };
   }, []);
 
-  // Auto-rotate on mount
-  useEffect(() => {
+  const handleGlobeReady = useCallback(() => {
+    const globe = globeEl.current;
+    if (!globe) return;
+
+    globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    reducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const controls = globeEl.current?.controls();
     if (controls) {
-      controls.autoRotate = true;
+      controls.autoRotate = !reducedMotion.current;
       controls.autoRotateSpeed = 0.4;
       controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.rotateSpeed = 0.6;
+      controls.zoomSpeed = 0.8;
     }
   }, []);
 
@@ -336,7 +346,7 @@ const Globe = forwardRef(function Globe({
   const setAutoRotate = useCallback((on) => {
     const controls = globeEl.current?.controls();
     // Stay still while a country is in focus
-    if (controls) controls.autoRotate = on && !selectedCountry;
+    if (controls) controls.autoRotate = on && !selectedCountry && !reducedMotion.current;
   }, [selectedCountry]);
 
   const avatarElement = useCallback(
@@ -467,13 +477,20 @@ const Globe = forwardRef(function Globe({
   // Track mouse for tooltip
   useEffect(() => {
     const handler = (e) => {
-      if (tooltipRef.current && !tooltipDisabled) {
-        tooltipRef.current.style.left = (e.clientX + 12) + 'px';
-        tooltipRef.current.style.top = (e.clientY + 12) + 'px';
-      }
+      if (!tooltipRef.current || tooltipDisabled) return;
+      const x = e.clientX + 12;
+      const y = e.clientY + 12;
+      if (tooltipFrame.current) cancelAnimationFrame(tooltipFrame.current);
+      tooltipFrame.current = requestAnimationFrame(() => {
+        if (tooltipRef.current) tooltipRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        tooltipFrame.current = null;
+      });
     };
     document.addEventListener('mousemove', handler);
-    return () => document.removeEventListener('mousemove', handler);
+    return () => {
+      document.removeEventListener('mousemove', handler);
+      if (tooltipFrame.current) cancelAnimationFrame(tooltipFrame.current);
+    };
   }, [tooltipDisabled]);
 
   return (
@@ -490,6 +507,7 @@ const Globe = forwardRef(function Globe({
           showAtmosphere={true}
           atmosphereColor={isLight ? '#7ba7d9' : '#3a7ecf'}
           atmosphereAltitude={0.25}
+          onGlobeReady={handleGlobeReady}
           polygonsData={countryFeatures}
           polygonAltitude={polygonAltitude}
           polygonCapColor={polygonCapColor}

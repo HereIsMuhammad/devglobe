@@ -2181,6 +2181,8 @@ body {
 /* Tooltip */
 .tooltip {
   position: fixed;
+  top: 0;
+  left: 0;
   pointer-events: none;
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -2193,6 +2195,7 @@ body {
   max-width: 300px;
   min-width: 240px;
   backdrop-filter: blur(8px);
+  will-change: transform, opacity;
 }
 
 .tooltip.visible {
