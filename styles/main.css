@@ -4370,7 +4370,7 @@ body {
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
-  white-space: normal;   /* nowrap ki jagah — ab wrap hoga, scroll nahi */
+  white-space: normal;   
   color: #a8c5ff;
   font-size: 11.5px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
