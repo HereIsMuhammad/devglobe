@@ -482,6 +482,7 @@ export default function Home() {
             onClose={handleCloseDetail}
             onCardGenerated={recordCardActivity}
             claimedLogins={claimedLogins}
+            user={user}
             openCardOnMount={cardRequest > 0}
             claimSuccess={cardContext === 'claim'}
           />

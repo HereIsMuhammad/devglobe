@@ -2047,6 +2047,8 @@ body {
 
 .detail-header__links {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
 }
@@ -2059,6 +2061,38 @@ body {
 
 .detail-header__links a:hover {
   text-decoration: underline;
+}
+
+.btn--follow {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--overlay-subtle);
+  color: var(--text-primary);
+  font: 600 12px var(--font);
+  cursor: pointer;
+}
+
+.btn--follow:hover:not(:disabled),
+.btn--follow-active {
+  border-color: rgba(46, 164, 79, 0.55);
+  background: rgba(46, 164, 79, 0.14);
+  color: #2ea44f;
+}
+
+.btn--follow:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.detail-header__follow-error {
+  margin-top: 6px;
+  color: #ef4444;
+  font-size: 11px;
 }
 
 .ai-collaboration {
