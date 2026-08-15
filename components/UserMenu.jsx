@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus }) {
   const [open, setOpen] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState('idle');
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -15,6 +16,24 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const status = new URLSearchParams(window.location.search).get('email_verification');
+    if (status === 'success') setVerificationStatus('verified');
+    if (status === 'invalid') setVerificationStatus('invalid');
+  }, []);
+
+  async function requestEmailVerification() {
+    setVerificationStatus('sending');
+    try {
+      const response = await fetch('/api/contact/verification', { method: 'POST' });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not send verification email');
+      setVerificationStatus(result.alreadyVerified ? 'verified' : 'sent');
+    } catch {
+      setVerificationStatus('error');
+    }
+  }
 
   if (!user) {
     return (
@@ -87,6 +106,27 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
                 </svg>
                 Agent requests
               </button>
+              <button
+                className="user-menu__item"
+                onClick={requestEmailVerification}
+                disabled={verificationStatus === 'sending' || verificationStatus === 'sent' || verificationStatus === 'verified'}
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-10 6L2 7" />
+                </svg>
+                {verificationStatus === 'sending' && 'Sending verification...'}
+                {verificationStatus === 'sent' && 'Verification email sent'}
+                {verificationStatus === 'verified' && 'Email verified'}
+                {!['sending', 'sent', 'verified'].includes(verificationStatus) && 'Verify email'}
+              </button>
+              {(verificationStatus === 'error' || verificationStatus === 'invalid') && (
+                <div className="user-menu__message" role="status">
+                  {verificationStatus === 'invalid'
+                    ? 'Verification link is invalid or expired.'
+                    : 'Could not send verification email.'}
+                </div>
+              )}
             </>
           )}
           {claimStatus === 'no_match' && (

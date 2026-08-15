@@ -25,6 +25,7 @@
     "setup-contacts-container": "node scripts/setup-contacts-container.js",
     "create-agent-key": "node scripts/create-agent-key.js",
     "review-nominations": "node scripts/review-nominations.js",
+    "send-nomination-email": "node scripts/send-nomination-approval-email.js",
     "seed-emulator": "node scripts/seed-emulator.js"
   },
   "dependencies": {
