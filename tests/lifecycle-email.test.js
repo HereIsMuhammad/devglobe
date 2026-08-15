@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   buildClaimWelcomeEmail,
+  buildEmailVerificationEmail,
   buildNominationApprovedEmail,
   sendLifecycleEmail,
 } from '../lib/lifecycle-email.js';
@@ -98,4 +99,14 @@ test('throws a sanitized provider error', async () => {
     if (originalFrom === undefined) delete process.env.EMAIL_FROM;
     else process.env.EMAIL_FROM = originalFrom;
   }
+});
+
+test('builds an encoded email verification link', () => {
+  const message = buildEmailVerificationEmail({ login: 'dev user', token: 'token+/=' });
+
+  assert.match(message.subject, /verify/i);
+  assert.match(message.text, /login=dev\+user/);
+  assert.match(message.text, /token=token%2B%2F%3D/);
+  assert.match(message.text, /24 hours/);
+  assert.match(message.html, /Verify email/);
 });
