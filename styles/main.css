@@ -4241,6 +4241,30 @@ body {
 .badge-card__copy:active {
   transform: translateY(1px);
 }
+.badge-card--compact {
+  margin: 20px auto 0;
+  padding: 18px 18px 16px;
+  max-width: 100%;
+}
+
+.badge-card--compact .badge-card__title {
+  margin: 10px 0 4px;
+  font-size: 16px;
+}
+
+.badge-card--compact .badge-card__subtitle {
+  margin: 0 0 14px;
+  font-size: 12px;
+}
+
+.badge-card--compact .badge-card__stats {
+  margin-bottom: 14px;
+}
+
+.badge-card--compact .badge-card__preview {
+  margin-bottom: 14px;
+  padding: 10px;
+}
 @media (max-width: 520px) {
   .quick-tour {
     left: 12px;
