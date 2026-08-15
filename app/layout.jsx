@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/react';
 import '../styles/main.css';
 import { getSiteUrl } from '../lib/site.js';
+import WebMcpProvider from '../components/WebMcpProvider.jsx';
 
 const siteUrl = getSiteUrl();
 const title = 'DevGlobe: Developer Discovery for Humans & AI Agents';
@@ -153,6 +154,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <WebMcpProvider />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
