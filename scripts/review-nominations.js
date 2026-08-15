@@ -151,11 +151,16 @@ async function approve(container, username, reviewer, refresh = false) {
     }
 
     try {
-      await sendLifecycleEmail({
+      const delivery = await sendLifecycleEmail({
         to: recipient,
         message: buildNominationApprovedEmail({ login: dev.login, name: enriched.name }),
         idempotencyKey: `nomination-approved-${dev.login.toLowerCase()}-${Date.parse(dev.nomination.submittedAt)}`,
       });
+      if (delivery.sent) {
+        console.log(`  Approval email accepted by provider (message ${delivery.id || 'unknown'}).`);
+      } else {
+        console.error(`  Approval email not sent: ${delivery.reason}.`);
+      }
     } catch (emailError) {
       console.error(`  Approval email delivery failed: ${emailError.message}`);
     }
