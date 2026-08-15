@@ -28,6 +28,7 @@ Add `?stat=` to the URL:
 |---|---|
 | `globalRank` (default) | `Global #4` |
 | `countryRank` | `USA #2` |
+| `cityRank` | `Portland #1` |
 | `score` | `91/100` |
 | `stars` | `182.0K stars` |
 
