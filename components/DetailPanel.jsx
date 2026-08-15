@@ -554,7 +554,7 @@ function CardModal({ dev, claimSuccess, onClose }) {
   const agent = classifyAgent(dev);
   const shareHashtags = ['buildinpublic', 'DevGlobe', 'OpenSource', 'DeveloperCommunity', 'GitHub'];
   const hashtagText = shareHashtags.map(hashtag => `#${hashtag}`).join(' ');
-  const shareText = `I mapped my open-source identity on DevGlobe: ${rankText}. Generate yours and see where you rank.\n\n${hashtagText}`;
+  const shareText = `I mapped my open-source identity on DevGlobe: ${rankText}. Generate yours and see where you rank.`;
   const linkedinCaption = `I mapped my open-source contributions on DevGlobe and discovered my developer identity: ${agent.name}. ${rankText}. Build your card and see where your work places you in the global developer community.\n\n${hashtagText}`;
 
   const shareLinks = {
