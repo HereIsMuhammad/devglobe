@@ -567,14 +567,21 @@ function CardModal({ dev, claimSuccess, onClose }) {
   const handleDownload = async () => {
     try {
       const res = await fetch(cardUrl);
+      if (!res.ok || !res.headers.get('content-type')?.startsWith('image/')) {
+        throw new Error('Card image is unavailable');
+      }
       const blob = await res.blob();
+      if (!blob.size) throw new Error('Card image is empty');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `devglobe-${login}.png`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch { /* ignore */ }
+    } catch {
+      setLoading(false);
+      setError(true);
+    }
   };
 
   const handleCopyLink = () => {
@@ -623,19 +630,19 @@ function CardModal({ dev, claimSuccess, onClose }) {
 
         <div className="card-modal__preview">
           {loading && !error && <div className="card-modal__loading">Generating card...</div>}
-          {error && <div className="card-modal__error">Failed to generate card</div>}
+          {error && <div className="card-modal__error" role="alert">Card unavailable. Please try again later.</div>}
           <img
             src={cardUrl}
             alt={`DevAgent card for ${name}`}
             className="card-modal__image"
-            style={{ display: loading ? 'none' : 'block' }}
+            style={{ display: loading || error ? 'none' : 'block' }}
             onLoad={() => setLoading(false)}
             onError={() => { setLoading(false); setError(true); }}
           />
         </div>
 
         <div className="card-modal__actions">
-          <button className="card-modal__btn card-modal__btn--download" onClick={handleDownload}>
+          <button className="card-modal__btn card-modal__btn--download" onClick={handleDownload} disabled={loading || error}>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
             </svg>

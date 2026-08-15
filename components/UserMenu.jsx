@@ -184,6 +184,15 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
               )}
             </>
           )}
+          {claimStatus === 'pending' && (
+            <div className="user-menu__item user-menu__item--pending">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              Profile pending review
+            </div>
+          )}
           {claimStatus === 'no_match' && (
             <div className="user-menu__item user-menu__item--no-match">
               No matching profile found

@@ -8,6 +8,7 @@ import DetailPanel from '../components/DetailPanel.jsx';
 import ComparePanel from '../components/ComparePanel.jsx';
 import LoadingOverlay from '../components/LoadingOverlay.jsx';
 import AddMeModal from '../components/AddMeModal.jsx';
+import ClaimStatusModal from '../components/ClaimStatusModal.jsx';
 import AiProfileModal from '../components/AiProfileModal.jsx';
 import IntroductionInboxModal from '../components/IntroductionInboxModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
@@ -31,13 +32,14 @@ export default function Home() {
   const [compareDevs, setCompareDevs] = useState([]);
   const [theme, setTheme] = useState('dark');
   const [user, setUser] = useState(null);
-  const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'claimed' | 'no_match'
+  const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'pending' | 'claimed' | 'no_match'
   const [claimedLogins, setClaimedLogins] = useState(new Set());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarView, setSidebarView] = useState('leaderboard');
   const [cardRequest, setCardRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
+  const [showClaimPending, setShowClaimPending] = useState(false);
   const [showAiProfile, setShowAiProfile] = useState(false);
   const [showIntroductions, setShowIntroductions] = useState(false);
   const [agentGlobeLayerVisible, setAgentGlobeLayerVisible] = useState(false);
@@ -109,11 +111,20 @@ export default function Home() {
       const res = await fetch('/api/auth/claim', { method: 'POST' });
       if (res.ok) {
         const result = await res.json();
+        if (result.profileStatus !== 'public') {
+          setClaimStatus('pending');
+          setSelectedDev(null);
+          setCardContext(null);
+          setCardRequest(0);
+          setShowClaimPending(true);
+          setSidebarOpen(false);
+          return;
+        }
         setClaimStatus('claimed');
         setClaimedLogins(prev => new Set(prev).add(user.login));
         let claimedDeveloper = developers.find(developer => developer.login === user.login);
         // If a new profile was created, reload developers to include it
-        if (result.created) {
+        if (result.created || result.autoApproved) {
           const devRes = await fetch('/api/developers', { cache: 'no-store' });
           if (devRes.ok) {
             const raw = await devRes.json();
@@ -479,6 +490,7 @@ export default function Home() {
           <ComparePanel devs={compareDevs} onClose={handleCloseCompare} />
         )}
         {showAddMe && <AddMeModal onClose={handleCloseAddMe} />}
+        {showClaimPending && <ClaimStatusModal onClose={() => setShowClaimPending(false)} />}
         {showAiProfile && (
           <AiProfileModal
             onClose={() => setShowAiProfile(false)}
