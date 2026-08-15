@@ -252,7 +252,7 @@ Public search and profile lookup work anonymously. Introduction requests and sta
 npm run mcp
 ```
 
-See [docs/mcp-server.md](docs/mcp-server.md) for credential provisioning, Cosmos DB setup, client configuration, and the consent lifecycle.
+See [docs/mcp-server.md](docs/mcp-server.md) for credential provisioning, Cosmos DB setup, client configuration, and the consent lifecycle. [docs/agent-readiness.md](docs/agent-readiness.md) documents machine-readable discovery, WebMCP, and the external DNS-AID deployment steps.
 
 ## 📄 License
 
