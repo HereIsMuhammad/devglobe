@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { getSession } from '../../../../lib/auth.js';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { buildClaimWelcomeEmail, sendLifecycleEmail } from '../../../../lib/lifecycle-email.js';
+import { saveDeveloperContact } from '../../../../lib/developer-contact-store.js';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
@@ -99,6 +101,7 @@ export async function POST() {
       }).fetchAll();
 
       let dev;
+      const wasClaimed = resources[0]?.claimed === true;
 
       if (resources.length > 0) {
         // Existing profile — mark as claimed
@@ -118,6 +121,32 @@ export async function POST() {
       }
 
       await container.items.upsert(dev);
+
+      if (session.email) {
+        try {
+          await saveDeveloperContact({
+            login: dev.login,
+            email: session.email,
+            source: 'github-oauth',
+            emailVerified: true,
+            transactionalEmailsEnabled: true,
+          });
+        } catch (contactError) {
+          console.error('Claim contact storage failed:', contactError.message);
+        }
+      }
+
+      if (!wasClaimed) {
+        try {
+          await sendLifecycleEmail({
+            to: session.email,
+            message: buildClaimWelcomeEmail({ login: dev.login, name: dev.name }),
+            idempotencyKey: `profile-claimed-${dev.login.toLowerCase()}`,
+          });
+        } catch (emailError) {
+          console.error('Claim email delivery failed:', emailError.message);
+        }
+      }
 
       return NextResponse.json({
         ok: true,

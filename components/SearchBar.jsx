@@ -2,29 +2,30 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import SpecialTags from './SpecialTags.jsx';
+import { countryKey } from '../lib/country.js';
 
 const SAMPLES_BY_MODE = {
   text: [
-    { query: 'Colombo', label: 'Colombo' },
+    { query: 'torvalds', label: '@torvalds' },
+    { query: 'sindresorhus', label: '@sindresorhus' },
     { query: 'San Francisco', label: 'San Francisco' },
-    { query: 'torvalds', label: 'torvalds' },
-    { query: 'London', label: 'London' },
+    { query: 'Bengaluru', label: 'Bengaluru' },
   ],
   vector: [
-    { query: 'open source contributors in San Francisco', label: 'SF contributors' },
-    { query: 'Python developer working on AI and deep learning', label: 'AI & deep learning' },
-    { query: 'full stack JavaScript developer', label: 'full stack JS dev' },
-    { query: 'Linux kernel and systems programming in C', label: 'Linux kernel devs' },
+    { query: 'developer building AI agents and MCP tools', label: 'AI agent builders' },
+    { query: 'open source maintainer looking for collaborators', label: 'Open-source maintainers' },
+    { query: 'developer working on LLM infrastructure and evaluation', label: 'LLM infrastructure' },
+    { query: 'developer advocate growing technical communities', label: 'Community builders' },
   ],
   hybrid: [
-    { query: 'React developer in India', label: 'React devs in India' },
-    { query: 'cloud infrastructure and DevOps engineer', label: 'DevOps engineers' },
-    { query: 'machine learning researcher in Europe', label: 'ML in Europe' },
-    { query: 'Rust systems programmer', label: 'Rust systems' },
+    { query: 'MCP and TypeScript developer in Europe', label: 'MCP + TypeScript' },
+    { query: 'AI agent builder in India', label: 'AI builders in India' },
+    { query: 'Python open source maintainer', label: 'Python maintainers' },
+    { query: 'cloud native developer open to collaboration', label: 'Cloud collaborators' },
   ],
 };
 
-export default function SearchBar({ developers, onResults, onReset, onGenerateCard, onSearchState }) {
+export default function SearchBar({ developers, onResults, onReset, onGenerateCard, onSearchState, onOpenCardFeature, onOpenCompareFeature, compareCount = 0 }) {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState('text');
   const [topN, setTopN] = useState(50);
@@ -45,10 +46,11 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
 
     if (m === 'text') {
       const lower = q.trim().toLowerCase();
+      const locationKey = countryKey(q.trim());
       let results = developers.filter(d =>
         (d.login && d.login.toLowerCase().includes(lower)) ||
         (d.name && d.name.toLowerCase().includes(lower)) ||
-        (d.location && d.location.toLowerCase().includes(lower))
+        (d.location && countryKey(d.location).includes(locationKey))
       );
 
       if (results.length === 0) {
@@ -164,7 +166,7 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
         <input
           ref={inputRef}
           type="text"
-          placeholder={mode === 'text' ? 'Search by name, username, or location...' : mode === 'vector' ? 'Describe the developer you\'re looking for...' : 'Combine keywords and semantic search...'}
+          placeholder={mode === 'text' ? 'Find a developer by name, username, or location...' : mode === 'vector' ? 'Describe your ideal developer or agent collaborator...' : 'Combine skills, interests, and location...'}
           autoComplete="off"
           value={query}
           onChange={handleInput}
@@ -228,6 +230,30 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
             {s.label}
           </button>
         ))}
+      </div>
+      <div className="search-bar__features" role="group" aria-label="Developer tools">
+        <button type="button" className="feature-action feature-action--card" onClick={onOpenCardFeature}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+          <span>Generate Identity Card</span>
+        </button>
+        <button
+          type="button"
+          className={`feature-action feature-action--compare${compareCount ? ' feature-action--active' : ''}`}
+          onClick={onOpenCompareFeature}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M7 7h11l-3-3" />
+            <path d="M17 17H6l3 3" />
+            <path d="M18 7l-3 3" />
+            <path d="M6 17l3-3" />
+          </svg>
+          <span>Compare Contributions</span>
+          {compareCount > 0 && <strong>{compareCount}/2</strong>}
+        </button>
       </div>
     </div>
   );

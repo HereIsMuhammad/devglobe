@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { decodeActivityCursor, encodeActivityCursor, listActivities } from '../../../../lib/activity-store.js';
+import { createFallbackActivities } from '../../../../lib/platform-activity.js';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -16,9 +17,14 @@ export async function GET(request) {
 
   try {
     const result = await listActivities({ limit, cursor, after });
+    const activities = !cursor && !after && result.activities.length === 0
+      ? createFallbackActivities().slice(0, limit)
+      : result.activities;
     return NextResponse.json({
       ...result,
-      afterCursor: encodeActivityCursor(result.activities[0]),
+      activities,
+      nextCursor: result.activities.length === 0 ? null : result.nextCursor,
+      afterCursor: encodeActivityCursor(activities[0]),
       sourceUpdatedAt: result.activities[0]?.ingestedAt || null,
       bestEffort: true,
     }, {

@@ -17,11 +17,11 @@ async function getProfileLogins() {
 
   try {
     const { resources } = await container.items
-      .query("SELECT VALUE c.login FROM c WHERE c.claimed = true AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')")
+      .query("SELECT VALUE c.login FROM c WHERE IS_DEFINED(c.login) AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')")
       .fetchAll();
     return resources.filter(Boolean);
   } catch (error) {
-    console.error('Unable to load claimed profiles for sitemap:', error.message);
+    console.error('Unable to load profiles for sitemap:', error.message);
     return [];
   }
 }

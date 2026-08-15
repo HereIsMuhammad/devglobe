@@ -11,8 +11,10 @@ import AddMeModal from '../components/AddMeModal.jsx';
 import AiProfileModal from '../components/AiProfileModal.jsx';
 import IntroductionInboxModal from '../components/IntroductionInboxModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
+import PlatformActivityBanner from '../components/PlatformActivityBanner.jsx';
 import { scoreAll } from '../lib/scoring.js';
 import { addDeveloperRanks } from '../lib/ranking.js';
+import { enrichWithCollaborators } from '../lib/collaboration.js';
 import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
@@ -114,7 +116,7 @@ export default function Home() {
           const devRes = await fetch('/api/developers', { cache: 'no-store' });
           if (devRes.ok) {
             const raw = await devRes.json();
-            const scored = addDeveloperRanks(scoreAll(raw));
+            const scored = enrichWithCollaborators(addDeveloperRanks(scoreAll(raw)));
             setDevelopers(scored);
             setFiltered(scored);
             const claimed = new Set(raw.filter(d => d.claimed).map(d => d.login));
@@ -177,7 +179,7 @@ export default function Home() {
         const res = await fetch('/api/developers', { signal: AbortSignal.timeout(30000) });
         if (!res.ok) throw new Error(`Failed to load data: ${res.status}`);
         const raw = await res.json();
-        const scored = addDeveloperRanks(scoreAll(raw));
+        const scored = enrichWithCollaborators(addDeveloperRanks(scoreAll(raw)));
         setDevelopers(scored);
         setFiltered(scored);
         // Build set of all claimed logins from data
@@ -203,8 +205,17 @@ export default function Home() {
     setFiltered(rankedResults);
   }, [developers]);
 
+  const recordCardActivity = useCallback((targetLogin) => {
+    fetch('/api/activities/platform', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'generated_card', targetLogin }),
+    }).catch(() => {});
+  }, []);
+
   const handleGenerateCard = useCallback((developer) => {
     const rankedDeveloper = developers.find(item => item.login === developer.login) || developer;
+    recordCardActivity(rankedDeveloper.login);
     setSelectedDev(rankedDeveloper);
     setCardContext('generate');
     setCardRequest(request => request + 1);
@@ -212,7 +223,24 @@ export default function Home() {
     if (rankedDeveloper.lat != null && rankedDeveloper.lng != null) {
       setFlyTarget({ lat: rankedDeveloper.lat, lng: rankedDeveloper.lng });
     }
-  }, [developers]);
+  }, [developers, recordCardActivity]);
+
+  const handleOpenCardFeature = useCallback(() => {
+    const developer = selectedDev || (user ? developers.find(item => item.login === user.login) : null);
+    if (developer) {
+      handleGenerateCard(developer);
+      return;
+    }
+    document.querySelector('#search-bar input')?.focus();
+  }, [developers, handleGenerateCard, selectedDev, user]);
+
+  const handleOpenCompareFeature = useCallback(() => {
+    setCardRequest(0);
+    setCardContext(null);
+    setSelectedDev(null);
+    setSidebarView('leaderboard');
+    setSidebarOpen(true);
+  }, []);
 
   const completeTour = useCallback(() => {
     setTourStep(null);
@@ -370,12 +398,16 @@ export default function Home() {
         onAddMe={handleAddMe}
         onStartTour={handleTourFocusSearch}
       />
+      <PlatformActivityBanner />
       <SearchBar
         developers={developers}
         onResults={handleSearch}
         onReset={handleResetFilter}
         onGenerateCard={handleGenerateCard}
         onSearchState={handleTourSearchState}
+        onOpenCardFeature={handleOpenCardFeature}
+        onOpenCompareFeature={handleOpenCompareFeature}
+        compareCount={compareDevs.length}
       />
       <QuickTour
         step={tourStep}
@@ -418,6 +450,7 @@ export default function Home() {
           onCountryFilterChange={setSelectedCountry}
           compareLogins={compareDevs.map(d => d.login)}
           onToggleCompare={handleToggleCompare}
+          onClearCompare={handleCloseCompare}
           claimedLogins={claimedLogins}
           open={sidebarOpen}
           onClose={handleCloseSidebar}
@@ -432,6 +465,7 @@ export default function Home() {
             key={`${selectedDev.login}-${cardRequest}`}
             dev={selectedDev}
             onClose={handleCloseDetail}
+            onCardGenerated={recordCardActivity}
             claimedLogins={claimedLogins}
             openCardOnMount={cardRequest > 0}
             claimSuccess={cardContext === 'claim'}

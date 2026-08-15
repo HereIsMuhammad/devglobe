@@ -24,6 +24,8 @@ import {
   enrichFromGitHub,
   geocodeLocation,
 } from '../lib/nominate.js';
+import { buildNominationApprovedEmail, sendLifecycleEmail } from '../lib/lifecycle-email.js';
+import { getDeveloperContact } from '../lib/developer-contact-store.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -137,6 +139,31 @@ async function approve(container, username, reviewer, refresh = false) {
       process.exit(1);
     }
     throw err;
+  }
+
+  if (!refresh) {
+    let recipient = ghUser.email;
+    try {
+      const contact = await getDeveloperContact(dev.login);
+      if (contact?.transactionalEmailsEnabled) recipient = contact.email;
+    } catch (contactError) {
+      console.error(`  Private contact lookup failed: ${contactError.message}`);
+    }
+
+    try {
+      const delivery = await sendLifecycleEmail({
+        to: recipient,
+        message: buildNominationApprovedEmail({ login: dev.login, name: enriched.name }),
+        idempotencyKey: `nomination-approved-${dev.login.toLowerCase()}-${Date.parse(dev.nomination.submittedAt)}`,
+      });
+      if (delivery.sent) {
+        console.log(`  Approval email accepted by provider (message ${delivery.id || 'unknown'}).`);
+      } else {
+        console.error(`  Approval email not sent: ${delivery.reason}.`);
+      }
+    } catch (emailError) {
+      console.error(`  Approval email delivery failed: ${emailError.message}`);
+    }
   }
 
   console.log(`  ✓ "${username}" ${refresh ? 'details refreshed' : 'approved and now public'}.`);
