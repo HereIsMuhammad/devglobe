@@ -224,6 +224,23 @@ export default function Home() {
     }
   }, [developers, recordCardActivity]);
 
+  const handleOpenCardFeature = useCallback(() => {
+    const developer = selectedDev || (user ? developers.find(item => item.login === user.login) : null);
+    if (developer) {
+      handleGenerateCard(developer);
+      return;
+    }
+    document.querySelector('#search-bar input')?.focus();
+  }, [developers, handleGenerateCard, selectedDev, user]);
+
+  const handleOpenCompareFeature = useCallback(() => {
+    setCardRequest(0);
+    setCardContext(null);
+    setSelectedDev(null);
+    setSidebarView('leaderboard');
+    setSidebarOpen(true);
+  }, []);
+
   const completeTour = useCallback(() => {
     setTourStep(null);
     setTourMatch(null);
@@ -387,6 +404,9 @@ export default function Home() {
         onReset={handleResetFilter}
         onGenerateCard={handleGenerateCard}
         onSearchState={handleTourSearchState}
+        onOpenCardFeature={handleOpenCardFeature}
+        onOpenCompareFeature={handleOpenCompareFeature}
+        compareCount={compareDevs.length}
       />
       <QuickTour
         step={tourStep}
@@ -429,6 +449,7 @@ export default function Home() {
           onCountryFilterChange={setSelectedCountry}
           compareLogins={compareDevs.map(d => d.login)}
           onToggleCompare={handleToggleCompare}
+          onClearCompare={handleCloseCompare}
           claimedLogins={claimedLogins}
           open={sidebarOpen}
           onClose={handleCloseSidebar}

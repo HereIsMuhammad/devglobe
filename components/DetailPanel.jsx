@@ -142,7 +142,7 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <polyline points="21 15 16 10 5 21" />
                 </svg>
-                Generate Card
+                Generate Identity Card
               </button>
             </div>
           </div>
@@ -558,6 +558,7 @@ function CardModal({ dev, claimSuccess, onClose }) {
 
   const shareLinks = {
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}&hashtags=${shareHashtags.join(',')}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
     reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(`My DevGlobe Developer Card - ${name} ${hashtagText}`)}`,
   };
@@ -653,6 +654,11 @@ function CardModal({ dev, claimSuccess, onClose }) {
           <a href={shareLinks.twitter} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--twitter" title="Share on X/Twitter">
             <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor">
               <path d="M13.5 1h-3.7L8 3.6 6.2 1H2.5L6.6 6.5 2.3 13h1.7l2.5-3.2L9 13h4.2l-4.5-6.7L13.5 1zm-1.1 11h-1L4.5 2h1l6.9 10z" />
+            </svg>
+          </a>
+          <a href={shareLinks.facebook} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--facebook" title="Share on Facebook" aria-label="Share on Facebook">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+              <path d="M13.5 22v-9h3l.5-3.5h-3.5V7.25c0-1 .3-1.75 1.75-1.75H17V2.38A23.7 23.7 0 0014.44 2C11.9 2 10 3.55 10 6.4v3.1H7V13h3v9h3.5z" />
             </svg>
           </a>
           <button type="button" onClick={handleLinkedInShare} className="card-modal__social card-modal__social--linkedin" title="Copy caption and share on LinkedIn" aria-label="Copy caption and share on LinkedIn">
