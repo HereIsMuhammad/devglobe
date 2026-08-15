@@ -1,11 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildClaimApprovedEmail,
   buildClaimWelcomeEmail,
   buildEmailVerificationEmail,
   buildNominationApprovedEmail,
   sendLifecycleEmail,
 } from '../lib/lifecycle-email.js';
+
+test('builds combined claim and automatic approval email', () => {
+  const message = buildClaimApprovedEmail({ login: 'octocat', name: 'Octocat' });
+
+  assert.match(message.subject, /claimed and live/i);
+  assert.match(message.text, /approved automatically/i);
+  assert.match(message.text, /Generate identity card/);
+  assert.match(message.html, /Your profile is live/);
+});
 
 test('builds claim email with an encoded profile link and escaped HTML', () => {
   const message = buildClaimWelcomeEmail({ login: 'dev user', name: '<Dev & Co>' });

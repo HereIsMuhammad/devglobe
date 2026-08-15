@@ -3468,6 +3468,11 @@ body {
   cursor: default;
 }
 
+.user-menu__item--pending {
+  color: #d97706;
+  cursor: default;
+}
+
 .user-menu__item--no-match {
   color: var(--text-muted);
   cursor: default;
@@ -4457,6 +4462,11 @@ body {
   cursor: pointer;
 }
 
+.card-modal__btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .badge-card__format-btn--active {
   background: #161f33;
   color: #f8fafc;
@@ -4623,6 +4633,42 @@ body {
 .card-modal__success span {
   color: var(--text-secondary);
   font-size: 11px;
+}
+
+.claim-status-modal {
+  position: relative;
+  width: min(440px, 90vw);
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-strong);
+  text-align: center;
+}
+
+.claim-status-modal__icon {
+  display: inline-flex;
+  padding: 12px;
+  border-radius: 50%;
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+.claim-status-modal h2 {
+  margin: 16px 24px 10px;
+  color: var(--text-primary);
+  font-size: 20px;
+}
+
+.claim-status-modal p {
+  margin: 0 0 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.claim-status-modal .btn {
+  margin-top: 12px;
 }
 
 @media (prefers-reduced-motion: reduce) {

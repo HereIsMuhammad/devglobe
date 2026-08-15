@@ -3,8 +3,9 @@ import { NextResponse } from 'next/server';
 import { getSession } from '../../../../lib/auth.js';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { buildClaimWelcomeEmail, sendLifecycleEmail } from '../../../../lib/lifecycle-email.js';
-import { saveDeveloperContact } from '../../../../lib/developer-contact-store.js';
+import { buildClaimApprovedEmail, buildClaimWelcomeEmail, sendLifecycleEmail } from '../../../../lib/lifecycle-email.js';
+import { getDeveloperContact, saveDeveloperContact } from '../../../../lib/developer-contact-store.js';
+import { approvePendingNominationFromClaim, isPublicDeveloper } from '../../../../lib/nominate.js';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
@@ -120,6 +121,10 @@ export async function POST() {
         }
       }
 
+      const autoApprovedDev = approvePendingNominationFromClaim(dev);
+      const autoApproved = Boolean(autoApprovedDev);
+      if (autoApprovedDev) dev = autoApprovedDev;
+
       await container.items.upsert(dev);
 
       if (session.email) {
@@ -136,12 +141,21 @@ export async function POST() {
         }
       }
 
-      if (!wasClaimed) {
+      if (!wasClaimed || autoApproved) {
         try {
+          let recipient = session.email;
+          if (!recipient && autoApproved) {
+            const contact = await getDeveloperContact(dev.login);
+            if (contact?.transactionalEmailsEnabled) recipient = contact.email;
+          }
           await sendLifecycleEmail({
-            to: session.email,
-            message: buildClaimWelcomeEmail({ login: dev.login, name: dev.name }),
-            idempotencyKey: `profile-claimed-${dev.login.toLowerCase()}`,
+            to: recipient,
+            message: autoApproved
+              ? buildClaimApprovedEmail({ login: dev.login, name: dev.name })
+              : buildClaimWelcomeEmail({ login: dev.login, name: dev.name }),
+            idempotencyKey: autoApproved
+              ? `nomination-auto-approved-${dev.login.toLowerCase()}-${Date.parse(dev.nomination.submittedAt)}`
+              : `profile-claimed-${dev.login.toLowerCase()}`,
           });
         } catch (emailError) {
           console.error('Claim email delivery failed:', emailError.message);
@@ -153,6 +167,8 @@ export async function POST() {
         login,
         created: resources.length === 0,
         claimedAt: dev.claimedAt,
+        profileStatus: isPublicDeveloper(dev) ? 'public' : dev.nomination.status,
+        autoApproved,
       });
     } catch (err) {
       console.error('Claim error:', err);
@@ -171,6 +187,7 @@ export async function POST() {
     login,
     created: !dev,
     claimedAt: new Date().toISOString(),
+    profileStatus: 'public',
     note: 'Claim recorded (dev mode — not persisted without Cosmos DB)',
   });
 }
