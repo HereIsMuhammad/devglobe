@@ -25,6 +25,8 @@ export default function Leaderboard({
   onClose,
   activeView = 'leaderboard',
   onViewChange,
+  agentGlobeLayerVisible = false,
+  onToggleAgentGlobeLayer,
 }) {
   const listRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
@@ -293,7 +295,12 @@ export default function Leaderboard({
         </>
       )}
       {activeView === 'activity' && <GlobalActivityFeed active />}
-      {activeView === 'agents' && <AgentNetworkPanel />}
+      {activeView === 'agents' && (
+        <AgentNetworkPanel
+          globeLayerVisible={agentGlobeLayerVisible}
+          onToggleGlobeLayer={onToggleAgentGlobeLayer}
+        />
+      )}
     </aside>
   );
 }

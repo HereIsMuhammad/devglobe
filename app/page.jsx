@@ -40,6 +40,7 @@ export default function Home() {
   const [showAddMe, setShowAddMe] = useState(false);
   const [showAiProfile, setShowAiProfile] = useState(false);
   const [showIntroductions, setShowIntroductions] = useState(false);
+  const [agentGlobeLayerVisible, setAgentGlobeLayerVisible] = useState(false);
   const [tourStep, setTourStep] = useState(null);
   const [tourMatch, setTourMatch] = useState(null);
   const globeRef = useRef(null);
@@ -440,6 +441,7 @@ export default function Home() {
           onSelectDev={handleSelectDev}
           onSelectCountry={handleSelectCountry}
           onClearCountry={handleClearCountry}
+          agentNetworkVisible={agentGlobeLayerVisible}
           tooltipDisabled={Boolean(selectedDev || compareDevs.length === 2)}
         />
         <Leaderboard
@@ -456,6 +458,8 @@ export default function Home() {
           onClose={handleCloseSidebar}
           activeView={sidebarView}
           onViewChange={setSidebarView}
+          agentGlobeLayerVisible={agentGlobeLayerVisible}
+          onToggleAgentGlobeLayer={setAgentGlobeLayerVisible}
         />
         {sidebarOpen && (
           <div className="sidebar-backdrop" onClick={handleCloseSidebar} />

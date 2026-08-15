@@ -211,6 +211,7 @@ const Globe = forwardRef(function Globe({
   onSelectDev,
   onSelectCountry,
   onClearCountry,
+  agentNetworkVisible = false,
   tooltipDisabled = false,
 }, ref) {
   const globeEl = useRef();
@@ -236,9 +237,14 @@ const Globe = forwardRef(function Globe({
       .slice(0, 5000);
   }, [developers, selectedCountry]);
 
+  const featuredGeoDevs = useMemo(() => (
+    agentNetworkVisible ? geoDevs.filter(developer => developer.agentReady) : geoDevs
+  ), [agentNetworkVisible, geoDevs]);
+
   const labelDevs = useMemo(() => {
-    return geoDevs.filter(d => d.score >= 80);
-  }, [geoDevs]);
+    if (agentNetworkVisible) return featuredGeoDevs.slice(0, 80);
+    return featuredGeoDevs.filter(d => d.score >= 80);
+  }, [agentNetworkVisible, featuredGeoDevs]);
 
   // Show one top developer per represented country and use country geometry rather
   // than unreliable profile geocodes for the avatar's visual anchor.
@@ -252,7 +258,7 @@ const Globe = forwardRef(function Globe({
     const markers = [];
     const limit = selectedCountry ? 1 : 40;
 
-    for (const developer of geoDevs) {
+    for (const developer of featuredGeoDevs) {
       const key = countryKey(extractCountry(developer.location));
       if (!key || representedCountries.has(key)) continue;
 
@@ -265,7 +271,7 @@ const Globe = forwardRef(function Globe({
     }
 
     return markers;
-  }, [countryFeatures, geoDevs, selectedCountry]);
+  }, [countryFeatures, featuredGeoDevs, selectedCountry]);
 
   // Dynamic animated arcs on hover connecting developer to top collaborators
   const arcsData = useMemo(() => {
@@ -299,6 +305,18 @@ const Globe = forwardRef(function Globe({
 
   // Pulsing rings for top 10 developers + active hovered developer's collaborators
   const ringsData = useMemo(() => {
+    if (agentNetworkVisible) {
+      return featuredGeoDevs.slice(0, 120).map(developer => ({
+        lat: developer.lat,
+        lng: developer.lng,
+        maxR: 4,
+        propagationSpeed: 2,
+        repeatPeriod: 1400,
+        color: '#22d3ee',
+        login: developer.login,
+      }));
+    }
+
     const base = geoDevs.slice(0, 10).map(d => ({
       lat: d.lat,
       lng: d.lng,
@@ -326,7 +344,22 @@ const Globe = forwardRef(function Globe({
     }
 
     return base;
-  }, [geoDevs, hoverDev]);
+  }, [agentNetworkVisible, featuredGeoDevs, geoDevs, hoverDev]);
+
+  const displayPointAltitude = useCallback(developer => {
+    if (!agentNetworkVisible) return pointAltitude(developer);
+    return developer.agentReady ? 0.075 : 0.006;
+  }, [agentNetworkVisible]);
+
+  const displayPointRadius = useCallback(developer => {
+    if (!agentNetworkVisible) return pointRadius(developer);
+    return developer.agentReady ? 0.9 : 0.14;
+  }, [agentNetworkVisible]);
+
+  const displayPointColor = useCallback(developer => {
+    if (!agentNetworkVisible) return pointColor(developer);
+    return developer.agentReady ? '#22d3ee' : 'rgba(100, 116, 139, 0.16)';
+  }, [agentNetworkVisible]);
 
   // Developers per country, keyed the same way the leaderboard filters
   const devCountByCountry = useMemo(() => {
@@ -450,6 +483,7 @@ const Globe = forwardRef(function Globe({
           </div>
         </div>
         <div class="tooltip__score">Score: ${point.score}/100</div>
+        ${point.agentReady ? '<div class="tooltip__agent-ready">Open to verified agents</div>' : ''}
         <div class="tooltip__stats">
           <span>⭐ ${formatNum(point.totalStars || 0)}</span>
           <span>👥 ${formatNum(point.followers || 0)}</span>
@@ -593,9 +627,9 @@ const Globe = forwardRef(function Globe({
           pointsData={geoDevs}
           pointLat={devLat}
           pointLng={devLng}
-          pointAltitude={pointAltitude}
-          pointRadius={pointRadius}
-          pointColor={pointColor}
+          pointAltitude={displayPointAltitude}
+          pointRadius={displayPointRadius}
+          pointColor={displayPointColor}
           pointResolution={6}
           htmlElementsData={avatarDevs}
           htmlLat={avatarLat}
@@ -637,10 +671,19 @@ const Globe = forwardRef(function Globe({
         />
       </div>
       <div className="globe-legend">
-        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#fbbf24' }} />Elite (80+)</span>
-        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#34d399' }} />Strong (60+)</span>
-        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#3b82f6' }} />Solid (40+)</span>
-        <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#6366f1' }} />Emerging</span>
+        {agentNetworkVisible ? (
+          <>
+            <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#22d3ee' }} />Open to verified agents</span>
+            <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#64748b', opacity: 0.35 }} />Developer context</span>
+          </>
+        ) : (
+          <>
+            <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#fbbf24' }} />Elite (80+)</span>
+            <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#34d399' }} />Strong (60+)</span>
+            <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#3b82f6' }} />Solid (40+)</span>
+            <span className="globe-legend__item"><span className="globe-legend__dot" style={{ background: '#6366f1' }} />Emerging</span>
+          </>
+        )}
       </div>
       <div className="tooltip" ref={tooltipRef} />
     </>

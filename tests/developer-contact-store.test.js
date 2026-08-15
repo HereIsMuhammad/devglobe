@@ -5,8 +5,10 @@ import {
   buildDeveloperContact,
   createEmailVerification,
   getDeveloperContact,
+  iterateWeeklyDigestContacts,
   normalizeContactEmail,
   saveDeveloperContact,
+  setProductUpdatesPreference,
   verifyDeveloperContactEmail,
 } from '../lib/developer-contact-store.js';
 
@@ -110,6 +112,56 @@ test('skips persistence when Cosmos is not configured', async () => {
     saved: false,
     reason: 'not_configured',
   });
+});
+
+test('enables product updates only for a verified contact', async () => {
+  const unverifiedContainer = fakeContainer({
+    id: 'octocat',
+    login: 'OctoCat',
+    email: 'dev@example.com',
+    emailVerified: false,
+    _etag: 'etag-1',
+  });
+  assert.deepEqual(await setProductUpdatesPreference('OctoCat', true, {
+    container: unverifiedContainer,
+    now: timestamp,
+  }), { updated: false, reason: 'email_not_verified' });
+
+  const verifiedContainer = fakeContainer({
+    id: 'octocat',
+    login: 'OctoCat',
+    email: 'dev@example.com',
+    emailVerified: true,
+    productUpdatesEnabled: false,
+    _etag: 'etag-1',
+  });
+  const result = await setProductUpdatesPreference('OctoCat', true, {
+    container: verifiedContainer,
+    now: timestamp,
+  });
+  assert.equal(result.updated, true);
+  assert.equal(verifiedContainer.saved.productUpdatesEnabled, true);
+});
+
+test('pages through verified weekly digest opt-ins', async () => {
+  const pages = [
+    [{ id: 'one', login: 'One', email: 'one@example.com' }],
+    [{ id: 'two', login: 'Two', email: 'two@example.com' }],
+  ];
+  const container = {
+    items: {
+      query: () => ({
+        hasMoreResults: () => pages.length > 0,
+        fetchNext: async () => ({ resources: pages.shift() }),
+      }),
+    },
+  };
+
+  const contacts = [];
+  for await (const contact of iterateWeeklyDigestContacts({ container, pageSize: 1 })) {
+    contacts.push(contact.login);
+  }
+  assert.deepEqual(contacts, ['One', 'Two']);
 });
 
 test('creates a hashed email verification token that expires after 24 hours', async () => {

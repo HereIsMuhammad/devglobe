@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   buildAgentNetworkSnapshot,
   getIntroductionLifecycle,
+  isAgentReadyDeveloper,
+  projectAgentReadiness,
 } from '../lib/agent-network.js';
 
 function developer(login, country, tools = ['github-copilot']) {
@@ -19,6 +21,24 @@ function developer(login, country, tools = ['github-copilot']) {
     },
   };
 }
+
+test('marks only claimed public opt-ins as agent ready', () => {
+  assert.equal(isAgentReadyDeveloper(developer('ready', 'USA')), true);
+
+  const privateDeveloper = developer('private', 'USA');
+  privateDeveloper.aiProfile.visibility = 'private';
+  assert.equal(isAgentReadyDeveloper(privateDeveloper), false);
+
+  const closedDeveloper = developer('closed', 'USA');
+  closedDeveloper.aiProfile.acceptsAgentRequests = false;
+  assert.equal(isAgentReadyDeveloper(closedDeveloper), false);
+});
+
+test('projects readiness without exposing AI profile settings', () => {
+  const projected = projectAgentReadiness(developer('ready', 'USA'));
+  assert.equal(projected.agentReady, true);
+  assert.equal('aiProfile' in projected, false);
+});
 
 test('projects reportable aggregate Agent Network metrics', () => {
   const snapshot = buildAgentNetworkSnapshot({

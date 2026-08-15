@@ -15,7 +15,9 @@ test('builds claim email with an encoded profile link and escaped HTML', () => {
   assert.match(message.html, /&lt;Dev &amp; Co&gt;/);
   assert.doesNotMatch(message.html, /<Dev & Co>/);
   assert.match(message.html, /src="https:\/\/www\.devglobe\.dev\/devglobe\.png"/);
-  assert.match(message.html, /Contribute on GitHub/);
+  assert.match(message.html, /Where Developers and AI Agents Connect/);
+  assert.match(message.html, /Generate identity card/);
+  assert.match(message.html, /Star DevGlobe on GitHub/);
   assert.match(message.text, /github\.com\/sajeetharan\/devglobe/);
 });
 
@@ -109,4 +111,6 @@ test('builds an encoded email verification link', () => {
   assert.match(message.text, /token=token%2B%2F%3D/);
   assert.match(message.text, /24 hours/);
   assert.match(message.html, /Verify email/);
+  assert.match(message.html, /devglobe\.png/);
+  assert.match(message.html, /Generate identity card/);
 });

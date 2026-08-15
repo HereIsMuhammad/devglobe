@@ -5,6 +5,8 @@ import React, { useState, useRef, useEffect } from 'react';
 export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus }) {
   const [open, setOpen] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState('idle');
+  const [digestPreference, setDigestPreference] = useState(null);
+  const [digestStatus, setDigestStatus] = useState('idle');
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -23,6 +25,21 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
     if (status === 'invalid') setVerificationStatus('invalid');
   }, []);
 
+  useEffect(() => {
+    if (!user || claimStatus !== 'claimed') return;
+    let cancelled = false;
+    fetch('/api/contact/preferences')
+      .then(async response => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        if (!cancelled) setDigestPreference(result);
+      })
+      .catch(() => {
+        if (!cancelled) setDigestPreference(null);
+      });
+    return () => { cancelled = true; };
+  }, [user, claimStatus, verificationStatus]);
+
   async function requestEmailVerification() {
     setVerificationStatus('sending');
     try {
@@ -32,6 +49,23 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
       setVerificationStatus(result.alreadyVerified ? 'verified' : 'sent');
     } catch {
       setVerificationStatus('error');
+    }
+  }
+
+  async function updateDigestPreference(enabled) {
+    setDigestStatus('saving');
+    try {
+      const response = await fetch('/api/contact/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productUpdatesEnabled: enabled }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      setDigestPreference(result);
+      setDigestStatus('saved');
+    } catch {
+      setDigestStatus('error');
     }
   }
 
@@ -126,6 +160,27 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
                     ? 'Verification link is invalid or expired.'
                     : 'Could not send verification email.'}
                 </div>
+              )}
+              {digestPreference && (
+                <label className="user-menu__digest">
+                  <span>
+                    <strong>Weekly ranking email</strong>
+                    <small>
+                      {digestPreference.emailVerified
+                        ? 'Rank changes and DevGlobe updates'
+                        : 'Verify your email to subscribe'}
+                    </small>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={digestPreference.productUpdatesEnabled}
+                    disabled={!digestPreference.emailVerified || digestStatus === 'saving'}
+                    onChange={event => updateDigestPreference(event.target.checked)}
+                  />
+                </label>
+              )}
+              {digestStatus === 'error' && (
+                <div className="user-menu__message" role="status">Could not update weekly email preference.</div>
               )}
             </>
           )}

@@ -1431,6 +1431,71 @@ body {
   font-weight: 750;
 }
 
+.agent-network__globe-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 16px 18px;
+  padding: 12px;
+  border: 1px solid rgba(34, 211, 238, 0.32);
+  border-radius: 8px;
+  background: rgba(8, 145, 178, 0.08);
+}
+
+.agent-network__globe-control > span {
+  display: grid;
+  gap: 3px;
+}
+
+.agent-network__globe-control strong {
+  font-size: 12px;
+}
+
+.agent-network__globe-control small {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.agent-network__switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-hover);
+  cursor: pointer;
+}
+
+.agent-network__switch span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.agent-network__switch--active {
+  border-color: #22d3ee;
+  background: rgba(34, 211, 238, 0.18);
+}
+
+.agent-network__switch--active span {
+  background: #22d3ee;
+  transform: translateX(16px);
+}
+
+.agent-network__switch:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
 .agent-network__section {
   padding: 15px 14px;
   border-bottom: 1px solid var(--border);
@@ -2306,6 +2371,18 @@ body {
   font-weight: 600;
   color: var(--accent-blue);
   margin-bottom: 6px;
+}
+
+.tooltip__agent-ready {
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 3px 7px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  border-radius: 10px;
+  background: rgba(8, 145, 178, 0.15);
+  color: #22d3ee;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .tooltip__stats {
@@ -3403,6 +3480,38 @@ body {
 
 .user-menu__item--logout:hover {
   background: rgba(239, 68, 68, 0.1);
+}
+
+.user-menu__digest {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.user-menu__digest span {
+  display: grid;
+  gap: 2px;
+}
+
+.user-menu__digest strong {
+  font-size: 12px;
+}
+
+.user-menu__digest small {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.user-menu__digest input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  accent-color: var(--accent-github);
 }
 
 /* =============== Verified Badge =============== */

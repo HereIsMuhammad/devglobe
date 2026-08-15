@@ -208,6 +208,8 @@ Required environment variables:
 | `ACTIVITY_INGEST_SECRET` | Bearer secret for the activity collector endpoint |
 | `RESEND_API_KEY` | Optional Resend API key for claim and approval emails |
 | `EMAIL_FROM` | Sender on a domain verified by Resend |
+| `CRON_SECRET` | Bearer token used by Vercel Cron for the weekly digest endpoint |
+| `EMAIL_PREFERENCE_SECRET` | HMAC secret for weekly-email unsubscribe links; defaults to `SESSION_SECRET` |
 
 Lifecycle emails are transactional and best-effort. Claims use the verified primary email authorized through GitHub OAuth; self-nominations collect an explicitly consented notification address. Addresses are stored only in the private `developer-contacts` container and are never projected by public APIs or copied into developer documents. Create the container before deployment:
 
@@ -216,6 +218,8 @@ npm run setup-contacts-container
 ```
 
 See the [lifecycle email PRD](docs/prd/lifecycle-email-notifications.md).
+
+Verified users can explicitly opt in to a Monday weekly digest from the user menu. The digest includes current global and country rankings, rank movement since the previous digest, current DevGlobe features, and an Explore DevGlobe link. Vercel invokes `/api/cron/weekly-digest` at 13:00 UTC each Monday; only verified contacts with `productUpdatesEnabled: true` are eligible. Each message uses a per-user, per-week idempotency key and includes one-click unsubscribe headers and a signed unsubscribe link.
 
 ### Live developer activity
 

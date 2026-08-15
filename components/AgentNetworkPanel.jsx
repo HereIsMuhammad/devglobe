@@ -16,7 +16,7 @@ const LIFECYCLE = [
   { id: 'connect', label: 'Connect', detail: 'Public GitHub' },
 ];
 
-export default function AgentNetworkPanel() {
+export default function AgentNetworkPanel({ globeLayerVisible = false, onToggleGlobeLayer }) {
   const [snapshot, setSnapshot] = useState(null);
   const [error, setError] = useState('');
 
@@ -58,6 +58,23 @@ export default function AgentNetworkPanel() {
           );
         })}
       </dl>
+
+      <section className="agent-network__globe-control" aria-labelledby="agent-globe-title">
+        <span>
+          <strong id="agent-globe-title">Agent-ready globe layer</strong>
+          <small>Highlight public profiles open to verified agents.</small>
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-label="Show agent-ready developers on the globe"
+          aria-checked={globeLayerVisible}
+          className={globeLayerVisible ? 'agent-network__switch agent-network__switch--active' : 'agent-network__switch'}
+          onClick={() => onToggleGlobeLayer?.(!globeLayerVisible)}
+        >
+          <span />
+        </button>
+      </section>
 
       <section className="agent-network__section" aria-labelledby="agent-lifecycle-title">
         <h3 id="agent-lifecycle-title">Connection lifecycle</h3>
