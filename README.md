@@ -204,7 +204,18 @@ Required environment variables:
 | `COSMOS_DATABASE` | Database name |
 | `COSMOS_CONTAINER` | Container name |
 | `COSMOS_ACTIVITY_CONTAINER` | Rolling GitHub activity container (`activities`) |
+| `COSMOS_CONTACTS_CONTAINER` | Private lifecycle-email contact container (`developer-contacts`) |
 | `ACTIVITY_INGEST_SECRET` | Bearer secret for the activity collector endpoint |
+| `RESEND_API_KEY` | Optional Resend API key for claim and approval emails |
+| `EMAIL_FROM` | Sender on a domain verified by Resend |
+
+Lifecycle emails are transactional and best-effort. Claims use the verified primary email authorized through GitHub OAuth; self-nominations collect an explicitly consented notification address. Addresses are stored only in the private `developer-contacts` container and are never projected by public APIs or copied into developer documents. Create the container before deployment:
+
+```bash
+npm run setup-contacts-container
+```
+
+See the [lifecycle email PRD](docs/prd/lifecycle-email-notifications.md).
 
 ### Live developer activity
 
@@ -241,7 +252,7 @@ Public search and profile lookup work anonymously. Introduction requests and sta
 npm run mcp
 ```
 
-See [docs/mcp-server.md](docs/mcp-server.md) for credential provisioning, Cosmos DB setup, client configuration, and the consent lifecycle.
+See [docs/mcp-server.md](docs/mcp-server.md) for credential provisioning, Cosmos DB setup, client configuration, and the consent lifecycle. [docs/agent-readiness.md](docs/agent-readiness.md) documents machine-readable discovery, WebMCP, and the external DNS-AID deployment steps.
 
 ## 📄 License
 

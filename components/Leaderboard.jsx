@@ -19,6 +19,7 @@ export default function Leaderboard({
   onCountryFilterChange,
   compareLogins = [],
   onToggleCompare,
+  onClearCompare,
   claimedLogins,
   open = false,
   onClose,
@@ -125,7 +126,7 @@ export default function Leaderboard({
   };
 
   return (
-    <aside className={`sidebar${open ? ' open' : ''}`} id="sidebar">
+    <aside className={`sidebar${open ? ' open' : ''}${activeView === 'activity' ? ' sidebar--activity' : ''}`} id="sidebar">
       <div className="sidebar__drag-handle" onClick={onClose} aria-hidden="true" />
       <div className="sidebar__tabs" role="tablist" aria-label="Developer views">
         <button
@@ -172,8 +173,18 @@ export default function Leaderboard({
         </div>
         <div className="sidebar__count">
           {filtered.length} developer{filtered.length !== 1 ? 's' : ''}
+        </div>
+        <div className={`sidebar__compare-control${compareLogins.length ? ' sidebar__compare-control--active' : ''}`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M7 7h11l-3-3" />
+            <path d="M17 17H6l3 3" />
+            <path d="M18 7l-3 3" />
+            <path d="M6 17l3-3" />
+          </svg>
+          <span>Compare contributions</span>
+          <strong>{compareLogins.length}/2</strong>
           {compareLogins.length > 0 && (
-            <span className="sidebar__compare-hint"> · {compareLogins.length}/2 selected</span>
+            <button type="button" onClick={onClearCompare}>Clear</button>
           )}
         </div>
         <div className="sidebar__filters">
@@ -259,7 +270,12 @@ export default function Leaderboard({
                       onToggleCompare?.(dev);
                     }}
                   >
-                    {isCompareSelected ? '✓' : '⇄'}
+                    {isCompareSelected ? '✓' : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M7 7h11l-3-3" />
+                        <path d="M17 17H6l3 3" />
+                      </svg>
+                    )}
                   </button>
                   <span
                     className="lb-item__score"

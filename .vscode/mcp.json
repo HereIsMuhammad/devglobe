@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "devglobe": {
+      "type": "http",
+      "url": "https://www.devglobe.dev/mcp"
+    }
+  }
+}

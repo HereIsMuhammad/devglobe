@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { decodeActivityCursor, encodeActivityCursor } from '../lib/activity-store.js';
 import { describeGitHubEvent, normalizeGitHubEvent } from '../lib/github-activity.js';
+import { createFallbackActivities, createPlatformActivity } from '../lib/platform-activity.js';
 
 test('normalizes a GitHub event into the public activity shape', () => {
   const activity = normalizeGitHubEvent({
@@ -32,4 +33,26 @@ test('round trips stable timestamp and id cursors', () => {
   const activity = { id: '123', createdAt: '2026-08-12T12:00:00.000Z' };
   assert.deepEqual(decodeActivityCursor(encodeActivityCursor(activity)), activity);
   assert.equal(decodeActivityCursor('not-a-cursor'), null);
+});
+
+test('creates platform card activity for the actor and target', () => {
+  const activity = createPlatformActivity({
+    type: 'generated_card',
+    login: 'octocat',
+    targetLogin: 'hubot',
+    now: new Date('2026-08-13T12:00:00Z'),
+  });
+
+  assert.equal(activity.login, 'octocat');
+  assert.equal(activity.description, "generated @hubot's developer card");
+  assert.equal(activity.url, '/developer/hubot');
+  assert.equal(activity.documentType, 'platform-activity');
+});
+
+test('creates stable fallback activities within an hourly window', () => {
+  const first = createFallbackActivities(Date.parse('2026-08-13T12:10:00Z'));
+  const second = createFallbackActivities(Date.parse('2026-08-13T12:50:00Z'));
+
+  assert.deepEqual(first, second);
+  assert.ok(first.every(activity => activity.fallback));
 });

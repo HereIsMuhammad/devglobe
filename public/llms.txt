@@ -8,6 +8,9 @@
 - Source code: https://github.com/sajeetharan/devglobe
 - Sitemap: https://www.devglobe.dev/sitemap.xml
 - Remote MCP: https://www.devglobe.dev/mcp
+- API catalog: https://www.devglobe.dev/.well-known/api-catalog
+- Agent Skills: https://www.devglobe.dev/.well-known/agent-skills/index.json
+- Authentication guide: https://www.devglobe.dev/auth.md
 
 ## Core capabilities
 
