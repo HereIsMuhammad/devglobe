@@ -133,7 +133,8 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
               {merged.soUserId && (
                 <a href={`https://stackoverflow.com/users/${merged.soUserId}`} target="_blank" rel="noreferrer">StackOverflow ↗</a>
               )}
-              <button
+                <a href={`/share/${encodeURIComponent(dev.login)}#get-your-badge`} target="_blank" rel="noopener noreferrer">Get Badge ↗</a>
+                <button
                 className="btn btn--share"
                 onClick={handleGenerateCard}
               >
@@ -557,7 +558,7 @@ function CardModal({ dev, claimSuccess, onClose }) {
   const linkedinCaption = `I mapped my open-source contributions on DevGlobe and discovered my developer identity: ${agent.name}. ${rankText}. Build your card and see where your work places you in the global developer community.\n\n${hashtagText}`;
 
   const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}&hashtags=${shareHashtags.join(',')}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
     reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(`My DevGlobe Developer Card - ${name} ${hashtagText}`)}`,
