@@ -32,7 +32,7 @@ Snapshots contain only `login`, UTC day/time, score dimensions, aggregate stars/
 
 ## Capture
 
-Vercel invokes `/api/cron/impact-history` daily with `CRON_SECRET`. The job scores and ranks the complete public dataset once, adds rank within each primary language, writes snapshots, and publishes a deduplicated `rank_movement` feed event when global rank changes.
+An Azure Timer Function invokes `/api/cron/impact-history` every 15 minutes with `CRON_SECRET`. The job scores and ranks the complete public dataset, then resumes an RU-bounded daily capture from persisted progress. Each invocation writes up to 500 idempotent snapshots and publishes a deduplicated `rank_movement` feed event when global rank changes. Repeated invocations complete the daily set without exceeding the function duration or overwhelming shared Cosmos throughput.
 
 ## History and deltas
 
