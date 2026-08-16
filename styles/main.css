@@ -1213,6 +1213,71 @@ body {
 .activity-timeline__heading > span { color: var(--text-muted); font-size: 11px; }
 .activity-timeline__empty { padding: 36px 0; color: var(--text-muted); }
 
+.impact-history {
+  margin-bottom: 48px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+}
+
+.impact-history__heading,
+.impact-history__visibility,
+.impact-history__periods,
+.impact-chart__legend {
+  display: flex;
+  align-items: center;
+}
+
+.impact-history__heading { justify-content: space-between; gap: 20px; }
+.impact-history__heading span { color: var(--text-muted); font-size: 10px; font-weight: 700; }
+.impact-history__heading h2 { margin-top: 3px; font-size: 24px; }
+.impact-history__visibility { gap: 10px; }
+.impact-history__visibility input { width: 18px; height: 18px; accent-color: #2ea44f; }
+
+.impact-history__periods { gap: 4px; margin: 22px 0 16px; }
+.impact-history__periods button {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font: 600 12px var(--font);
+  cursor: pointer;
+}
+.impact-history__periods button.active { border-color: #0891b2; background: rgba(8, 145, 178, 0.12); color: #0891b2; }
+
+.impact-metrics,
+.impact-ranks { display: grid; gap: 10px; }
+.impact-metrics { grid-template-columns: repeat(4, 1fr); }
+.impact-ranks { grid-template-columns: repeat(3, 1fr); margin: 14px 0; }
+.impact-metrics > div,
+.impact-ranks > div { display: flex; flex-direction: column; gap: 4px; padding: 13px; border: 1px solid var(--border); }
+.impact-metrics span,
+.impact-ranks span { color: var(--text-muted); font-size: 10px; }
+.impact-metrics strong,
+.impact-ranks strong { font-size: 20px; }
+.impact-delta { font-size: 11px !important; }
+.impact-delta--up { color: #2ea44f !important; }
+.impact-delta--down { color: #ef4444 !important; }
+.impact-delta--empty { color: var(--text-muted) !important; }
+
+.impact-chart { margin-top: 18px; }
+.impact-chart svg { width: 100%; max-height: 220px; overflow: visible; }
+.impact-chart line { stroke: var(--border); stroke-width: 1; }
+.impact-chart polyline { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.impact-chart__legend { justify-content: center; gap: 18px; }
+.impact-chart__legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 11px; }
+.impact-chart__legend i { width: 9px; height: 9px; border-radius: 50%; }
+
+.impact-history__notice,
+.impact-history__empty,
+.impact-history__explanation { color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+.impact-history__notice { margin: 12px 0; padding: 10px 12px; border-left: 2px solid #d97706; background: rgba(217, 119, 6, 0.08); }
+.impact-history__empty { padding: 24px 0; text-align: center; }
+.impact-history__explanation { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+.impact-history__explanation p { margin-top: 4px; }
+.impact-history__error { margin-top: 10px; color: #ef4444; font-size: 12px; }
+
 .timeline-event {
   display: grid;
   grid-template-columns: 12px 1fr auto;
@@ -3159,6 +3224,10 @@ body {
   .activity-profile__avatar { width: 72px; height: 72px; }
   .activity-profile h1 { font-size: 30px; }
   .activity-profile__stats { grid-column: 1 / -1; justify-content: space-between; padding-top: 8px; }
+  .impact-history { padding: 18px 14px; }
+  .impact-history__heading { align-items: flex-start; }
+  .impact-metrics { grid-template-columns: repeat(2, 1fr); }
+  .impact-ranks { grid-template-columns: 1fr; }
   .activity-timeline { margin-top: 36px; }
   .timeline-event { grid-template-columns: 10px 1fr; gap: 12px; }
   .timeline-event time { grid-column: 2; }
