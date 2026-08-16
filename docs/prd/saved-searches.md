@@ -16,6 +16,16 @@ Signed-in users can save a search (free-text query and/or structured filters: co
 - **Alerts are opt-in with per-search frequency controls** — `alert.frequency` is `off` by default; `daily` / `weekly` can be set per search via `PATCH`.
 - **Private or pending profiles never appear** — `isPubliclyVisible()` mirrors the `PUBLIC_FILTER` predicate already used by `/api/search` and `/api/developers` (excludes any profile with `nomination.status` other than `approved`), applied as a local guard regardless of where the candidate pool came from.
 
+## Deployment
+
+Before this ships to production, the `saved-searches` Cosmos container needs to exist:
+
+```bash
+npm run setup-saved-search-container
+```
+
+This creates it (partitioned by `/login`, matching how `lib/saved-search-store.js` always reads/writes) if it doesn't already exist — safe to run repeatedly. Without this, every `/api/saved-searches*` call 500s with a Cosmos `NotFound` until the container is created.
+
 ## Data model
 
 ```json
