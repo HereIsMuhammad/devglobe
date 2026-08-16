@@ -10,9 +10,11 @@ import { classifyAgent } from '../lib/agent-class.js';
 import { AI_TOOLS } from '../lib/ai-profile.js';
 import SpecialTags from './SpecialTags.jsx';
 
-export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogins, openCardOnMount = false, claimSuccess = false }) {
+export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogins, user, openCardOnMount = false, claimSuccess = false }) {
   const [fullData, setFullData] = useState(null);
   const [showCard, setShowCard] = useState(false);
+  const [followState, setFollowState] = useState('idle');
+  const [followError, setFollowError] = useState('');
   const radarRef = useRef(null);
   const heatmapRef = useRef(null);
   const langRef = useRef(null);
@@ -26,6 +28,49 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
   useEffect(() => {
     if (openCardOnMount) setShowCard(true);
   }, [openCardOnMount]);
+
+  useEffect(() => {
+    if (!user || user.login.toLowerCase() === dev.login.toLowerCase()) return;
+    let cancelled = false;
+    setFollowState('loading');
+    fetch('/api/watchlist/developers', { cache: 'no-store' })
+      .then(async response => {
+        if (!response.ok) throw new Error('Unable to load follows');
+        const result = await response.json();
+        if (!cancelled) {
+          setFollowState(result.developers.includes(dev.login.toLowerCase()) ? 'following' : 'not-following');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setFollowState('not-following');
+      });
+    return () => { cancelled = true; };
+  }, [dev.login, user]);
+
+  const handleFollow = async () => {
+    if (!user) {
+      window.location.assign('/api/auth/github');
+      return;
+    }
+    const wasFollowing = followState === 'following';
+    setFollowState('saving');
+    setFollowError('');
+    try {
+      const response = await fetch('/api/watchlist/developers', {
+        method: wasFollowing ? 'DELETE' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login: dev.login }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Unable to update follow');
+      const following = result.developers.includes(dev.login.toLowerCase());
+      setFollowState(following ? 'following' : 'not-following');
+      track(following ? 'developer_followed' : 'developer_unfollowed', { login: dev.login });
+    } catch (error) {
+      setFollowState(wasFollowing ? 'following' : 'not-following');
+      setFollowError(error.message);
+    }
+  };
 
   // Fetch full details on mount
   useEffect(() => {
@@ -129,6 +174,20 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
               {SCORE_METHODOLOGY.short}
             </p>
             <div className="detail-header__links">
+              {user?.login.toLowerCase() !== dev.login.toLowerCase() && (
+                <button
+                  type="button"
+                  className={`btn btn--follow${followState === 'following' ? ' btn--follow-active' : ''}`}
+                  onClick={handleFollow}
+                  disabled={followState === 'loading' || followState === 'saving'}
+                  aria-pressed={followState === 'following'}
+                >
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    {followState === 'following' ? <path d="m5 12 4 4L19 6" /> : <><path d="M15 19a6 6 0 00-12 0" /><circle cx="9" cy="7" r="4" /><path d="M19 8v6M22 11h-6" /></>}
+                  </svg>
+                  {followState === 'following' ? 'Following' : followState === 'saving' ? 'Saving...' : 'Follow'}
+                </button>
+              )}
               <a href={merged.githubUrl || `https://github.com/${dev.login}`} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
               {merged.soUserId && (
                 <a href={`https://stackoverflow.com/users/${merged.soUserId}`} target="_blank" rel="noreferrer">StackOverflow ↗</a>
@@ -146,6 +205,7 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
                 Generate Identity Card
               </button>
             </div>
+            {followError && <div className="detail-header__follow-error" role="status">{followError}</div>}
           </div>
         </div>
       </div>

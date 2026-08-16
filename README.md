@@ -208,6 +208,7 @@ Required environment variables:
 | `ACTIVITY_INGEST_SECRET` | Bearer secret for the activity collector endpoint |
 | `RESEND_API_KEY` | Optional Resend API key for claim and approval emails |
 | `EMAIL_FROM` | Sender on a domain verified by Resend |
+| `COSMOS_WATCHLIST_CONTAINER` | Optional private watchlist container name (default: `watchlists`) |
 | `CRON_SECRET` | Bearer token used by Vercel Cron for the weekly digest endpoint |
 | `EMAIL_PREFERENCE_SECRET` | HMAC secret for weekly-email unsubscribe links; defaults to `SESSION_SECRET` |
 
