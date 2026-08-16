@@ -78,3 +78,69 @@ test('capture stores ranked snapshots and publishes privacy-aware movement event
   assert.equal(events[0].options.isPublicDeveloper, true);
   assert.equal(events[1].options.isPublicDeveloper, false);
 });
+
+test('capture bounds concurrent snapshot operations', async () => {
+  let active = 0;
+  let peak = 0;
+  const developers = Array.from({ length: 12 }, (_, index) => ({
+    login: `developer-${index}`,
+    totalStars: index,
+  }));
+
+  await captureImpactHistory({
+    developers,
+    concurrency: 3,
+    getPrevious: async () => null,
+    saveSnapshot: async () => {
+      active += 1;
+      peak = Math.max(peak, active);
+      await new Promise(resolve => setTimeout(resolve, 5));
+      active -= 1;
+    },
+  });
+
+  assert.equal(peak, 3);
+});
+
+test('capture uses the latest completed day for previous snapshots', async () => {
+  let previousDayLoads = 0;
+  const snapshots = [];
+
+  await captureImpactHistory({
+    now: new Date('2026-08-17T14:00:00.000Z'),
+    developers: [{ login: 'a' }, { login: 'b' }],
+    getPreviousDay: async day => {
+      previousDayLoads += 1;
+      assert.equal(day, '2026-08-17');
+      return '2026-08-16';
+    },
+    getPreviousForDay: async login => ({ login, globalRank: login === 'a' ? 2 : 1 }),
+    saveSnapshot: async snapshot => snapshots.push(snapshot),
+    saveEvents: async () => ({ inserted: 1 }),
+  });
+
+  assert.equal(previousDayLoads, 1);
+  assert.equal(snapshots.length, 2);
+});
+
+test('managed capture resumes from persisted progress', async () => {
+  const savedProgress = [];
+  const snapshots = [];
+  const developers = Array.from({ length: 5 }, (_, index) => ({ login: `dev-${index}` }));
+
+  const summary = await captureImpactHistory({
+    loadDevelopers: async () => developers,
+    batchSize: 2,
+    getProgress: async () => ({ nextIndex: 2, previousDay: null }),
+    saveProgress: async progress => savedProgress.push(progress),
+    getPreviousDay: async () => null,
+    getPreviousForDay: async () => null,
+    saveSnapshot: async snapshot => snapshots.push(snapshot),
+  });
+
+  assert.equal(summary.snapshots, 2);
+  assert.equal(summary.processed, 4);
+  assert.equal(summary.remaining, 1);
+  assert.equal(summary.complete, false);
+  assert.equal(savedProgress[0].nextIndex, 4);
+});

@@ -8,7 +8,7 @@
     },
     {
       "path": "/api/cron/impact-history",
-      "schedule": "0 14 * * *"
+      "schedule": "*/15 * * * *"
     }
   ]
 }
