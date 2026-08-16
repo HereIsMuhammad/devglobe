@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { formatNum, formatRelativeTime } from '../lib/format.js';
 import { useActivityFeed } from './useActivityFeed.js';
 import SpecialTags from './SpecialTags.jsx';
+import ImpactHistoryPanel from './ImpactHistoryPanel.jsx';
 
 export default function DeveloperActivityPage({ login }) {
   const [developer, setDeveloper] = useState(null);
@@ -73,6 +74,8 @@ export default function DeveloperActivityPage({ login }) {
               <div><dt>Followers</dt><dd>{formatNum(developer.followers)}</dd></div>
             </dl>
           </section>
+
+          <ImpactHistoryPanel login={developer.login} />
 
           <section className="activity-timeline" aria-labelledby="activity-timeline-title">
             <div className="activity-timeline__heading">
