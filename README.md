@@ -240,6 +240,17 @@ ACTIVITY_INGEST_SECRET=the-same-secret-configured-on-the-site
 
 The timer invokes the collector every minute, matching GitHub's advertised polling interval. GitHub's public Events API is best-effort and may delay or omit events; the 15-second browser refresh does not guarantee GitHub source delivery within that interval. A valid `GITHUB_TOKEN` is required for full three-page collection; anonymous fallback inspects one page only. The Cosmos activity container uses a 48-hour TTL while the API exposes only the latest 24 hours.
 
+### Impact history capture
+
+Deploy the `functions` directory to an Azure Function App and configure these application settings for the 15-minute impact-history timer:
+
+```env
+IMPACT_HISTORY_URL=https://www.devglobe.dev/api/cron/impact-history
+CRON_SECRET=the-same-secret-configured-in-vercel
+```
+
+The timer resumes the current UTC day's capture in RU-bounded batches. Keep `IMPACT_HISTORY_CONCURRENCY` and `IMPACT_HISTORY_BATCH_SIZE` on the Vercel application because the Next.js endpoint performs the Cosmos work.
+
 ## 🤝 Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and areas where help is needed.
