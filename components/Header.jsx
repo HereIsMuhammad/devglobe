@@ -79,6 +79,13 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
             </svg>
           )}
         </button>
+        <a href="https://sajeetharan.github.io/devglobe/" target="_blank" rel="noreferrer" className="btn btn--docs" aria-label="Open DevGlobe documentation" title="Documentation">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+          </svg>
+          <span className="btn__label">Docs</span>
+        </a>
         <a href="https://github.com/sajeetharan/devglobe" target="_blank" rel="noreferrer" className="btn btn--star" aria-label="Star DevGlobe on GitHub" title="Star DevGlobe on GitHub">
           <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
             <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z" />

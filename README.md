@@ -5,6 +5,7 @@
 **The global open-source developer discovery platform — search, compare, and connect with the people behind the code**
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel)](https://devglobe.dev)
+[![Documentation](https://img.shields.io/badge/Documentation-GitHub%20Pages-2ea44f?style=for-the-badge&logo=github)](https://sajeetharan.github.io/devglobe/)
 [![GitHub Stars](https://img.shields.io/github/stars/sajeetharan/devglobe?style=for-the-badge&logo=github)](https://github.com/sajeetharan/devglobe/stargazers)
 [![License](https://img.shields.io/github/license/sajeetharan/devglobe?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](CONTRIBUTING.md)
@@ -16,6 +17,8 @@
 </div>
 
 DevGlobe is an interactive global developer network built for engineering teams, open-source communities, and the emerging ecosystem of AI agents. It combines a 3D developer map with Azure Cosmos DB vector and hybrid search to surface relevant expertise from real contribution signals rather than popularity alone. The long-term vision is a consent-aware discovery layer where AI agents can find the right human collaborators.
+
+The dynamic application is hosted on [Vercel](https://www.devglobe.dev). Product, API, MCP, Agent Skill, and agent-readiness documentation is published separately on [GitHub Pages](https://sajeetharan.github.io/devglobe/).
 
 > [!IMPORTANT]
 > **Connect an AI agent to DevGlobe:** MCP-compatible agents can use the hosted endpoint at `https://www.devglobe.dev/mcp` to search public developer profiles without credentials. Verified agents can also request developer-approved introductions. See the [MCP setup guide](docs/mcp-server.md).
