@@ -2,6 +2,8 @@ import { ImageResponse } from '@vercel/og';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getCosmosContainer } from '../../../../lib/cosmos.js';
+import { calculateOssWorth } from '../../../../lib/oss-worth.js';
+import { formatUsd } from '../../../../lib/format.js';
 
 export const runtime = 'nodejs';
 
@@ -10,7 +12,7 @@ async function getDeveloper(login) {
   if (cosmosContainer) {
     try {
       const { resources } = await cosmosContainer.items.query({
-        query: `SELECT TOP 1 c.login, c.name, c.location, c.followers, c.totalStars, c.totalCommits, c.topLanguage
+        query: `SELECT TOP 1 c.login, c.name, c.location, c.followers, c.totalStars, c.totalCommits, c.topLanguage, c.soUserId, c.soReputation, c.soAnswers, c.soBadges
           FROM c
           WHERE (c.login = @login OR c.id = @login)
             AND (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved')`,
@@ -44,10 +46,12 @@ export async function GET(request) {
   if (!developer) return new Response('Developer not found', { status: 404 });
 
   const name = developer.name || developer.login;
+  const ossWorth = calculateOssWorth(developer);
   const stats = [
     { label: 'GITHUB STARS', value: formatNumber(developer.totalStars) },
     { label: 'COMMITS', value: formatNumber(developer.totalCommits) },
     { label: 'FOLLOWERS', value: formatNumber(developer.followers) },
+    { label: `OSS WORTH · ${formatNumber(ossWorth.totalCredits)} OSC`, value: formatUsd(ossWorth.totalDollarValue, true) },
   ];
 
   return new ImageResponse(
@@ -87,7 +91,7 @@ export async function GET(request) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', gap: '52px' }}>
+          <div style={{ display: 'flex', gap: '36px' }}>
             {stats.map(stat => (
               <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                 <div style={{ display: 'flex', color: '#f8fafc', fontSize: '34', fontWeight: '800' }}>{stat.value}</div>

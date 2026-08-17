@@ -6,7 +6,7 @@ import { track } from '@vercel/analytics';
 import * as d3 from 'd3';
 import { formatNum, formatRelativeTime, formatUsd, isStaleData } from '../lib/format.js';
 import { DIMENSIONS, SCORE_METHODOLOGY } from '../lib/scoring.js';
-import { SOCIAL_PREVIEW_VERSION } from '../lib/site.js';
+import { IDENTITY_CARD_VERSION, SOCIAL_PREVIEW_VERSION } from '../lib/site.js';
 import { classifyAgent } from '../lib/agent-class.js';
 import { AI_TOOLS } from '../lib/ai-profile.js';
 import SpecialTags from './SpecialTags.jsx';
@@ -672,7 +672,7 @@ function CardModal({ dev, claimSuccess, onClose }) {
   const [linkedinCopied, setLinkedinCopied] = useState(false);
   const { login } = dev;
   const name = dev.name || login;
-  const cardUrl = `/api/card?login=${encodeURIComponent(login)}`;
+  const cardUrl = `/api/card?login=${encodeURIComponent(login)}&v=${IDENTITY_CARD_VERSION}`;
   const sharePath = `/share/${encodeURIComponent(login)}?v=${SOCIAL_PREVIEW_VERSION}`;
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}${sharePath}` : sharePath;
 
