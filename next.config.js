@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  outputFileTracingIncludes: {
+    '/api/card': ['./node_modules/@fontsource/manrope/files/manrope-latin-*-normal.woff'],
+  },
   async headers() {
     return [
       {

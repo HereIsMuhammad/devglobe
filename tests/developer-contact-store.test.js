@@ -5,8 +5,10 @@ import {
   buildDeveloperContact,
   createEmailVerification,
   getDeveloperContact,
+  isVerificationReminderDue,
   iterateWeeklyDigestContacts,
   normalizeContactEmail,
+  recordEmailVerificationReminder,
   saveDeveloperContact,
   setProductUpdatesPreference,
   verifyDeveloperContactEmail,
@@ -162,6 +164,46 @@ test('pages through verified weekly digest opt-ins', async () => {
     contacts.push(contact.login);
   }
   assert.deepEqual(contacts, ['One', 'Two']);
+});
+
+test('verification reminders are due only for opted-in unverified contacts after 72 hours', () => {
+  const now = new Date('2026-08-17T14:00:00.000Z');
+  const contact = {
+    email: 'dev@example.com',
+    emailVerified: false,
+    transactionalEmailsEnabled: true,
+  };
+
+  assert.equal(isVerificationReminderDue(contact, now), true);
+  assert.equal(isVerificationReminderDue({
+    ...contact,
+    lastVerificationReminderAt: '2026-08-14T14:00:00.000Z',
+  }, now), true);
+  assert.equal(isVerificationReminderDue({
+    ...contact,
+    lastVerificationReminderAt: '2026-08-15T14:00:00.000Z',
+  }, now), false);
+  assert.equal(isVerificationReminderDue({ ...contact, emailVerified: true }, now), false);
+  assert.equal(isVerificationReminderDue({ ...contact, transactionalEmailsEnabled: false }, now), false);
+});
+
+test('records a successful verification reminder', async () => {
+  const container = fakeContainer({
+    id: 'octocat',
+    login: 'OctoCat',
+    email: 'dev@example.com',
+    emailVerified: false,
+    verificationReminderCount: 1,
+    _etag: 'etag-1',
+  });
+
+  const result = await recordEmailVerificationReminder('OctoCat', {
+    sentAt: timestamp,
+  }, { container });
+
+  assert.equal(result.updated, true);
+  assert.equal(container.saved.lastVerificationReminderAt, timestamp);
+  assert.equal(container.saved.verificationReminderCount, 2);
 });
 
 test('creates a hashed email verification token that expires after 24 hours', async () => {
