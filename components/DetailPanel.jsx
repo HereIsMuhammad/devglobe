@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { track } from '@vercel/analytics';
 import * as d3 from 'd3';
-import { formatNum, formatRelativeTime, isStaleData } from '../lib/format.js';
+import { formatNum, formatRelativeTime, formatUsd, isStaleData } from '../lib/format.js';
 import { DIMENSIONS, SCORE_METHODOLOGY } from '../lib/scoring.js';
 import { SOCIAL_PREVIEW_VERSION } from '../lib/site.js';
 import { classifyAgent } from '../lib/agent-class.js';
@@ -417,35 +417,40 @@ function OssWorthSection({ worth }) {
           <span>Public contribution footprint</span>
           <h3 id="oss-worth-title">OSS Worth</h3>
         </div>
-        <strong title={`${worth.totalCredits.toLocaleString()} OSS Credits`}>
-          {formatNum(worth.totalCredits)} <small>OSC</small>
-        </strong>
+        <div className="oss-worth__totals">
+          <strong title={`${worth.totalCredits.toLocaleString()} OSS Credits`}>
+            {formatNum(worth.totalCredits)} <small>OSC</small>
+          </strong>
+          <span title={`${formatUsd(worth.totalDollarValue)} estimated value`}>
+            {formatUsd(worth.totalDollarValue, true)} estimated
+          </span>
+        </div>
       </div>
       <p className="oss-worth__disclaimer">
-        Fictional OSS Credits celebrate public contributions. They are not compensation, skill, employability, or financial value.
+        A playful estimate based on public activity, not compensation, skill, employability, or market value. 10 OSC equals $1 in this estimate.
       </p>
       <div className="oss-worth__cards">
-        <WorthCard platform="GitHub" allocation="60% allocation" worth={worth.github} />
-        <WorthCard platform="Stack Overflow" allocation="40% allocation" worth={worth.stackoverflow} />
+        <WorthCard platform="GitHub" worth={worth.github} />
+        <WorthCard platform="Stack Overflow" worth={worth.stackoverflow} />
       </div>
       <details className="oss-worth__methodology">
         <summary>How this is calculated</summary>
-        <p>Inputs are log-normalized against fixed reference caps. Formula {worth.formulaVersion}.</p>
+        <p>GitHub follows GitEstimate: contributions × $0.50 + followers × $0.10 + stars × $0.30. Stack Overflow is calculated separately using answers × $0.50 + reputation × $0.10 + badges × $0.30. Formula {worth.formulaVersion}.</p>
       </details>
     </section>
   );
 }
 
-function WorthCard({ platform, allocation, worth }) {
+function WorthCard({ platform, worth }) {
   const platformClass = platform === 'GitHub' ? 'github' : 'stackoverflow';
   return (
     <article className={`worth-card worth-card--${platformClass}${worth.available ? '' : ' worth-card--unavailable'}`}>
       <div className="worth-card__header">
         <span>{platform}</span>
-        <small>{allocation}</small>
+        <small>Independent value</small>
       </div>
-      <strong title={`${worth.credits.toLocaleString()} of ${worth.maxCredits.toLocaleString()} OSS Credits`}>
-        {formatNum(worth.credits)} <small>/ {formatNum(worth.maxCredits)} OSC</small>
+      <strong title={`${formatUsd(worth.dollarValue)} and ${worth.credits.toLocaleString()} OSS Credits`}>
+        {formatUsd(worth.dollarValue, true)} <small>· {formatNum(worth.credits)} OSC</small>
       </strong>
       {!worth.available ? (
         <p>No linked Stack Overflow profile</p>
@@ -455,7 +460,7 @@ function WorthCard({ platform, allocation, worth }) {
             <li key={dimension.key}>
               <span>
                 {dimension.label}
-                <small>{Math.round(dimension.weight * 100)}% · cap {formatNum(dimension.cap)}</small>
+                <small>{formatUsd(dimension.dollarsPerUnit)} each · {formatUsd(dimension.dollarValue, true)}</small>
               </span>
               <b>{formatNum(dimension.sourceValue)}</b>
             </li>

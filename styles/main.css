@@ -2606,15 +2606,31 @@ body {
   font-size: 18px;
 }
 
-.oss-worth__heading > strong {
+.oss-worth__totals {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.oss-worth__totals > strong {
   color: #22d3ee;
   font-size: 24px;
   line-height: 1;
   white-space: nowrap;
 }
 
-.oss-worth__heading > strong small {
+.oss-worth__totals > strong small {
   font-size: 11px;
+}
+
+.oss-worth__totals > span {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .oss-worth__disclaimer {
@@ -4798,7 +4814,7 @@ body {
 
 .search-bar__card-suggestion {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   margin-top: 8px;
@@ -4806,7 +4822,32 @@ body {
   border-top: 1px solid var(--border);
 }
 
-.search-bar__card-suggestion > img {
+.search-bar__profile-result {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search-bar__profile-result:hover .search-bar__card-identity strong {
+  color: #22d3ee;
+}
+
+.search-bar__profile-result:focus-visible {
+  border-radius: 5px;
+  outline: 2px solid #22d3ee;
+  outline-offset: 3px;
+}
+
+.search-bar__profile-result > img {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -4845,7 +4886,7 @@ body {
   font-size: 10px;
 }
 
-.search-bar__card-suggestion > button {
+.search-bar__card-action {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -4859,7 +4900,7 @@ body {
   transition: background 0.15s, border-color 0.15s;
 }
 
-.search-bar__card-suggestion > button:hover {
+.search-bar__card-action:hover {
   border-color: #0891b2;
   background: rgba(8, 145, 178, 0.24);
 }

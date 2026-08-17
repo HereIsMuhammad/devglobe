@@ -447,6 +447,7 @@ export default function Home() {
         developers={developers}
         onResults={handleSearch}
         onReset={handleResetFilter}
+        onSelectDeveloper={handleSelectDev}
         onGenerateCard={handleGenerateCard}
         onSearchState={handleTourSearchState}
         onOpenCardFeature={handleOpenCardFeature}

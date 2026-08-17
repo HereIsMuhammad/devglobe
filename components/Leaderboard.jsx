@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { formatNum } from '../lib/format.js';
+import { formatNum, formatUsd } from '../lib/format.js';
 import { extractCountry, normalizeCountry, countryKey } from '../lib/country.js';
 import { SCORE_METHODOLOGY } from '../lib/scoring.js';
 import { compareOssWorth } from '../lib/oss-worth.js';
@@ -262,10 +262,10 @@ export default function Leaderboard({
                     {dev.soReputation ? <span className="lb-badge lb-badge--so" title="SO Reputation">● {formatNum(dev.soReputation)}</span> : null}
                     <span
                       className="lb-badge lb-badge--worth"
-                      title={`${dev.ossWorth?.totalCredits?.toLocaleString() || 0} OSS Credits`}
-                      aria-label={`${dev.ossWorth?.totalCredits?.toLocaleString() || 0} OSS Credits`}
+                      title={`${dev.ossWorth?.totalCredits?.toLocaleString() || 0} OSS Credits · ${formatUsd(dev.ossWorth?.totalDollarValue || 0)} estimated`}
+                      aria-label={`${dev.ossWorth?.totalCredits?.toLocaleString() || 0} OSS Credits, ${formatUsd(dev.ossWorth?.totalDollarValue || 0)} estimated`}
                     >
-                      OSC {formatNum(dev.ossWorth?.totalCredits || 0)}
+                      OSC {formatNum(dev.ossWorth?.totalCredits || 0)} · {formatUsd(dev.ossWorth?.totalDollarValue || 0, true)}
                     </span>
                   </div>
                 </div>
