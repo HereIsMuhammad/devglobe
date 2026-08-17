@@ -7,8 +7,30 @@ import { getSiteHostname } from '../../../lib/site.js';
 import { addDeveloperRanks } from '../../../lib/ranking.js';
 import { getCosmosContainer } from '../../../lib/cosmos.js';
 import { getPublicAiToolNames } from '../../../lib/ai-profile.js';
+import { calculateOssWorth } from '../../../lib/oss-worth.js';
+import { formatUsd } from '../../../lib/format.js';
 
 export const runtime = 'nodejs';
+
+const manropeFonts = Promise.all(
+  [400, 600, 700, 800].map(async weight => {
+    const fontPath = path.join(
+      process.cwd(),
+      'node_modules',
+      '@fontsource',
+      'manrope',
+      'files',
+      `manrope-latin-${weight}-normal.woff`
+    );
+    const buffer = await fs.readFile(fontPath);
+    return {
+      name: 'Manrope',
+      data: buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
+      weight,
+      style: 'normal',
+    };
+  })
+);
 
 async function getDeveloper(login) {
   const cosmosContainer = getCosmosContainer();
@@ -74,7 +96,10 @@ export async function GET(request) {
   const score = Number.isFinite(dev.score) ? dev.score : 0;
   const agent = classifyAgent({ ...dev, score });
   const power = getPowerTier(score);
-  const avatarDataUrl = await loadAvatarDataUrl(dev.avatarUrl);
+  const [avatarDataUrl, fonts] = await Promise.all([
+    loadAvatarDataUrl(dev.avatarUrl),
+    manropeFonts,
+  ]);
   const avatarInitial = (dev.name || dev.login).trim().charAt(0).toUpperCase();
   const agentMark = agent.name
     .replace(/^The\s+/, '')
@@ -89,6 +114,7 @@ export async function GET(request) {
   const rankValueFontSize = hasCityRank ? '29' : '34';
   const rankTotalFontSize = hasCityRank ? '12' : '14';
   const aiToolNames = getPublicAiToolNames(dev.aiProfile);
+  const ossWorth = calculateOssWorth(dev);
 
   return new ImageResponse(
     (
@@ -97,8 +123,8 @@ export async function GET(request) {
           width: '1200',
           height: '630',
           display: 'flex',
-          background: 'linear-gradient(135deg, #080b10 0%, #111820 52%, #15120f 100%)',
-          fontFamily: 'Inter, sans-serif',
+          background: 'linear-gradient(135deg, #f8fbff 0%, #eaf8fb 56%, #fff3e6 100%)',
+          fontFamily: 'Manrope',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -115,10 +141,10 @@ export async function GET(request) {
             alignItems: 'center',
           }}
         >
-          <div style={{ display: 'flex', color: '#f8fafc', fontSize: '18', fontWeight: '800', letterSpacing: '1' }}>
-            DEV<span style={{ color: '#22d3ee' }}>GLOBE</span>
+          <div style={{ display: 'flex', color: '#102a43', fontSize: '18', fontWeight: '800', letterSpacing: '1' }}>
+            DEV<span style={{ color: '#0891b2' }}>GLOBE</span>
           </div>
-          <div style={{ display: 'flex', color: '#64748b', fontSize: '12', letterSpacing: '2' }}>
+          <div style={{ display: 'flex', color: '#52667a', fontSize: '12', fontWeight: '700', letterSpacing: '2' }}>
             OPEN SOURCE IDENTITY · 2026
           </div>
         </div>
@@ -132,22 +158,24 @@ export async function GET(request) {
             right: 0,
             bottom: 0,
             display: 'flex',
-            opacity: 0.06,
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+            opacity: 0.55,
+            backgroundImage: 'linear-gradient(rgba(8,145,178,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(8,145,178,0.08) 1px, transparent 1px)',
             backgroundSize: '40px 40px',
           }}
         />
 
-        {/* Glow effect behind hero */}
+        {/* Bright identity field behind hero */}
         <div
           style={{
             position: 'absolute',
-            top: '92',
-            left: '50',
-            width: '330',
-            height: '390',
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${agent.color}33 0%, transparent 70%)`,
+            top: '76',
+            left: '28',
+            width: '355',
+            height: '500',
+            borderRadius: '24',
+            background: `linear-gradient(160deg, #ffffffdd 0%, ${agent.color}1f 100%)`,
+            border: `1px solid ${agent.color}55`,
+            boxShadow: `0 18px 50px ${agent.color}24`,
             display: 'flex',
           }}
         />
@@ -183,7 +211,7 @@ export async function GET(request) {
                   transform: 'rotate(-45deg)',
                   color: '#f8fafc',
                   fontSize: '21',
-                  fontWeight: '900',
+                  fontWeight: '800',
                 }}
               >
                 {agentMark}
@@ -204,7 +232,7 @@ export async function GET(request) {
           {/* Name */}
           <div
             style={{
-              color: '#e2e8f0',
+              color: '#102a43',
               fontSize: '25',
               fontWeight: '700',
               marginTop: '4',
@@ -218,7 +246,7 @@ export async function GET(request) {
           {/* Login */}
           <div
             style={{
-              color: '#64748b',
+              color: '#52667a',
               fontSize: '16',
               display: 'flex',
               marginTop: '3',
@@ -231,7 +259,7 @@ export async function GET(request) {
           {dev.location && (
             <div
               style={{
-                color: '#94a3b8',
+                color: '#52667a',
                 fontSize: '12',
                 display: 'flex',
                 marginTop: '6',
@@ -263,7 +291,7 @@ export async function GET(request) {
           >
             <div
               style={{
-                color: agent.color,
+                color: '#087f8c',
                 fontSize: '14',
                 fontWeight: '600',
                 letterSpacing: '3',
@@ -277,7 +305,7 @@ export async function GET(request) {
 
           <div
             style={{
-              color: '#e2e8f0',
+              color: '#102a43',
               fontSize: '36',
               fontWeight: '700',
               display: 'flex',
@@ -289,7 +317,7 @@ export async function GET(request) {
 
           <div
             style={{
-              color: '#94a3b8',
+              color: '#52667a',
               fontSize: '16',
               fontStyle: 'italic',
               display: 'flex',
@@ -309,16 +337,17 @@ export async function GET(request) {
                 width: rankCardWidth,
                 height: '82',
                 padding: '12px 18px',
-                background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.04))',
-                border: '1px solid rgba(34,211,238,0.32)',
+                background: 'linear-gradient(135deg, #dff8fc, #ffffff)',
+                border: '1px solid #79d7e5',
                 borderRadius: '8',
+                boxShadow: '0 8px 18px rgba(8,145,178,0.10)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
-                <span style={{ color: '#67e8f9', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.globalRank)}</span>
-                <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.globalTotal)}</span>
+                <span style={{ color: '#087f8c', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.globalRank)}</span>
+                <span style={{ color: '#52667a', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.globalTotal)}</span>
               </div>
-              <div style={{ display: 'flex', color: '#a5f3fc', fontSize: '11', fontWeight: '700', letterSpacing: '1.6' }}>GLOBAL RANK</div>
+              <div style={{ display: 'flex', color: '#0e7490', fontSize: '12', fontWeight: '700', letterSpacing: '1.1' }}>GLOBAL RANK</div>
             </div>
             {dev.countryRank && (
               <div
@@ -329,16 +358,17 @@ export async function GET(request) {
                   width: rankCardWidth,
                   height: '82',
                   padding: '12px 18px',
-                  background: 'linear-gradient(135deg, rgba(251,146,60,0.15), rgba(251,146,60,0.04))',
-                  border: '1px solid rgba(251,146,60,0.32)',
+                  background: 'linear-gradient(135deg, #fff0dc, #ffffff)',
+                  border: '1px solid #f6b66f',
                   borderRadius: '8',
+                  boxShadow: '0 8px 18px rgba(234,88,12,0.08)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
-                  <span style={{ color: '#fdba74', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.countryRank)}</span>
-                  <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.countryTotal)}</span>
+                  <span style={{ color: '#c2410c', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.countryRank)}</span>
+                  <span style={{ color: '#52667a', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.countryTotal)}</span>
                 </div>
-                <div style={{ display: 'flex', color: '#fed7aa', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.country.toUpperCase()}</div>
+                <div style={{ display: 'flex', color: '#c2410c', fontSize: '12', fontWeight: '700', letterSpacing: '0.8' }}>IN {dev.country.toUpperCase()}</div>
               </div>
             )}
             {hasCityRank && (
@@ -350,16 +380,17 @@ export async function GET(request) {
                   width: rankCardWidth,
                   height: '82',
                   padding: '12px 18px',
-                  background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.04))',
-                  border: '1px solid rgba(139,92,246,0.32)',
+                  background: 'linear-gradient(135deg, #f1eaff, #ffffff)',
+                  border: '1px solid #bca6ef',
                   borderRadius: '8',
+                  boxShadow: '0 8px 18px rgba(109,40,217,0.08)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '4', width: '100%' }}>
-                  <span style={{ color: '#c4b5fd', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.cityRank)}</span>
-                  <span style={{ color: '#64748b', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.cityTotal)}</span>
+                  <span style={{ color: '#6d28d9', fontSize: rankValueFontSize, fontWeight: '800', lineHeight: '1' }}>#{formatNum(dev.cityRank)}</span>
+                  <span style={{ color: '#52667a', fontSize: rankTotalFontSize, whiteSpace: 'nowrap' }}>of {formatNum(dev.cityTotal)}</span>
                 </div>
-                <div style={{ display: 'flex', color: '#ddd6fe', fontSize: '11', fontWeight: '700', letterSpacing: '1.2' }}>IN {dev.city.toUpperCase()}</div>
+                <div style={{ display: 'flex', color: '#6d28d9', fontSize: '12', fontWeight: '700', letterSpacing: '0.8' }}>IN {dev.city.toUpperCase()}</div>
               </div>
             )}
           </div>}
@@ -371,6 +402,7 @@ export async function GET(request) {
               alignItems: 'center',
               gap: '16',
               marginBottom: '20',
+              width: '100%',
             }}
           >
             <div
@@ -393,7 +425,7 @@ export async function GET(request) {
               </div>
               <div
                 style={{
-                  color: '#64748b',
+                  color: '#52667a',
                   fontSize: '20',
                   display: 'flex',
                 }}
@@ -411,8 +443,8 @@ export async function GET(request) {
             >
               <div
                 style={{
-                  background: `${power.color}22`,
-                  border: `1px solid ${power.color}66`,
+                  background: `${power.color}18`,
+                  border: `1px solid ${power.color}99`,
                   borderRadius: '6',
                   padding: '4px 12px',
                   color: power.color,
@@ -423,6 +455,28 @@ export async function GET(request) {
                 }}
               >
                 {power.tier}-TIER · {power.label}
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginLeft: 'auto',
+                minWidth: '190',
+                padding: '9px 14px',
+                background: 'linear-gradient(135deg, #06b6d4, #087f8c)',
+                border: '1px solid #087f8c',
+                borderRadius: '8',
+                boxShadow: '0 10px 22px rgba(8,145,178,0.22)',
+              }}
+            >
+              <div style={{ display: 'flex', color: '#cffafe', fontSize: '11', fontWeight: '800', letterSpacing: '1.1', marginBottom: '3' }}>
+                OSS WORTH
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8' }}>
+                <span style={{ color: '#f8fafc', fontSize: '23', fontWeight: '800' }}>{formatUsd(ossWorth.totalDollarValue, true)}</span>
+                <span style={{ color: '#cffafe', fontSize: '11', fontWeight: '700' }}>{formatNum(ossWorth.totalCredits)} OSC</span>
               </div>
             </div>
           </div>
@@ -446,19 +500,20 @@ export async function GET(request) {
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: '#ffffff',
+                  border: '1px solid #cfdae5',
                   borderRadius: '8',
                   padding: '10px 14px',
                   minWidth: '120',
+                  boxShadow: '0 7px 16px rgba(16,42,67,0.07)',
                 }}
               >
                 <div
                   style={{
-                    color: '#64748b',
-                    fontSize: '11',
+                    color: '#52667a',
+                    fontSize: '12',
                     fontWeight: '600',
-                    letterSpacing: '1.5',
+                    letterSpacing: '1.1',
                     display: 'flex',
                     marginBottom: '4',
                   }}
@@ -486,12 +541,12 @@ export async function GET(request) {
                 alignItems: 'flex-start',
                 gap: '10',
                 marginTop: '14',
-                color: '#94a3b8',
+                color: '#52667a',
                 fontSize: '12',
                 lineHeight: '1.4',
               }}
             >
-              <div style={{ display: 'flex', flexShrink: '0', color: '#67e8f9', fontSize: '10', fontWeight: '800', letterSpacing: '1.4' }}>
+              <div style={{ display: 'flex', flexShrink: '0', color: '#087f8c', fontSize: '11', fontWeight: '800', letterSpacing: '1' }}>
                 AI TOOLKIT
               </div>
               <div style={{ display: 'flex', flex: '1' }}>
@@ -512,11 +567,11 @@ export async function GET(request) {
             >
               <div
                 style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: '#ffffff',
+                  border: '1px solid #cfdae5',
                   borderRadius: '20',
                   padding: '6px 14px',
-                  color: '#94a3b8',
+                  color: '#52667a',
                   fontSize: '13',
                   display: 'flex',
                 }}
@@ -555,13 +610,13 @@ export async function GET(request) {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0px 40px',
-            background: 'rgba(0,0,0,0.4)',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            background: '#102a43',
+            borderTop: '1px solid #234a68',
           }}
         >
           <div
             style={{
-              color: '#64748b',
+              color: '#d6e4ee',
               fontSize: '14',
               fontWeight: '600',
               display: 'flex',
@@ -572,10 +627,10 @@ export async function GET(request) {
             DEVGLOBE / OPEN SOURCE IDENTITY
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '18' }}>
-            <div style={{ color: '#22d3ee', fontSize: '13', fontWeight: '700', display: 'flex' }}>
+            <div style={{ color: '#67e8f9', fontSize: '13', fontWeight: '700', display: 'flex' }}>
               #buildinpublic
             </div>
-            <div style={{ color: '#475569', fontSize: '13', display: 'flex' }}>
+            <div style={{ color: '#b7cad8', fontSize: '13', display: 'flex' }}>
               {getSiteHostname()}
             </div>
           </div>
@@ -590,7 +645,7 @@ export async function GET(request) {
             width: '200',
             height: '200',
             borderRadius: '50%',
-            background: `radial-gradient(circle, ${agent.color}15 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${agent.color}2a 0%, transparent 70%)`,
             display: 'flex',
           }}
         />
@@ -599,6 +654,7 @@ export async function GET(request) {
     {
       width: 1200,
       height: 630,
+      fonts,
       headers: {
         'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
       },
