@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --vp-font-family-base: 'Manrope', sans-serif;
+  --vp-font-family-mono: 'IBM Plex Mono', monospace;
+  --vp-c-brand-1: #15803d;
+  --vp-c-brand-2: #16a34a;
+  --vp-c-brand-3: #22c55e;
+  --vp-c-brand-soft: rgba(34, 197, 94, 0.14);
+  --vp-home-hero-name-color: #15803d;
+  --vp-home-hero-image-background-image: none;
+  --vp-home-hero-image-filter: none;
+  --vp-c-bg-alt: #f3f7f5;
+}
+
+.dark {
+  --vp-c-bg: #09110f;
+  --vp-c-bg-alt: #0d1815;
+  --vp-c-bg-soft: #12201c;
+  --vp-c-bg-elv: #152620;
+  --vp-c-brand-1: #4ade80;
+  --vp-c-brand-2: #22c55e;
+  --vp-c-brand-3: #16a34a;
+  --vp-home-hero-name-color: #4ade80;
+}
+
+.VPHomeHero .name,
+.VPHomeHero .text,
+.VPHomeHero .tagline {
+  letter-spacing: 0;
+}
+
+.VPHomeHero .image-src {
+  width: min(220px, 46vw);
+  max-width: none;
+  max-height: none;
+}
+
+.VPFeature {
+  border-radius: 8px !important;
+}
+
+.vp-doc a:focus-visible,
+.VPNav a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--vp-c-brand-2);
+  outline-offset: 3px;
+}
+
+.vp-doc table {
+  display: table;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .vp-doc table {
+    display: block;
+    overflow-x: auto;
+  }
+}
