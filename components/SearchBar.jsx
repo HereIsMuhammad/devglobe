@@ -25,7 +25,7 @@ const SAMPLES_BY_MODE = {
   ],
 };
 
-export default function SearchBar({ developers, onResults, onReset, onGenerateCard, onSearchState, onOpenCardFeature, onOpenCompareFeature, compareCount = 0 }) {
+export default function SearchBar({ developers, onResults, onReset, onSelectDeveloper, onGenerateCard, onSearchState, onOpenCardFeature, onOpenCompareFeature, compareCount = 0 }) {
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState('text');
   const [topN, setTopN] = useState(50);
@@ -230,18 +230,25 @@ export default function SearchBar({ developers, onResults, onReset, onGenerateCa
           </div>
           {singleResult && (
             <div className="search-bar__card-suggestion">
-              <img src={singleResult.avatarUrl} alt="" />
-              <div className="search-bar__card-identity">
-                <strong>
-                  {singleResult.name || singleResult.login}
-                  <SpecialTags tags={singleResult.specialTags} compact />
-                </strong>
-                <span>
-                  @{singleResult.login}
-                  {singleResult.globalRank ? ` · Global #${singleResult.globalRank}` : ''}
+              <button
+                type="button"
+                className="search-bar__profile-result"
+                onClick={() => onSelectDeveloper(singleResult)}
+                aria-label={`Open ${singleResult.name || singleResult.login}'s profile`}
+              >
+                <img src={singleResult.avatarUrl} alt="" />
+                <span className="search-bar__card-identity">
+                  <strong>
+                    {singleResult.name || singleResult.login}
+                    <SpecialTags tags={singleResult.specialTags} compact />
+                  </strong>
+                  <span>
+                    @{singleResult.login}
+                    {singleResult.globalRank ? ` · Global #${singleResult.globalRank}` : ''}
+                  </span>
                 </span>
-              </div>
-              <button onClick={() => onGenerateCard(singleResult)}>
+              </button>
+              <button type="button" className="search-bar__card-action" onClick={() => onGenerateCard(singleResult)}>
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <circle cx="8.5" cy="8.5" r="1.5" />

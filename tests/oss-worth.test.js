@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {
   calculateOssWorth,
   compareOssWorth,
+  OSS_CREDITS_PER_DOLLAR,
   OSS_WORTH_FORMULA_VERSION,
-  OSS_WORTH_MAX_CREDITS,
 } from '../lib/oss-worth.js';
 
 test('zero inputs produce zero credits with unavailable Stack Overflow', () => {
@@ -12,43 +12,38 @@ test('zero inputs produce zero credits with unavailable Stack Overflow', () => {
 
   assert.equal(worth.formulaVersion, OSS_WORTH_FORMULA_VERSION);
   assert.equal(worth.totalCredits, 0);
+  assert.equal(worth.totalDollarValue, 0);
   assert.equal(worth.github.available, true);
   assert.equal(worth.stackoverflow.available, false);
 });
 
-test('reference caps produce the exact 60/40 maximum allocation', () => {
+test('GitHub uses the GitEstimate direct-value formula', () => {
   const worth = calculateOssWorth({
-    totalStars: 100_000,
-    totalCommits: 10_000,
-    totalForks: 25_000,
-    totalWatchers: 25_000,
-    followers: 25_000,
-    publicRepos: 100,
-    soUserId: 1,
-    soReputation: 100_000,
-    soAnswers: 1_000,
-    soAcceptRate: 100,
-    soBadges: 100,
+    totalCommits: 1_000,
+    followers: 200,
+    totalStars: 300,
   });
 
-  assert.equal(worth.github.credits, 600_000);
-  assert.equal(worth.stackoverflow.credits, 400_000);
-  assert.equal(worth.totalCredits, OSS_WORTH_MAX_CREDITS);
+  assert.equal(worth.github.dollarValue, 610);
+  assert.equal(worth.github.credits, 6_100);
+  assert.equal(worth.totalDollarValue, 610);
 });
 
-test('missing Stack Overflow data is not redistributed to GitHub', () => {
+test('Stack Overflow is valued separately and added to the total', () => {
   const worth = calculateOssWorth({
-    totalStars: 100_000,
-    totalCommits: 10_000,
-    totalForks: 50_000,
-    followers: 25_000,
-    publicRepos: 100,
+    totalCommits: 100,
+    followers: 20,
+    totalStars: 30,
+    soUserId: 1,
+    soAnswers: 40,
+    soReputation: 500,
+    soBadges: 10,
   });
 
-  assert.equal(worth.github.credits, 600_000);
-  assert.equal(worth.stackoverflow.available, false);
-  assert.equal(worth.stackoverflow.credits, 0);
-  assert.equal(worth.totalCredits, 600_000);
+  assert.equal(worth.github.dollarValue, 61);
+  assert.equal(worth.stackoverflow.dollarValue, 73);
+  assert.equal(worth.totalDollarValue, 134);
+  assert.equal(worth.totalCredits, 134 * OSS_CREDITS_PER_DOLLAR);
 });
 
 test('a linked all-zero Stack Overflow profile is available with zero credits', () => {
@@ -58,13 +53,13 @@ test('a linked all-zero Stack Overflow profile is available with zero credits', 
   assert.equal(worth.stackoverflow.credits, 0);
 });
 
-test('credits are monotonic and invalid inputs are clamped', () => {
-  const baseline = calculateOssWorth({ totalStars: 10, soUserId: 1, soAnswers: 10, soAcceptRate: 50 });
-  const increased = calculateOssWorth({ totalStars: 20, soUserId: 1, soAnswers: 10, soAcceptRate: 150 });
-  const invalid = calculateOssWorth({ totalStars: -1, totalCommits: Infinity, soUserId: 1, soAnswers: -10, soAcceptRate: NaN });
+test('direct values scale linearly and invalid inputs are clamped', () => {
+  const baseline = calculateOssWorth({ totalStars: 10, soUserId: 1, soAnswers: 10 });
+  const doubled = calculateOssWorth({ totalStars: 20, soUserId: 1, soAnswers: 20 });
+  const invalid = calculateOssWorth({ totalStars: -1, totalCommits: Infinity, soUserId: 1, soAnswers: -10, soReputation: NaN });
 
-  assert.ok(increased.github.credits >= baseline.github.credits);
-  assert.ok(increased.stackoverflow.credits >= baseline.stackoverflow.credits);
+  assert.equal(doubled.github.credits, baseline.github.credits * 2);
+  assert.equal(doubled.stackoverflow.credits, baseline.stackoverflow.credits * 2);
   assert.equal(invalid.github.credits, 0);
   assert.equal(invalid.stackoverflow.credits, 0);
 });
