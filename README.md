@@ -213,7 +213,7 @@ Required environment variables:
 | `EMAIL_FROM` | Sender on a domain verified by Resend |
 | `COSMOS_WATCHLIST_CONTAINER` | Optional private watchlist container name (default: `watchlists`) |
 | `COSMOS_IMPACT_HISTORY_CONTAINER` | Optional impact snapshot container name (default: `impact-history`) |
-| `CRON_SECRET` | Bearer token used by Vercel Cron for the weekly digest endpoint |
+| `CRON_SECRET` | Bearer token shared by protected cron endpoints and Azure Timer Functions |
 | `EMAIL_PREFERENCE_SECRET` | HMAC secret for weekly-email unsubscribe links; defaults to `SESSION_SECRET` |
 
 Lifecycle emails are transactional and best-effort. Claims use the verified primary email authorized through GitHub OAuth; self-nominations collect an explicitly consented notification address. Addresses are stored only in the private `developer-contacts` container and are never projected by public APIs or copied into developer documents. Create the container before deployment:
@@ -253,6 +253,19 @@ CRON_SECRET=the-same-secret-configured-in-vercel
 ```
 
 The timer resumes the current UTC day's capture in RU-bounded batches. Keep `IMPACT_HISTORY_CONCURRENCY` and `IMPACT_HISTORY_BATCH_SIZE` on the Vercel application because the Next.js endpoint performs the Cosmos work.
+
+### Email verification reminders
+
+The Azure Functions app invokes the protected reminder endpoint daily at 14:00 UTC. The application sends reminders only to unverified contacts who consented to transactional email and have not received a reminder in the previous 72 hours; verified contacts stop receiving reminders immediately.
+
+Configure these application settings on the Azure Function App:
+
+```env
+EMAIL_VERIFICATION_REMINDERS_URL=https://www.devglobe.dev/api/cron/email-verification-reminders
+CRON_SECRET=the-same-secret-configured-in-vercel
+```
+
+Deploy the complete `functions` directory so the timer and its `function.json` are included. Do not configure the same reminder schedule in Vercel, or each due batch may be invoked twice.
 
 ## 🤝 Contributing
 
