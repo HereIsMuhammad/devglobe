@@ -1,0 +1,82 @@
+{
+  "name": "devglobe-developer-discovery",
+  "displayName": "DevGlobe Developer Discovery",
+  "description": "Find developers, share your DevGlobe identity, and connect AI agents from VS Code.",
+  "version": "0.1.0",
+  "publisher": "devglobe",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "developers",
+    "discovery",
+    "github",
+    "mcp",
+    "agents"
+  ],
+  "homepage": "https://www.devglobe.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sajeetharan/devglobe.git",
+    "directory": "extensions/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/sajeetharan/devglobe/issues"
+  },
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "devglobe.searchDevelopers",
+        "title": "Find a Developer",
+        "category": "DevGlobe"
+      },
+      {
+        "command": "devglobe.openMyProfile",
+        "title": "Open My Profile",
+        "category": "DevGlobe"
+      },
+      {
+        "command": "devglobe.copyIdentityCardUrl",
+        "title": "Copy My Identity Card Link",
+        "category": "DevGlobe"
+      },
+      {
+        "command": "devglobe.copyMcpConfiguration",
+        "title": "Copy MCP Configuration",
+        "category": "DevGlobe"
+      },
+      {
+        "command": "devglobe.openAgentSetup",
+        "title": "Open Agent Setup",
+        "category": "DevGlobe"
+      }
+    ],
+    "configuration": {
+      "title": "DevGlobe",
+      "properties": {
+        "devglobe.githubLogin": {
+          "type": "string",
+          "default": "",
+          "description": "Your public GitHub login, used for profile and identity-card commands."
+        },
+        "devglobe.baseUrl": {
+          "type": "string",
+          "default": "https://www.devglobe.dev",
+          "description": "DevGlobe web origin. HTTPS is required except for localhost development."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/extension.js && node --check src/devglobe.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0"
+  }
+}
