@@ -1,0 +1,161 @@
+.page {
+  --agent-ink: #132019;
+  --agent-muted: #58665e;
+  --agent-line: #ccd8d0;
+  --agent-green: #087a4b;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    linear-gradient(rgba(19, 32, 25, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(19, 32, 25, 0.045) 1px, transparent 1px),
+    #f4f7f4;
+  background-size: 32px 32px;
+  color: var(--agent-ink);
+  font-family: var(--font);
+}
+
+.nav,
+.hero,
+.setup,
+.workflowSection,
+.boundary,
+.resources {
+  width: min(1120px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  border-bottom: 1px solid var(--agent-line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--agent-ink);
+  font-size: 18px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.brand img { width: 34px; height: 34px; object-fit: contain; }
+.navLinks { display: flex; gap: 24px; }
+.navLinks a, .resources a { color: var(--agent-ink); font-size: 13px; font-weight: 700; }
+
+.hero {
+  padding: 92px 0 72px;
+  border-bottom: 1px solid var(--agent-line);
+}
+
+.eyebrow {
+  color: var(--agent-green);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.hero h1 {
+  max-width: 850px;
+  margin: 18px 0;
+  font-size: clamp(44px, 6vw, 76px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.hero > p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--agent-muted);
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+.endpoint {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  max-width: 760px;
+  margin-top: 42px;
+  padding: 14px 16px;
+  border: 1px solid var(--agent-line);
+  background: #fff;
+}
+
+.endpoint span { color: var(--agent-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.endpoint code { overflow: hidden; color: var(--agent-ink); font-size: 14px; text-overflow: ellipsis; }
+.endpoint button, .configMeta button, .workflows button {
+  border: 0;
+  background: transparent;
+  color: var(--agent-green);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.setup, .workflowSection { padding: 72px 0; border-bottom: 1px solid var(--agent-line); }
+.sectionHeading { display: flex; gap: 22px; align-items: flex-start; margin-bottom: 28px; }
+.sectionHeading > span { color: var(--agent-green); font-family: monospace; font-size: 13px; }
+.sectionHeading h2 { margin: 0 0 5px; font-size: 30px; letter-spacing: 0; }
+.sectionHeading p { margin: 0; color: var(--agent-muted); }
+
+.clientPicker {
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid var(--agent-line);
+  background: #e7ede9;
+}
+
+.clientPicker button {
+  min-width: 108px;
+  padding: 10px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--agent-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.clientPicker .activeClient { background: #fff; color: var(--agent-ink); box-shadow: 0 1px 4px rgba(19, 32, 25, 0.12); }
+.configPanel { max-width: 820px; margin-top: 18px; border: 1px solid #26362d; background: #101a14; color: #d9ebe0; }
+.configMeta { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #304239; color: #91a69a; font-size: 12px; }
+.configMeta button { color: #6ce0a5; }
+.configPanel pre { min-height: 180px; margin: 0; overflow-x: auto; padding: 22px; font-size: 14px; line-height: 1.65; }
+.copyError { color: #b42318; font-size: 13px; }
+
+.workflows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--agent-line); border-left: 1px solid var(--agent-line); }
+.workflows article { min-height: 170px; padding: 24px; border-right: 1px solid var(--agent-line); border-bottom: 1px solid var(--agent-line); background: rgba(255, 255, 255, 0.62); }
+.workflows article > span { color: var(--agent-green); font-family: monospace; font-size: 11px; }
+.workflows p { min-height: 64px; margin: 18px 0; font-size: 16px; line-height: 1.5; }
+.workflows button { padding: 0; }
+
+.boundary { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 64px; padding: 72px 0; }
+.boundary h2 { max-width: 420px; margin: 12px 0 0; font-size: 34px; line-height: 1.15; letter-spacing: 0; }
+.boundary dl { margin: 0; border-top: 1px solid var(--agent-line); }
+.boundary dl div { padding: 18px 0; border-bottom: 1px solid var(--agent-line); }
+.boundary dt { font-size: 14px; font-weight: 800; }
+.boundary dd { margin: 5px 0 0; color: var(--agent-muted); font-size: 14px; line-height: 1.5; }
+
+.resources { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; padding: 24px 0 40px; border-top: 1px solid var(--agent-line); }
+.resources > span { margin-right: auto; color: var(--agent-muted); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+
+@media (max-width: 700px) {
+  .nav, .hero, .setup, .workflowSection, .boundary, .resources { width: min(100% - 28px, 1120px); }
+  .navLinks a:first-child { display: none; }
+  .hero { padding: 60px 0 48px; }
+  .hero h1 { font-size: 43px; }
+  .hero > p { font-size: 16px; }
+  .endpoint { grid-template-columns: 1fr auto; gap: 10px; }
+  .endpoint span { grid-column: 1 / -1; }
+  .clientPicker { display: grid; grid-template-columns: repeat(2, 1fr); width: 100%; }
+  .clientPicker button { min-width: 0; }
+  .workflows, .boundary { grid-template-columns: 1fr; }
+  .boundary { gap: 34px; }
+  .resources > span { width: 100%; }
+}

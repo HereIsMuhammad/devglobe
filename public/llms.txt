@@ -8,6 +8,8 @@
 - Source code: https://github.com/sajeetharan/devglobe
 - Sitemap: https://www.devglobe.dev/sitemap.xml
 - Remote MCP: https://www.devglobe.dev/mcp
+- Add to Agent: https://www.devglobe.dev/agents
+- MCP server card: https://www.devglobe.dev/.well-known/mcp/server-card.json
 - API catalog: https://www.devglobe.dev/.well-known/api-catalog
 - Agent Skills: https://www.devglobe.dev/.well-known/agent-skills/index.json
 - Authentication guide: https://www.devglobe.dev/auth.md
@@ -38,6 +40,7 @@
 - `request_introduction` and `get_introduction_status` require an issued agent bearer token.
 - Developers must explicitly opt in and approve each introduction.
 - Use MCP instead of scraping the visual website or internal API routes.
+- Discovery tools provide structured match explanations, public evidence, data freshness, and canonical profile URLs.
 
 ## Preferred citation
 

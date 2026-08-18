@@ -12,6 +12,13 @@ export function GET() {
         'service-doc': [
           { href: `${siteUrl}/docs/mcp-server`, type: 'text/markdown' },
         ],
+        describedby: [
+          { href: `${siteUrl}/.well-known/mcp/server-card.json`, type: 'application/json' },
+          { href: `${siteUrl}/.well-known/agent-skills/index.json`, type: 'application/json' },
+        ],
+        item: [
+          { href: `${siteUrl}/agents`, type: 'text/html', title: 'Add to Agent' },
+        ],
       },
     ],
   }, {

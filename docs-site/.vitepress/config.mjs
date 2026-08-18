@@ -39,6 +39,7 @@ export default defineConfig({
         items: [
           { text: 'Agent overview', link: '/agents/overview' },
           { text: 'MCP server', link: '/agents/mcp' },
+          { text: 'Agent workflows', link: '/agents/workflows' },
           { text: 'Agent Skill', link: '/agents/skills' },
           { text: 'Agent readiness', link: '/agents/readiness' },
         ],

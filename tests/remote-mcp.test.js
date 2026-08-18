@@ -46,6 +46,33 @@ test('remote MCP initializes and lists DevGlobe tools without a session', async 
     'request_introduction',
     'get_introduction_status',
   ]);
+  assert.equal(listing.result.tools[0].annotations.readOnlyHint, true);
+  assert.ok(listing.result.tools[0].outputSchema);
+  assert.equal(listing.result.tools[2].annotations.idempotentHint, false);
+});
+
+test('remote MCP advertises discovery metadata and records privacy-safe usage', async () => {
+  const metrics = [];
+  const request = mcpRequest({
+    jsonrpc: '2.0',
+    id: 8,
+    method: 'tools/call',
+    params: { name: 'search_developers', arguments: { query: 'private search wording' } },
+  });
+  const response = await handleRemoteMcpRequest(request, {
+    fetchImpl: async url => new URL(url).pathname === '/api/search'
+      ? Response.json({ results: [] })
+      : Response.json({}),
+    metricRecorder: metric => metrics.push(metric),
+  });
+
+  assert.match(response.headers.get('link'), /server-card\.json/);
+  assert.match(response.headers.get('link'), /agent-skills/);
+  assert.deepEqual(metrics[0].method, 'tools/call');
+  assert.deepEqual(metrics[0].tool, 'search_developers');
+  assert.equal(metrics[0].outcome, 'success');
+  assert.equal(metrics[0].resultCount, 0);
+  assert.doesNotMatch(JSON.stringify(metrics[0]), /private search wording/);
 });
 
 test('remote MCP performs anonymous public developer discovery', async () => {
@@ -72,6 +99,10 @@ test('remote MCP performs anonymous public developer discovery', async () => {
   }), { fetchImpl }));
   const developers = JSON.parse(response.result.content[0].text);
   assert.deepEqual(developers.map(developer => developer.login), ['open-dev']);
+  assert.equal(response.result.structuredContent.resultCount, 1);
+  assert.equal(response.result.structuredContent.results[0].profileUrl, 'http://localhost:3000/developer/open-dev');
+  assert.match(response.result.structuredContent.results[0].whyMatched[0], /React/);
+  assert.equal(response.result.structuredContent.results[0].availableForAgents, true);
 });
 
 test('remote MCP forwards bearer credentials for introduction tools', async () => {

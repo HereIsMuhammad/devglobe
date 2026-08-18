@@ -36,6 +36,12 @@ export default async function sitemap() {
       changeFrequency: 'daily',
       priority: 1,
     },
+    {
+      url: `${siteUrl}/agents`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
     ...profileLogins.map(login => ({
       url: `${siteUrl}/share/${encodeURIComponent(login)}`,
       changeFrequency: 'monthly',

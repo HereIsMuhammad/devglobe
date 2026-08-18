@@ -53,6 +53,14 @@ For consent-gated introduction tools, keep the issued token in the client's secu
 
 Search limits must remain between 1 and 20. Clients should surface structured tool errors and back off when rate-limited rather than retrying aggressively.
 
+Discovery tools return MCP `structuredContent` with stable schemas while retaining JSON text content for older clients. Search results include a canonical profile URL, match explanation, public evidence, freshness status, agent availability, and the DevGlobe methodology disclaimer.
+
+The endpoint advertises its [MCP server card](https://www.devglobe.dev/.well-known/mcp/server-card.json), documentation, and [Agent Skill index](https://www.devglobe.dev/.well-known/agent-skills/index.json) through HTTP `Link` headers.
+
+## Privacy-safe telemetry
+
+DevGlobe records the MCP method, known tool name, success or error outcome, latency, and aggregate result count. Raw prompts, search arguments, profile content, credentials, and private contact details are not included in usage events.
+
 ## Consent lifecycle
 
 1. An authenticated agent requests an introduction to an opted-in profile.

@@ -32,6 +32,8 @@ Skill installation differs by agent client. A generic flow is:
 4. Store the skill in the client's documented skills directory.
 5. Connect the [MCP server](./mcp) or provide an equivalent public API tool.
 
+Use the [workflow recipes](./workflows) to test search, evidence comparison, agent availability, and consent-gated introductions after installation.
+
 The skill contains workflow guidance, not credentials. Do not place bearer tokens in `SKILL.md`, source control, prompts, or chat history.
 
 ## Verification prompt
