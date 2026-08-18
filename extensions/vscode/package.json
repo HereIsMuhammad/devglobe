@@ -1,10 +1,16 @@
 {
   "name": "devglobe-developer-discovery",
-  "displayName": "DevGlobe Developer Discovery",
+  "displayName": "DevGlobe.dev Developer Discovery",
   "description": "Find developers, share your DevGlobe identity, and connect AI agents from VS Code.",
   "version": "0.1.0",
-  "publisher": "devglobe",
+  "publisher": "devglobedev",
   "license": "MIT",
+  "icon": "images/icon.png",
+  "pricing": "Free",
+  "galleryBanner": {
+    "color": "#080b10",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -31,40 +37,40 @@
   "contributes": {
     "commands": [
       {
-        "command": "devglobe.searchDevelopers",
+        "command": "devglobedev.searchDevelopers",
         "title": "Find a Developer",
-        "category": "DevGlobe"
+        "category": "DevGlobe.dev"
       },
       {
-        "command": "devglobe.openMyProfile",
+        "command": "devglobedev.openMyProfile",
         "title": "Open My Profile",
-        "category": "DevGlobe"
+        "category": "DevGlobe.dev"
       },
       {
-        "command": "devglobe.copyIdentityCardUrl",
+        "command": "devglobedev.copyIdentityCardUrl",
         "title": "Copy My Identity Card Link",
-        "category": "DevGlobe"
+        "category": "DevGlobe.dev"
       },
       {
-        "command": "devglobe.copyMcpConfiguration",
+        "command": "devglobedev.copyMcpConfiguration",
         "title": "Copy MCP Configuration",
-        "category": "DevGlobe"
+        "category": "DevGlobe.dev"
       },
       {
-        "command": "devglobe.openAgentSetup",
+        "command": "devglobedev.openAgentSetup",
         "title": "Open Agent Setup",
-        "category": "DevGlobe"
+        "category": "DevGlobe.dev"
       }
     ],
     "configuration": {
-      "title": "DevGlobe",
+      "title": "DevGlobe.dev",
       "properties": {
-        "devglobe.githubLogin": {
+        "devglobedev.githubLogin": {
           "type": "string",
           "default": "",
           "description": "Your public GitHub login, used for profile and identity-card commands."
         },
-        "devglobe.baseUrl": {
+        "devglobedev.baseUrl": {
           "type": "string",
           "default": "https://www.devglobe.dev",
           "description": "DevGlobe web origin. HTTPS is required except for localhost development."
