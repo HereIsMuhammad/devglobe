@@ -27,8 +27,8 @@ jobs:
           node-version: 22
           cache: npm
 
-        - name: Use repository npm version
-          run: npm install --global npm@11.14.1
+      - name: Use repository npm version
+        run: npm install --global npm@11.14.1
 
       - name: Install dependencies
         run: npm ci
