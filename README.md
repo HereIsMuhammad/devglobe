@@ -6,6 +6,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge&logo=vercel)](https://devglobe.dev)
 [![Documentation](https://img.shields.io/badge/Documentation-GitHub%20Pages-2ea44f?style=for-the-badge&logo=github)](https://sajeetharan.github.io/devglobe/)
+[![VS Code](https://img.shields.io/badge/VS%20Code-Install-007ACC?style=for-the-badge&logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=devglobedev.devglobe-developer-discovery)
 [![GitHub Stars](https://img.shields.io/github/stars/sajeetharan/devglobe?style=for-the-badge&logo=github)](https://github.com/sajeetharan/devglobe/stargazers)
 [![License](https://img.shields.io/github/license/sajeetharan/devglobe?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](CONTRIBUTING.md)
@@ -22,6 +23,8 @@ The dynamic application is hosted on [Vercel](https://www.devglobe.dev). Product
 
 > [!IMPORTANT]
 > **Connect an AI agent to DevGlobe:** MCP-compatible agents can use the hosted endpoint at `https://www.devglobe.dev/mcp` to search public developer profiles without credentials. Verified agents can also request developer-approved introductions. See the [MCP setup guide](docs/mcp-server.md).
+>
+> **Use DevGlobe in VS Code:** Install [DevGlobe.dev Developer Discovery](https://marketplace.visualstudio.com/items?itemName=devglobedev.devglobe-developer-discovery) to search profiles, share identity cards, and copy MCP configuration from the Command Palette.
 
 ## 🎬 Watch the DevGlobe Demo
 
@@ -43,6 +46,7 @@ The dynamic application is hosted on [Vercel](https://www.devglobe.dev). Product
 - **Leaderboard** — Filter by country, language, or sort by score/stars/commits
 - **Developer Profiles** — Click any pin to see detailed stats, top repos, and contribution breakdown
 - **Remote MCP Access** — Agents can discover developers and request consent-gated introductions through hosted tools
+- **VS Code Extension** — Search developers, open profiles, share identity cards, and configure MCP from the editor
 - **Mobile Responsive** — Bottom-sheet filters and full-width search on smaller screens
 
 ## 🚀 Quick Start
