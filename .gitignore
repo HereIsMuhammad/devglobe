@@ -11,6 +11,7 @@ data/github-so-geo.json
 data/fetch-progress.json
 data/geocode-cache.json
 data/pipeline.log
+data/activation-campaign.json
 app/promo/
 public/promo/
 *.log

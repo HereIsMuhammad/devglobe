@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { track } from '@vercel/analytics';
 import styles from './AddMeModal.module.css';
 
 const PENDING_CLAIM_KEY = 'devglobe-pending-claim';
@@ -60,6 +61,7 @@ export default function AddMeModal({ onClose, user, onVerify, verificationUserna
       }
       setUsername(data.username || clean);
       setStatus('success');
+      track('nomination_submitted');
     } catch (err) {
       setStatus('error');
       setError('Network error. Please try again.');
@@ -72,6 +74,7 @@ export default function AddMeModal({ onClose, user, onVerify, verificationUserna
     } catch { /* Continue with the current session when storage is unavailable. */ }
 
     if (!user) {
+      track('github_auth_started', { source: 'nomination_claim' });
       window.location.assign(`/api/auth/github?login=${encodeURIComponent(normalizedUsername)}`);
       return;
     }
@@ -80,6 +83,7 @@ export default function AddMeModal({ onClose, user, onVerify, verificationUserna
 
     setStatus('verifying');
     setError('');
+    track('claim_clicked', { source: 'nomination' });
     const result = await onVerify();
     if (!result?.ok) {
       setStatus('success');

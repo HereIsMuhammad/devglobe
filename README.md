@@ -226,6 +226,14 @@ See the [lifecycle email PRD](docs/prd/lifecycle-email-notifications.md).
 
 Verified users can explicitly opt in to a Monday weekly digest from the user menu. The digest includes current global and country rankings, rank movement since the previous digest, current DevGlobe features, and an Explore DevGlobe link. Vercel invokes `/api/cron/weekly-digest` at 13:00 UTC each Monday; only verified contacts with `productUpdatesEnabled: true` are eligible. Each message uses a per-user, per-week idempotency key and includes one-click unsubscribe headers and a signed unsubscribe link.
 
+Generate a manual-review activation queue and weekly social spotlight from public, unclaimed profiles:
+
+```bash
+npm run activation-campaign -- --limit=100 --output=data/activation-campaign.json
+```
+
+The command is read-only against Cosmos DB and never sends messages or retrieves private contact details. Review each draft before contacting a developer through an appropriate public channel.
+
 ### Live developer activity
 
 The Activity tab is anonymous and shows a rolling 24-hour feed for indexed developers. Create its dedicated Cosmos container before deployment:
