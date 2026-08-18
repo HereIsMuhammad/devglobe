@@ -490,16 +490,16 @@ export default function Home() {
         onClose={completeTour}
       />
       <a
-        className="product-hunt-badge"
-        href="https://www.producthunt.com/products/devglobe-2?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-devglobe-2"
+        className="spacerr-badge"
+        href="https://spacerrapps.com/apps/devglobe?utm_source=badge&amp;utm_medium=referral&amp;utm_campaign=featured"
         target="_blank"
         rel="noopener noreferrer"
       >
         <img
-          alt="DevGlobe - Discover top open source devs on an interactive 3D globe | Product Hunt"
-          width="250"
+          alt="DevGlobe is featured on Spacerr"
+          width="192"
           height="54"
-          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1216204&amp;theme=light&amp;t=1785998968385"
+          src="https://spacerrapps.com/badge/devglobe.svg?theme=dark"
         />
       </a>
       <main className="main">
