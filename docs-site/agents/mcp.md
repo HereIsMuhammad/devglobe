@@ -13,6 +13,8 @@ https://www.devglobe.dev/mcp
 
 ## VS Code configuration
 
+Install [DevGlobe.dev Developer Discovery](https://marketplace.visualstudio.com/items?itemName=devglobedev.devglobe-developer-discovery) and run **DevGlobe.dev: Copy MCP Configuration** from the Command Palette, or add the configuration manually.
+
 Public discovery requires no credentials:
 
 ```json

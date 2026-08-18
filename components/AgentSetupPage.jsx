@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import styles from './AgentSetupPage.module.css';
 
 const endpoint = 'https://www.devglobe.dev/mcp';
+const marketplaceUrl = 'https://marketplace.visualstudio.com/items?itemName=devglobedev.devglobe-developer-discovery';
 const clients = [
   {
     id: 'vscode',
@@ -95,6 +96,17 @@ export default function AgentSetupPage() {
         <span className={styles.eyebrow}>MCP DEVELOPER DISCOVERY</span>
         <h1>Give your agent a map of open-source expertise.</h1>
         <p>Connect once, then search 26,000+ public developer profiles by skill, language, location, and agent availability.</p>
+        <div className={styles.heroActions}>
+          <a
+            href={marketplaceUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => track('vscode_extension_install_clicked', { source: 'agent_setup' })}
+          >
+            Install for VS Code
+          </a>
+          <span>Search profiles and copy MCP setup directly from the Command Palette.</span>
+        </div>
         <div className={styles.endpoint}>
           <span>Streamable HTTP</span>
           <code>{endpoint}</code>

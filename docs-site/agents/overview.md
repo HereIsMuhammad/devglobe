@@ -9,9 +9,12 @@ DevGlobe publishes multiple machine-readable integration surfaces. Choose the na
 
 Start with the live [Add to Agent setup hub](https://www.devglobe.dev/agents) for client-specific configuration, then use the [workflow recipes](./workflows) to verify the connection.
 
+VS Code users can install [DevGlobe.dev Developer Discovery](https://marketplace.visualstudio.com/items?itemName=devglobedev.devglobe-developer-discovery) to search public profiles and copy the MCP configuration from the Command Palette.
+
 | Surface | Use it when |
 |---|---|
 | [Hosted MCP](./mcp) | The client supports Streamable HTTP MCP and needs structured tools |
+| [VS Code extension](https://marketplace.visualstudio.com/items?itemName=devglobedev.devglobe-developer-discovery) | A developer wants discovery and MCP setup inside the editor |
 | [Agent Skill](./skills) | The agent can load `SKILL.md` instructions and already has HTTP or MCP capability |
 | [WebMCP](./readiness#webmcp) | A supported preview browser is operating the live application |
 | [Public API](../reference/api) | You are building a direct HTTP integration |
