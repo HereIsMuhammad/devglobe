@@ -1,7 +1,10 @@
 'use client';
 
 import React from 'react';
+import { track } from '@vercel/analytics';
 import UserMenu from './UserMenu.jsx';
+
+const marketplaceUrl = 'https://marketplace.visualstudio.com/items?itemName=devglobedev.devglobe-developer-discovery';
 
 export default function Header({ onHome, theme, onToggleTheme, user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus, sidebarOpen, onToggleSidebar, activityOpen, onOpenActivity, onAddMe, onStartTour }) {
   return (
@@ -92,6 +95,21 @@ export default function Header({ onHome, theme, onToggleTheme, user, onLogout, o
             <path d="M12 8V4M9 4h6M2 14h2M20 14h2M9 13v2M15 13v2" />
           </svg>
           <span className="btn__label">Agents</span>
+        </a>
+        <a
+          href={marketplaceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn--extension"
+          aria-label="Install DevGlobe for VS Code"
+          title="Install DevGlobe for VS Code"
+          onClick={() => track('vscode_extension_install_clicked', { source: 'main_header' })}
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="14" rx="2" />
+            <path d="m8 9-2 2 2 2M12 13h4M9 21h6" />
+          </svg>
+          <span className="btn__label">VS Code</span>
         </a>
         <a href="https://github.com/sajeetharan/devglobe" target="_blank" rel="noreferrer" className="btn btn--star" aria-label="Star DevGlobe on GitHub" title="Star DevGlobe on GitHub">
           <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">

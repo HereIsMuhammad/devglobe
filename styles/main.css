@@ -292,6 +292,17 @@ body {
   border-color: #f472b6;
 }
 
+.btn--extension {
+  border: 1px solid rgba(0, 122, 204, 0.55);
+  background: rgba(0, 122, 204, 0.16);
+  color: #4db3f7;
+}
+
+.btn--extension:hover {
+  border-color: #4db3f7;
+  background: rgba(0, 122, 204, 0.26);
+}
+
 .btn--theme {
   display: inline-flex;
   align-items: center;
@@ -3394,6 +3405,10 @@ body {
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .btn--star,
+  .btn--sponsor {
+    display: none;
+  }
   .recent-activity {
     right: 304px;
     width: min(360px, calc(100vw - 328px));
