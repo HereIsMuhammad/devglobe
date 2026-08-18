@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { track } from '@vercel/analytics';
 
 export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, claimStatus }) {
   const [open, setOpen] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState('idle');
   const [digestPreference, setDigestPreference] = useState(null);
   const [digestStatus, setDigestStatus] = useState('idle');
+  const [inviteStatus, setInviteStatus] = useState('');
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -21,7 +23,10 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
 
   useEffect(() => {
     const status = new URLSearchParams(window.location.search).get('email_verification');
-    if (status === 'success') setVerificationStatus('verified');
+    if (status === 'success') {
+      setVerificationStatus('verified');
+      track('email_verified');
+    }
     if (status === 'invalid') setVerificationStatus('invalid');
   }, []);
 
@@ -47,6 +52,7 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Could not send verification email');
       setVerificationStatus(result.alreadyVerified ? 'verified' : 'sent');
+      track(result.alreadyVerified ? 'email_already_verified' : 'email_verification_requested');
     } catch {
       setVerificationStatus('error');
     }
@@ -69,9 +75,27 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
     }
   }
 
+  async function inviteDeveloper() {
+    const url = `${window.location.origin}/?ref=${encodeURIComponent(user.login)}`;
+    const text = 'Find your open-source profile, developer rank, and OSS Worth on DevGlobe.';
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Join me on DevGlobe', text, url });
+        setInviteStatus('Invite shared');
+        track('developer_invite_shared', { channel: 'native_share' });
+      } else {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        setInviteStatus('Invite copied');
+        track('developer_invite_shared', { channel: 'copy_link' });
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') setInviteStatus('Unable to share invite');
+    }
+  }
+
   if (!user) {
     return (
-      <a href="/api/auth/github" className="btn btn--signin" aria-label="Sign in with GitHub" title="Sign in with GitHub">
+      <a href="/api/auth/github" className="btn btn--signin" aria-label="Sign in with GitHub" title="Sign in with GitHub" onClick={() => track('github_auth_started', { source: 'header' })}>
         <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
         </svg>
@@ -108,12 +132,18 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
           </div>
           <div className="user-menu__divider" />
           {claimStatus === 'unclaimed' && (
-            <button className="user-menu__item" onClick={() => { onClaim(); setOpen(false); }}>
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-                <path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z" />
-              </svg>
-              Claim my profile
-            </button>
+            <>
+              <div className="user-menu__claim-benefits">
+                <strong>Make this profile yours</strong>
+                <span>Verified identity card, AI collaboration controls, impact history, and weekly rankings.</span>
+              </div>
+              <button className="user-menu__item" onClick={() => { track('claim_clicked', { source: 'user_menu' }); onClaim(); setOpen(false); }}>
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+                  <path d="M16 8A8 8 0 110 8a8 8 0 0116 0zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.06L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z" />
+                </svg>
+                Claim and unlock profile
+              </button>
+            </>
           )}
           {claimStatus === 'claimed' && (
             <>
@@ -140,6 +170,15 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
                 </svg>
                 Agent requests
               </button>
+              <button className="user-menu__item" onClick={inviteDeveloper}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M15 19a6 6 0 00-12 0" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M19 8v6M22 11h-6" />
+                </svg>
+                Invite a developer
+              </button>
+              {inviteStatus && <div className="user-menu__message" role="status">{inviteStatus}</div>}
               <button
                 className="user-menu__item"
                 onClick={requestEmailVerification}

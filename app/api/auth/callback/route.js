@@ -86,7 +86,9 @@ export async function GET(request) {
     const token = await createSessionToken(session);
     const cookie = buildSessionCookie(token);
 
-    const response = NextResponse.redirect(baseUrl);
+    const successUrl = new URL(baseUrl);
+    successUrl.searchParams.set('auth', 'success');
+    const response = NextResponse.redirect(successUrl);
     response.cookies.set(cookie);
     try {
       await saveActivities([createPlatformActivity({

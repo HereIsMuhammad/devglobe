@@ -34,6 +34,7 @@
     "create-agent-key": "node scripts/create-agent-key.js",
     "review-nominations": "node scripts/review-nominations.js",
     "send-nomination-email": "node scripts/send-nomination-approval-email.js",
+    "activation-campaign": "node scripts/generate-activation-campaign.js",
     "seed-emulator": "node scripts/seed-emulator.js"
   },
   "dependencies": {

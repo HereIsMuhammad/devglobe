@@ -20,6 +20,10 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
   const heatmapRef = useRef(null);
   const langRef = useRef(null);
 
+  useEffect(() => {
+    track('profile_viewed', { login: dev.login });
+  }, [dev.login]);
+
   const handleGenerateCard = () => {
     track('card_generated', { login: dev.login });
     onCardGenerated?.(dev.login);
@@ -705,19 +709,26 @@ function CardModal({ dev, claimSuccess, onClose }) {
       a.download = `devglobe-${login}.png`;
       a.click();
       URL.revokeObjectURL(url);
+      track('identity_card_downloaded', { login });
     } catch {
       setLoading(false);
       setError(true);
     }
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(shareUrl);
+    track('identity_card_shared', { login, channel: 'copy_link' });
   };
 
   const handleLinkedInShare = () => {
     navigator.clipboard?.writeText(linkedinCaption).then(() => setLinkedinCopied(true)).catch(() => {});
+    track('identity_card_shared', { login, channel: 'linkedin' });
     window.open(shareLinks.linkedin, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSocialShare = channel => {
+    track('identity_card_shared', { login, channel });
   };
 
   return (
@@ -786,12 +797,12 @@ function CardModal({ dev, claimSuccess, onClose }) {
 
         <div className="card-modal__share">
           <span className="card-modal__share-label">Share on:</span>
-          <a href={shareLinks.twitter} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--twitter" title="Share on X/Twitter">
+          <a href={shareLinks.twitter} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--twitter" title="Share on X/Twitter" onClick={() => handleSocialShare('twitter')}>
             <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor">
               <path d="M13.5 1h-3.7L8 3.6 6.2 1H2.5L6.6 6.5 2.3 13h1.7l2.5-3.2L9 13h4.2l-4.5-6.7L13.5 1zm-1.1 11h-1L4.5 2h1l6.9 10z" />
             </svg>
           </a>
-          <a href={shareLinks.facebook} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--facebook" title="Share on Facebook" aria-label="Share on Facebook">
+          <a href={shareLinks.facebook} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--facebook" title="Share on Facebook" aria-label="Share on Facebook" onClick={() => handleSocialShare('facebook')}>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
               <path d="M13.5 22v-9h3l.5-3.5h-3.5V7.25c0-1 .3-1.75 1.75-1.75H17V2.38A23.7 23.7 0 0014.44 2C11.9 2 10 3.55 10 6.4v3.1H7V13h3v9h3.5z" />
             </svg>
@@ -801,7 +812,7 @@ function CardModal({ dev, claimSuccess, onClose }) {
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
             </svg>
           </button>
-          <a href={shareLinks.reddit} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--reddit" title="Share on Reddit">
+          <a href={shareLinks.reddit} target="_blank" rel="noreferrer" className="card-modal__social card-modal__social--reddit" title="Share on Reddit" onClick={() => handleSocialShare('reddit')}>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
               <path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 00-.231.094.33.33 0 000 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 000-.463.327.327 0 00-.462 0c-.545.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 00-.205-.094z" />
             </svg>

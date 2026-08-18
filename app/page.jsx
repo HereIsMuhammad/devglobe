@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { track } from '@vercel/analytics';
 import Header from '../components/Header.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
@@ -70,6 +71,17 @@ export default function Home() {
     } catch { /* localStorage unavailable; leave the tour closed */ }
   }, []);
 
+  useEffect(() => {
+    const referrer = new URLSearchParams(window.location.search).get('ref')?.trim();
+    if (!referrer || !/^[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i.test(referrer)) return;
+    const key = `devglobe-referral-${referrer.toLowerCase()}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch { /* Analytics can still record the visit without session storage. */ }
+    track('referral_landing', { referrer: referrer.toLowerCase() });
+  }, []);
+
   // Fetch session on mount
   useEffect(() => {
     async function loadSession() {
@@ -78,6 +90,16 @@ export default function Home() {
         const data = await res.json();
         if (data.user) {
           setUser(data.user);
+          const url = new URL(window.location.href);
+          if (url.searchParams.get('auth') === 'success') {
+            let source = 'signin';
+            try {
+              if (localStorage.getItem(PENDING_CLAIM_KEY)) source = 'claim';
+            } catch { /* localStorage is optional for attribution. */ }
+            track('github_auth_completed', { source });
+            url.searchParams.delete('auth');
+            window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+          }
         }
       } catch { /* not authenticated */ }
     }
@@ -109,6 +131,7 @@ export default function Home() {
   }, [user]);
 
   const handleClaim = useCallback(async () => {
+    track('claim_started');
     try {
       const res = await fetch('/api/auth/claim', { method: 'POST' });
       if (res.ok) {
@@ -123,6 +146,7 @@ export default function Home() {
           return { ok: false, ...result };
         }
         setClaimStatus('claimed');
+        track('claim_completed', { profile_status: 'public' });
         setClaimedLogins(prev => new Set(prev).add(user.login));
         let claimedDeveloper = developers.find(developer => developer.login === user.login);
         // If a new profile was created, reload developers to include it
@@ -162,10 +186,12 @@ export default function Home() {
         return { ok: true, ...result };
       } else {
         const data = await res.json();
+        track('claim_failed', { reason: 'request_failed' });
         console.error('Claim failed:', data.error);
         return { ok: false, ...data };
       }
     } catch (err) {
+      track('claim_failed', { reason: 'network_error' });
       console.error('Claim error:', err);
       return { ok: false, error: err.message };
     }

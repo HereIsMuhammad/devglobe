@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { track } from '@vercel/analytics';
 import { formatNum, formatRelativeTime } from '../lib/format.js';
 import { useActivityFeed } from './useActivityFeed.js';
 import SpecialTags from './SpecialTags.jsx';
@@ -17,6 +18,11 @@ export default function DeveloperActivityPage({ login }) {
     newActivityIds,
     lastUpdated,
   } = useActivityFeed(login, { limit: 20 });
+
+  useEffect(() => {
+    const source = new URLSearchParams(window.location.search).get('utm_source') || 'direct';
+    track('profile_viewed', { login, source });
+  }, [login]);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,6 +44,12 @@ export default function DeveloperActivityPage({ login }) {
     load();
     return () => { cancelled = true; };
   }, [login]);
+
+  function claimProfile() {
+    try { localStorage.setItem('devglobe-pending-claim', login); } catch { /* OAuth can continue without persistence. */ }
+    track('claim_clicked', { source: 'developer_page' });
+    window.location.assign(`/api/auth/github?login=${encodeURIComponent(login)}`);
+  }
 
   return (
     <main className="activity-page">
@@ -65,6 +77,9 @@ export default function DeveloperActivityPage({ login }) {
                 <a href={developer.githubUrl || `https://github.com/${developer.login}`} target="_blank" rel="noopener noreferrer">GitHub profile</a>
                 {developer.soUserId && (
                   <a href={`https://stackoverflow.com/users/${developer.soUserId}`} target="_blank" rel="noopener noreferrer">Stack Overflow</a>
+                )}
+                {!developer.claimed && (
+                  <button type="button" onClick={claimProfile}>Claim this profile</button>
                 )}
               </div>
             </div>

@@ -1151,11 +1151,17 @@ body {
 .activity-page__brand img { width: 34px; height: 34px; object-fit: contain; }
 
 .activity-page__back,
+.activity-profile__links button,
 .activity-profile__links a {
   color: #22d3ee;
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
+}
+
+.activity-profile__links button {
+  cursor: pointer;
+  font: inherit;
 }
 
 .activity-page__back::before { content: '← '; }
@@ -3775,6 +3781,23 @@ body {
 
 .user-menu__item:hover {
   background: var(--overlay-hover);
+}
+
+.user-menu__claim-benefits {
+  display: grid;
+  gap: 3px;
+  padding: 8px 14px 6px;
+  color: var(--text-primary);
+}
+
+.user-menu__claim-benefits strong {
+  font-size: 12px;
+}
+
+.user-menu__claim-benefits span {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.4;
 }
 
 .user-menu__item--claimed {
