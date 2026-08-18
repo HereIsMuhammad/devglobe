@@ -1,6 +1,8 @@
-# DevGlobe Developer Discovery for VS Code
+# DevGlobe.dev Developer Discovery for VS Code
 
 Find public developer profiles, share your DevGlobe identity card, and connect AI agents without leaving VS Code.
+
+This extension connects exclusively to [devglobe.dev](https://www.devglobe.dev). It is not affiliated with `devglobe.app` or the `DevGlobe.devglobe` Marketplace extension.
 
 ## Commands
 
@@ -10,7 +12,7 @@ Find public developer profiles, share your DevGlobe identity card, and connect A
 - `DevGlobe: Copy MCP Configuration`
 - `DevGlobe: Open Agent Setup`
 
-Set `devglobe.githubLogin` in VS Code settings to enable personal profile and card commands. `devglobe.baseUrl` defaults to `https://www.devglobe.dev`.
+Set `devglobedev.githubLogin` in VS Code settings to enable personal profile and card commands. `devglobedev.baseUrl` defaults to `https://www.devglobe.dev`.
 
 ## Privacy
 
@@ -24,6 +26,8 @@ The extension makes a public API request only when you run a search command. It 
 4. Run a DevGlobe command in the Extension Development Host.
 
 Run `npm test` for helper tests and `npm run check` for JavaScript syntax checks.
+
+For help, see [SUPPORT.md](SUPPORT.md) or open a [GitHub issue](https://github.com/sajeetharan/devglobe/issues).
 
 ## Packaging
 

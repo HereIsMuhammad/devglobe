@@ -41,7 +41,7 @@ The extension contributes these commands:
 | `DevGlobe: Copy MCP Configuration` | Copies a VS Code-compatible Streamable HTTP server configuration. |
 | `DevGlobe: Open Agent Setup` | Opens the DevGlobe agent setup hub. |
 
-`devglobe.githubLogin` stores the user's public GitHub login in VS Code settings. `devglobe.baseUrl` defaults to `https://www.devglobe.dev` and supports local or staging environments.
+`devglobedev.githubLogin` stores the user's public GitHub login in VS Code settings. `devglobedev.baseUrl` defaults to `https://www.devglobe.dev` and supports local or staging environments. The `devglobedev.*` namespace avoids collisions with the unrelated `DevGlobe.devglobe` Marketplace extension.
 
 ## Architecture
 

@@ -11,7 +11,7 @@ const {
 } = require('./devglobe');
 
 function configuration() {
-  const settings = vscode.workspace.getConfiguration('devglobe');
+  const settings = vscode.workspace.getConfiguration('devglobedev');
   return {
     baseUrl: resolveBaseUrl(settings.get('baseUrl', 'https://www.devglobe.dev')),
     githubLogin: settings.get('githubLogin', ''),
@@ -32,11 +32,11 @@ async function configuredLogin() {
   if (githubLogin) return normalizeLogin(githubLogin);
 
   const action = await vscode.window.showWarningMessage(
-    'Set devglobe.githubLogin to use this command.',
+    'Set devglobedev.githubLogin to use this command.',
     'Open Settings',
   );
   if (action === 'Open Settings') {
-    await vscode.commands.executeCommand('workbench.action.openSettings', 'devglobe.githubLogin');
+    await vscode.commands.executeCommand('workbench.action.openSettings', 'devglobedev.githubLogin');
   }
   return null;
 }
@@ -109,12 +109,12 @@ function registerCommand(context, name, handler) {
 }
 
 function activate(context) {
-  registerCommand(context, 'devglobe.searchDevelopers', searchDevelopers);
-  registerCommand(context, 'devglobe.openMyProfile', async () => {
+  registerCommand(context, 'devglobedev.searchDevelopers', searchDevelopers);
+  registerCommand(context, 'devglobedev.openMyProfile', async () => {
     const login = await configuredLogin();
     if (login) await openExternal(profileUrl(configuration().baseUrl, login));
   });
-  registerCommand(context, 'devglobe.copyIdentityCardUrl', async () => {
+  registerCommand(context, 'devglobedev.copyIdentityCardUrl', async () => {
     const login = await configuredLogin();
     if (login) {
       await copyWithConfirmation(
@@ -123,10 +123,10 @@ function activate(context) {
       );
     }
   });
-  registerCommand(context, 'devglobe.copyMcpConfiguration', async () => {
+  registerCommand(context, 'devglobedev.copyMcpConfiguration', async () => {
     await copyWithConfirmation(mcpConfiguration(configuration().baseUrl), 'DevGlobe MCP configuration copied.');
   });
-  registerCommand(context, 'devglobe.openAgentSetup', async () => {
+  registerCommand(context, 'devglobedev.openAgentSetup', async () => {
     await openExternal(agentSetupUrl(configuration().baseUrl));
   });
 }
