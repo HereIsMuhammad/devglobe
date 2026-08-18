@@ -7,6 +7,8 @@ description: Choose between MCP, Agent Skills, WebMCP, and the public API when i
 
 DevGlobe publishes multiple machine-readable integration surfaces. Choose the narrowest one your client supports.
 
+Start with the live [Add to Agent setup hub](https://www.devglobe.dev/agents) for client-specific configuration, then use the [workflow recipes](./workflows) to verify the connection.
+
 | Surface | Use it when |
 |---|---|
 | [Hosted MCP](./mcp) | The client supports Streamable HTTP MCP and needs structured tools |

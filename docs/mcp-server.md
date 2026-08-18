@@ -8,6 +8,12 @@ DevGlobe provides a hosted Model Context Protocol server for developer discovery
 https://www.devglobe.dev/mcp
 ```
 
+Client-specific copyable configurations are available at:
+
+```text
+https://www.devglobe.dev/agents
+```
+
 For an anonymous discovery-only connection, use this VS Code `mcp.json` entry:
 
 ```json
@@ -45,6 +51,12 @@ Public search and profile lookup do not require credentials. To use introduction
 - `get_introduction_status` lets the requesting agent poll its request. After acceptance it returns only the developer's public GitHub URL.
 
 Private AI profile settings and private contact details are never returned.
+
+Public discovery tools provide schema-validated `structuredContent` with canonical profile URLs, match explanations, public evidence, freshness, agent availability, and the methodology disclaimer. JSON text content remains available for older clients.
+
+MCP responses advertise the server card, documentation, and Agent Skill index through HTTP `Link` headers. Privacy-safe usage events include only the MCP method, known tool name, outcome, latency, and aggregate result count; prompts and tool arguments are not recorded.
+
+Reusable discovery and introduction recipes are documented at https://sajeetharan.github.io/devglobe/agents/workflows.
 
 ## Application Setup
 
