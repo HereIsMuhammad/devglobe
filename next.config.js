@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   outputFileTracingIncludes: {
     '/api/card': ['./node_modules/@fontsource/manrope/files/manrope-latin-*-normal.woff'],
   },
@@ -15,16 +16,6 @@ const nextConfig = {
           },
           { key: 'Vary', value: 'Accept' },
         ],
-      },
-    ];
-  },
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'dev-globe-viz.vercel.app' }],
-        destination: 'https://www.devglobe.dev/:path*',
-        permanent: true,
       },
     ];
   },

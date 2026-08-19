@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { track } from '@vercel/analytics';
+import { track } from '../lib/analytics.js';
 import Header from '../components/Header.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
@@ -15,6 +15,7 @@ import IntroductionInboxModal from '../components/IntroductionInboxModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
 import PlatformActivityBanner from '../components/PlatformActivityBanner.jsx';
 import { prepareDeveloperDataset } from '../lib/developer-dataset.js';
+import { developerSnapshotUrl, publicApiUrl } from '../lib/public-api.js';
 import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
@@ -155,7 +156,7 @@ export default function Home() {
         let claimedDeveloper = developers.find(developer => developer.login === user.login);
         // If a new profile was created, reload developers to include it
         if (result.created || result.autoApproved) {
-          const devRes = await fetch('/api/developers', { cache: 'no-store' });
+          const devRes = await fetch(developerSnapshotUrl(), { cache: 'no-store' });
           if (devRes.ok) {
             const raw = await devRes.json();
             const scored = prepareDeveloperDataset(raw);
@@ -243,13 +244,12 @@ export default function Home() {
 
     async function loadData() {
       try {
-        fetch('/api/developers/count', { signal: AbortSignal.timeout(10000) })
+        fetch(publicApiUrl('/api/developers/count'), { signal: AbortSignal.timeout(10000) })
           .then(res => res.ok ? res.json() : null)
           .then(data => {
             if (Number.isInteger(data?.count)) setDatasetCount(data.count);
           })
           .catch(() => {});
-
         setLoadingStage('downloading');
         const firstRes = await fetch(`/api/developers?limit=${INITIAL_BATCH_SIZE}&offset=0`, { signal: AbortSignal.timeout(30000) });
         if (!firstRes.ok) throw new Error(`Failed to load data: ${firstRes.status}`);
