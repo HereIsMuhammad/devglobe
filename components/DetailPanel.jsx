@@ -14,16 +14,12 @@ import { resolveReadmeAccess } from '../lib/profile-readme.js';
 import SpecialTags from './SpecialTags.jsx';
 import ReadmeGeneratorModal from './ReadmeGeneratorModal.jsx';
 
-const PENDING_CLAIM_KEY = 'devglobe-pending-claim';
-const PENDING_README_KEY = 'devglobe-pending-readme';
-
 export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogins, user, onClaim, readmeRequest = 0, openCardOnMount = false, claimSuccess = false }) {
   const [fullData, setFullData] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const [showReadmeGenerator, setShowReadmeGenerator] = useState(false);
   const [followState, setFollowState] = useState('idle');
   const [followError, setFollowError] = useState('');
-  const [readmeClaiming, setReadmeClaiming] = useState(false);
   const radarRef = useRef(null);
   const heatmapRef = useRef(null);
   const langRef = useRef(null);
@@ -109,27 +105,9 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
   const readmeClaimed = Boolean(dev.claimed || claimedLogins?.has(dev.login) || claimedLogins?.has(dev.login.toLowerCase()));
   const readmeAccess = resolveReadmeAccess(dev, user, readmeClaimed);
 
-  const handleReadmeAccess = async () => {
-    if (readmeAccess === 'sign-in') {
-      try {
-        localStorage.setItem(PENDING_CLAIM_KEY, dev.login);
-        localStorage.setItem(PENDING_README_KEY, dev.login.toLowerCase());
-      } catch { /* OAuth can continue without persistence. */ }
-      track('github_auth_started', { source: 'profile_readme' });
-      window.location.assign(`/api/auth/github?login=${encodeURIComponent(dev.login)}`);
-      return;
-    }
-
-    if (readmeAccess === 'claim') {
-      setReadmeClaiming(true);
-      track('claim_clicked', { source: 'profile_readme' });
-      const result = await onClaim?.({ openCard: false });
-      setReadmeClaiming(false);
-      if (!result?.ok) return;
-    }
-
+  const handleReadmeAccess = () => {
     setShowReadmeGenerator(true);
-    track('profile_readme_opened', { login: dev.login });
+    track('profile_readme_opened', { login: dev.login, access: readmeAccess });
   };
 
   // Radar chart
@@ -237,19 +215,16 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
               )}
                 <Link href={`/developer/${encodeURIComponent(dev.login)}`}>Impact History</Link>
                 <a href={`/share/${encodeURIComponent(dev.login)}#get-your-badge`} target="_blank" rel="noopener noreferrer">Get Badge ↗</a>
-                {readmeAccess !== 'unavailable' && (
-                  <button
-                    type="button"
-                    className={`btn btn--readme${readmeAccess === 'generate' ? '' : ' btn--readme-locked'}`}
-                    onClick={handleReadmeAccess}
-                    disabled={readmeClaiming}
-                  >
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      {readmeAccess === 'generate' ? <><path d="M4 3h11l5 5v13H4z" /><path d="M14 3v6h6M8 13h8M8 17h6" /></> : <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>}
-                    </svg>
-                    {readmeClaiming ? 'Claiming profile...' : readmeAccess === 'sign-in' ? 'Sign in to generate README' : readmeAccess === 'claim' ? 'Claim profile to generate README' : 'Generate README'}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="btn btn--readme"
+                  onClick={handleReadmeAccess}
+                >
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4 3h11l5 5v13H4z" /><path d="M14 3v6h6M8 13h8M8 17h6" />
+                  </svg>
+                  {readmeAccess === 'generate' ? 'Generate README' : 'Preview README'}
+                </button>
                 <button
                 className="btn btn--share"
                 onClick={handleGenerateCard}
@@ -339,7 +314,13 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
         <CardModal dev={dev} claimSuccess={claimSuccess} onClose={() => setShowCard(false)} />
       )}
       {showReadmeGenerator && (
-        <ReadmeGeneratorModal developer={merged} onClose={() => setShowReadmeGenerator(false)} />
+        <ReadmeGeneratorModal
+          developer={merged}
+          access={readmeAccess}
+          viewerLogin={user?.login}
+          onClaim={onClaim}
+          onClose={() => setShowReadmeGenerator(false)}
+        />
       )}
     </div>
   );

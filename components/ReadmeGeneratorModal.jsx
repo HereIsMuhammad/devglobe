@@ -6,12 +6,16 @@ import { defaultReadmeAbout, generateProfileReadme } from '../lib/profile-readme
 
 const MODES = ['edit', 'source'];
 
-export default function ReadmeGeneratorModal({ developer, onClose }) {
+export default function ReadmeGeneratorModal({ developer, access = 'preview', viewerLogin, onClaim, onClose }) {
   const [about, setAbout] = useState(() => defaultReadmeAbout(developer));
-  const [mode, setMode] = useState('edit');
+  const [mode, setMode] = useState(access === 'generate' ? 'edit' : 'source');
   const [status, setStatus] = useState('');
+  const [claiming, setClaiming] = useState(false);
   const siteUrl = typeof window === 'undefined' ? 'https://www.devglobe.dev' : window.location.origin;
   const markdown = generateProfileReadme(developer, { about, siteUrl });
+  const canCustomize = access === 'generate';
+  const signedInAsDifferentUser = Boolean(viewerLogin && viewerLogin.toLowerCase() !== developer.login.toLowerCase());
+  const availableModes = canCustomize ? MODES : ['source'];
 
   useEffect(() => {
     const handleKeyDown = event => {
@@ -46,9 +50,23 @@ export default function ReadmeGeneratorModal({ developer, onClose }) {
     if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
     event.preventDefault();
     const direction = event.key === 'ArrowRight' ? 1 : -1;
-    const nextMode = MODES[(MODES.indexOf(mode) + direction + MODES.length) % MODES.length];
+    const nextMode = availableModes[(availableModes.indexOf(mode) + direction + availableModes.length) % availableModes.length];
     setMode(nextMode);
     document.getElementById(`readme-tab-${nextMode}`)?.focus();
+  }
+
+  async function requestCustomization() {
+    if (access === 'claim') {
+      setClaiming(true);
+      const result = await onClaim?.({ openCard: false });
+      setClaiming(false);
+      if (!result?.ok) setStatus('Unable to claim this profile right now.');
+      return;
+    }
+
+    try { localStorage.setItem('devglobe-pending-home-readme', developer.login); } catch { /* OAuth can continue without persistence. */ }
+    track('github_auth_started', { source: 'readme_preview' });
+    window.location.assign(`/api/auth/github?login=${encodeURIComponent(developer.login)}`);
   }
 
   return (
@@ -57,12 +75,14 @@ export default function ReadmeGeneratorModal({ developer, onClose }) {
         <button type="button" className="readme-modal__close" onClick={onClose} aria-label="Close README generator">&times;</button>
         <header className="readme-modal__header">
           <span>GITHUB PROFILE</span>
-          <h2 id="readme-modal-title">Generate README.md</h2>
-          <p>Customize the introduction, then add the generated file to your GitHub profile repository.</p>
+          <h2 id="readme-modal-title">{canCustomize ? 'Generate README.md' : `Preview @${developer.login}'s README.md`}</h2>
+          <p>{canCustomize
+            ? 'Customize the introduction, then add the generated file to your GitHub profile repository.'
+            : 'Preview, copy, or download the generated README before signing in. DevGlobe cannot modify your repositories.'}</p>
         </header>
 
         <div className="readme-modal__tabs" role="tablist" aria-label="README generator view">
-          <button type="button" id="readme-tab-edit" role="tab" aria-selected={mode === 'edit'} aria-controls="readme-panel-edit" tabIndex={mode === 'edit' ? 0 : -1} onClick={() => setMode('edit')} onKeyDown={handleTabKeyDown}>Edit profile</button>
+          {canCustomize && <button type="button" id="readme-tab-edit" role="tab" aria-selected={mode === 'edit'} aria-controls="readme-panel-edit" tabIndex={mode === 'edit' ? 0 : -1} onClick={() => setMode('edit')} onKeyDown={handleTabKeyDown}>Edit profile</button>}
           <button type="button" id="readme-tab-source" role="tab" aria-selected={mode === 'source'} aria-controls="readme-panel-source" tabIndex={mode === 'source' ? 0 : -1} onClick={() => setMode('source')} onKeyDown={handleTabKeyDown}>Markdown source</button>
         </div>
 
@@ -82,6 +102,13 @@ export default function ReadmeGeneratorModal({ developer, onClose }) {
 
         <footer className="readme-modal__footer">
           <span className="readme-modal__status" role="status" aria-live="polite">{status}</span>
+          {!canCustomize && (
+            <button type="button" className="readme-modal__action readme-modal__action--secondary" onClick={requestCustomization} disabled={claiming || signedInAsDifferentUser}>
+              {signedInAsDifferentUser
+                ? `Only @${developer.login} can customize`
+                : claiming ? 'Claiming...' : access === 'claim' ? 'Claim to customize' : 'Sign in to customize'}
+            </button>
+          )}
           <button type="button" className="readme-modal__action readme-modal__action--secondary" onClick={copyMarkdown}>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M15 9V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4" /></svg>
             Copy
