@@ -421,6 +421,7 @@ const Globe = forwardRef(function Globe({
 
     globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     reducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.innerWidth <= 768) globe.pointOfView({ altitude: 3 }, 0);
 
     const controls = globeEl.current?.controls();
     if (controls) {

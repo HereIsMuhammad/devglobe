@@ -350,19 +350,11 @@ export default function Home() {
     requestAnimationFrame(() => document.querySelector('#search-bar input')?.focus());
   }, [developers, handleGenerateCard, selectedDev, user]);
 
-  const handleOpenReadmeFeature = useCallback(() => {
-    if (!user) {
-      try { localStorage.setItem(PENDING_HOME_README_KEY, '1'); } catch { /* OAuth can continue without persistence. */ }
-      track('github_auth_started', { source: 'home_readme' });
-      window.location.assign('/api/auth/github');
-      return;
-    }
-    const developer = resolveIdentityCardDeveloper(null, user, developers);
-    const claimed = Boolean(
-      developer?.claimed || claimedLogins.has(user.login) || claimedLogins.has(user.login.toLowerCase())
-    );
-    if (!developer || !claimed) {
-      void handleClaim({ openCard: false, openReadme: true });
+  const handleOpenReadmeFeature = useCallback((requestedDeveloper) => {
+    const developer = requestedDeveloper || selectedDev || resolveIdentityCardDeveloper(null, user, developers);
+    if (!developer) {
+      setTourStep('search');
+      requestAnimationFrame(() => document.querySelector('#search-bar input')?.focus());
       return;
     }
     track('profile_readme_opened', { login: developer.login, source: 'home' });
@@ -371,16 +363,17 @@ export default function Home() {
     setSelectedDev(developer);
     setSidebarOpen(false);
     setReadmeRequest(request => request + 1);
-  }, [claimedLogins, developers, handleClaim, user]);
+  }, [developers, selectedDev, user]);
 
   // Resume a "Generate README" request started from the home menu before sign-in.
   useEffect(() => {
     if (!user || developers.length === 0) return;
-    let pending = false;
-    try { pending = localStorage.getItem(PENDING_HOME_README_KEY) === '1'; } catch { return; }
-    if (!pending) return;
+    let pendingLogin = '';
+    try { pendingLogin = localStorage.getItem(PENDING_HOME_README_KEY) || ''; } catch { return; }
+    if (!pendingLogin) return;
     try { localStorage.removeItem(PENDING_HOME_README_KEY); } catch { /* best-effort cleanup */ }
-    handleOpenReadmeFeature();
+    const developer = developers.find(candidate => candidate.login.toLowerCase() === pendingLogin.toLowerCase());
+    if (developer) handleOpenReadmeFeature(developer);
   }, [user, developers, handleOpenReadmeFeature]);
 
   const handleOpenCompareFeature = useCallback(() => {
@@ -561,13 +554,7 @@ export default function Home() {
         onSearchState={handleTourSearchState}
         onOpenCardFeature={handleOpenCardFeature}
         onOpenReadmeFeature={handleOpenReadmeFeature}
-        readmeTooltip={
-          !user
-            ? 'Sign in with GitHub to generate a README for your profile'
-            : claimStatus === 'claimed'
-              ? 'Generate a README for your GitHub profile'
-              : 'Claim your profile to generate your GitHub README'
-        }
+        readmeTooltip="Preview a generated GitHub profile README"
         onOpenCompareFeature={handleOpenCompareFeature}
         compareCount={compareDevs.length}
       />

@@ -103,10 +103,10 @@ test('defaultReadmeAbout creates a fallback and a login is required', () => {
   assert.throws(() => generateProfileReadme({}), /login is required/);
 });
 
-test('resolveReadmeAccess requires GitHub ownership and a claimed profile', () => {
+test('resolveReadmeAccess allows previews while reserving customization for claimed owners', () => {
   const dev = developer({ claimed: false });
-  assert.equal(resolveReadmeAccess(dev, null), 'sign-in');
-  assert.equal(resolveReadmeAccess(dev, { login: 'someone-else' }), 'unavailable');
+  assert.equal(resolveReadmeAccess(dev, null), 'preview');
+  assert.equal(resolveReadmeAccess(dev, { login: 'someone-else' }), 'preview');
   assert.equal(resolveReadmeAccess(dev, { login: 'OCTO-DEV' }), 'claim');
   assert.equal(resolveReadmeAccess(dev, { login: 'octo-dev' }, true), 'generate');
   assert.equal(resolveReadmeAccess({ ...dev, claimed: true }, { login: 'octo-dev' }), 'generate');

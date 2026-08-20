@@ -207,7 +207,7 @@ export default function SearchBar({ developers, onResults, onReset, onSelectDeve
           <button
             type="button"
             className="feature-action feature-action--readme"
-            onClick={onOpenReadmeFeature}
+            onClick={() => onOpenReadmeFeature(singleResult)}
             aria-label={readmeTooltip}
             title={readmeTooltip}
           >
@@ -263,14 +263,22 @@ export default function SearchBar({ developers, onResults, onReset, onSelectDeve
                   </span>
                 </span>
               </button>
-              <button type="button" className="search-bar__card-action" onClick={() => onGenerateCard(singleResult)}>
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <path d="M21 15l-5-5L5 21" />
-                </svg>
-                Generate Card
-              </button>
+              <span className="search-bar__card-actions">
+                <button type="button" className="search-bar__card-action search-bar__card-action--readme" onClick={() => onOpenReadmeFeature(singleResult)}>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M4 3h11l5 5v13H4z" /><path d="M14 3v6h6M8 13h8M8 17h6" />
+                  </svg>
+                  Preview README
+                </button>
+                <button type="button" className="search-bar__card-action" onClick={() => onGenerateCard(singleResult)}>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                  Generate Card
+                </button>
+              </span>
             </div>
           )}
         </div>
