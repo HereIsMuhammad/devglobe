@@ -2,6 +2,28 @@
 
 import { useEffect, useState } from 'react';
 
+const OPPORTUNITY_LABELS = {
+  employment: 'Full-time roles',
+  contract: 'Contract work',
+  'open-source': 'Open source',
+  speaking: 'Speaking',
+  mentoring: 'Mentoring',
+  remote: 'Remote',
+  hybrid: 'Hybrid',
+  onsite: 'On-site',
+};
+
+function expiryFromNow(days) {
+  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+}
+
+function expiryDuration(expiresAt) {
+  const days = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+  if (days <= 7 && days > 0) return '7';
+  if (days <= 30 && days > 0) return '30';
+  return '90';
+}
+
 export default function AiProfileModal({ onClose, onSaved }) {
   const [profile, setProfile] = useState(null);
   const [options, setOptions] = useState(null);
@@ -47,6 +69,41 @@ export default function AiProfileModal({ onClose, onSaved }) {
       ...current,
       tools: current.tools.map(tool => tool.id === id ? { ...tool, usage } : tool),
     }));
+  };
+
+  const opportunity = profile?.opportunityPreferences || { enabled: false };
+
+  const setOpportunity = changes => {
+    setProfile(current => ({
+      ...current,
+      opportunityPreferences: { ...(current.opportunityPreferences || { enabled: false }), ...changes },
+    }));
+  };
+
+  const enableOpportunities = enabled => {
+    setProfile(current => ({
+      ...current,
+      visibility: enabled ? 'public' : current.visibility,
+      acceptsAgentRequests: enabled ? true : current.acceptsAgentRequests,
+      contactPolicy: enabled ? 'verified-agents' : current.contactPolicy,
+      opportunityPreferences: enabled ? {
+        enabled: true,
+        types: current.opportunityPreferences?.types?.length ? current.opportunityPreferences.types : ['employment'],
+        roles: current.opportunityPreferences?.roles || [],
+        locations: current.opportunityPreferences?.locations || [],
+        workModes: current.opportunityPreferences?.workModes?.length ? current.opportunityPreferences.workModes : ['remote'],
+        expiresAt: expiryFromNow(30),
+      } : { enabled: false },
+    }));
+  };
+
+  const toggleOpportunityValue = (field, value) => {
+    const values = opportunity[field] || [];
+    setOpportunity({ [field]: values.includes(value) ? values.filter(item => item !== value) : [...values, value] });
+  };
+
+  const updateTextList = (field, value) => {
+    setOpportunity({ [field]: value.split(',').map(item => item.trim()).filter(Boolean).slice(0, 10) });
   };
 
   const save = async event => {
@@ -124,6 +181,64 @@ export default function AiProfileModal({ onClose, onSaved }) {
                   }))}
                 />
               </label>
+            </fieldset>
+
+            <fieldset className="ai-profile-modal__fieldset">
+              <legend>Opportunity agent</legend>
+              <p>Let verified agents find you for relevant opportunities. Every introduction still requires your approval.</p>
+              <label className="ai-profile-modal__row">
+                <span><strong>Open to opportunities</strong><small>Publishes these preferences until they expire. Private contact details are never shared.</small></span>
+                <input type="checkbox" checked={opportunity.enabled} onChange={event => enableOpportunities(event.target.checked)} />
+              </label>
+
+              {opportunity.enabled && (
+                <div className="opportunity-editor">
+                  <div className="opportunity-editor__group">
+                    <strong>Opportunity types</strong>
+                    <div className="opportunity-editor__choices">
+                      {options.opportunityTypes.map(type => (
+                        <label key={type}>
+                          <input type="checkbox" checked={opportunity.types?.includes(type) || false} onChange={() => toggleOpportunityValue('types', type)} />
+                          <span>{OPPORTUNITY_LABELS[type]}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <label className="opportunity-editor__field">
+                    <strong>Desired roles or keywords</strong>
+                    <input type="text" value={(opportunity.roles || []).join(', ')} onChange={event => updateTextList('roles', event.target.value)} placeholder="Staff engineer, TypeScript, Azure" />
+                    <small>Separate up to 10 values with commas.</small>
+                  </label>
+
+                  <div className="opportunity-editor__group">
+                    <strong>Work modes</strong>
+                    <div className="opportunity-editor__choices">
+                      {options.opportunityWorkModes.map(mode => (
+                        <label key={mode}>
+                          <input type="checkbox" checked={opportunity.workModes?.includes(mode) || false} onChange={() => toggleOpportunityValue('workModes', mode)} />
+                          <span>{OPPORTUNITY_LABELS[mode]}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <label className="opportunity-editor__field">
+                    <strong>Preferred locations</strong>
+                    <input type="text" value={(opportunity.locations || []).join(', ')} onChange={event => updateTextList('locations', event.target.value)} placeholder="Colombo, London" />
+                    <small>Optional for remote-only opportunities.</small>
+                  </label>
+
+                  <label className="opportunity-editor__field">
+                    <strong>Keep this signal active for</strong>
+                    <select value={expiryDuration(opportunity.expiresAt)} onChange={event => setOpportunity({ expiresAt: expiryFromNow(Number(event.target.value)) })}>
+                      <option value="7">7 days</option>
+                      <option value="30">30 days</option>
+                      <option value="90">90 days</option>
+                    </select>
+                  </label>
+                </div>
+              )}
             </fieldset>
 
             {error && <div className="ai-profile-modal__error">{error}</div>}

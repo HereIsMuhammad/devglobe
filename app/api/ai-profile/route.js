@@ -6,6 +6,8 @@ import {
   AI_PROFILE_VISIBILITIES,
   AI_TOOLS,
   AI_USAGE_LEVELS,
+  OPPORTUNITY_TYPES,
+  OPPORTUNITY_WORK_MODES,
   AiProfileValidationError,
   normalizeAiProfile,
 } from '../../../lib/ai-profile.js';
@@ -20,6 +22,7 @@ const DEFAULT_PROFILE = {
   acceptsAgentRequests: false,
   visibility: 'private',
   contactPolicy: 'nobody',
+  opportunityPreferences: { enabled: false },
 };
 
 function settingsResponse(profile, options) {
@@ -30,6 +33,8 @@ function settingsResponse(profile, options) {
       usageLevels: AI_USAGE_LEVELS,
       visibilities: AI_PROFILE_VISIBILITIES,
       contactPolicies: AI_CONTACT_POLICIES,
+      opportunityTypes: OPPORTUNITY_TYPES,
+      opportunityWorkModes: OPPORTUNITY_WORK_MODES,
     },
   }, options);
 }
