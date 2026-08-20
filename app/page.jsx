@@ -16,6 +16,7 @@ import QuickTour from '../components/QuickTour.jsx';
 import PlatformActivityBanner from '../components/PlatformActivityBanner.jsx';
 import { prepareDeveloperDataset } from '../lib/developer-dataset.js';
 import { developerSnapshotUrl, publicApiUrl } from '../lib/public-api.js';
+import { resolveIdentityCardDeveloper } from '../lib/home-actions.js';
 import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
@@ -24,6 +25,7 @@ const PENDING_CLAIM_KEY = 'devglobe-pending-claim';
 // then progressively fetch the rest in the background instead of one huge payload.
 const INITIAL_BATCH_SIZE = 500;
 const BACKGROUND_BATCH_SIZE = 500;
+const PENDING_README_KEY = 'devglobe-pending-readme';
 let cachedDeveloperDataset = null;
 
 export default function Home() {
@@ -44,6 +46,7 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarView, setSidebarView] = useState('leaderboard');
   const [cardRequest, setCardRequest] = useState(0);
+  const [readmeRequest, setReadmeRequest] = useState(0);
   const [cardContext, setCardContext] = useState(null);
   const [showAddMe, setShowAddMe] = useState(false);
   const [verificationUsername, setVerificationUsername] = useState('');
@@ -91,7 +94,7 @@ export default function Home() {
   useEffect(() => {
     async function loadSession() {
       try {
-        const res = await fetch('/api/auth/session');
+        const res = await fetch('/api/auth/session', { cache: 'no-store', credentials: 'same-origin' });
         const data = await res.json();
         if (data.user) {
           setUser(data.user);
@@ -135,7 +138,7 @@ export default function Home() {
     setSelectedDev(current => current?.login === user?.login ? { ...current, aiProfile } : current);
   }, [user]);
 
-  const handleClaim = useCallback(async () => {
+  const handleClaim = useCallback(async ({ openCard = true, openReadme = false } = {}) => {
     track('claim_started');
     try {
       const res = await fetch('/api/auth/claim', { method: 'POST' });
@@ -185,8 +188,11 @@ export default function Home() {
           claimed: true,
         };
         setSelectedDev(claimedDeveloper);
-        setCardContext('claim');
-        setCardRequest(request => request + 1);
+        if (openCard) {
+          setCardContext('claim');
+          setCardRequest(request => request + 1);
+        }
+        if (openReadme) setReadmeRequest(request => request + 1);
         setSidebarOpen(false);
         return { ok: true, ...result };
       } else {
@@ -214,8 +220,10 @@ export default function Home() {
       return;
     }
 
+    const openReadme = localStorage.getItem(PENDING_README_KEY) === pendingUsername.toLowerCase();
     localStorage.removeItem(PENDING_CLAIM_KEY);
-    void handleClaim();
+    localStorage.removeItem(PENDING_README_KEY);
+    void handleClaim({ openCard: !openReadme, openReadme });
   }, [user, handleClaim]);
 
   const handleToggleTheme = useCallback(() => {
@@ -332,12 +340,13 @@ export default function Home() {
   }, [developers, recordCardActivity]);
 
   const handleOpenCardFeature = useCallback(() => {
-    const developer = selectedDev || (user ? developers.find(item => item.login === user.login) : null);
+    const developer = resolveIdentityCardDeveloper(selectedDev, user, developers);
     if (developer) {
       handleGenerateCard(developer);
       return;
     }
-    document.querySelector('#search-bar input')?.focus();
+    setTourStep('search');
+    requestAnimationFrame(() => document.querySelector('#search-bar input')?.focus());
   }, [developers, handleGenerateCard, selectedDev, user]);
 
   const handleOpenCompareFeature = useCallback(() => {
@@ -582,6 +591,8 @@ export default function Home() {
             onCardGenerated={recordCardActivity}
             claimedLogins={claimedLogins}
             user={user}
+            onClaim={handleClaim}
+            readmeRequest={readmeRequest}
             openCardOnMount={cardRequest > 0}
             claimSuccess={cardContext === 'claim'}
           />
