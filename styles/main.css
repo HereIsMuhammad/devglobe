@@ -106,21 +106,11 @@ body {
 .header__title {
   font-size: 18px;
   font-weight: 700;
+  flex-shrink: 0;
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.header__subtitle {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 400;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .header__actions {
@@ -3722,6 +3712,10 @@ body {
 }
 
 @media (max-width: 480px) {
+  .header__actions .btn--docs,
+  .header__actions .btn--extension {
+    display: none;
+  }
   .oss-worth__cards {
     grid-template-columns: 1fr;
   }
@@ -3891,15 +3885,6 @@ body {
 .user-menu__login {
   font-size: 12px;
   color: var(--text-secondary);
-}
-
-@media (max-width: 380px) {
-  .header__title {
-    display: none;
-  }
-  .header__brand {
-    flex: 0 1 auto;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4807,10 +4792,6 @@ body {
 }
 
 @media (max-width: 620px) {
-  .header__subtitle {
-    display: none;
-  }
-
   .ai-profile-modal {
     padding: 22px 16px;
   }
@@ -5051,35 +5032,6 @@ body {
   font-size: 11px;
 }
 
-.card-modal__share-label {
-  margin-left: 4px;
-  font-size: 11px;
-  color: var(--text-secondary);
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.card-modal__linkedin {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 38px;
-  padding: 8px 13px;
-  border: 1px solid #0a66c2;
-  border-radius: 6px;
-  background: #0a66c2;
-  color: #fff;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 650;
-  cursor: pointer;
-}
-
-.card-modal__linkedin:hover {
-  background: #084f96;
-}
-
 .card-modal__social {
   display: flex;
   align-items: center;
@@ -5095,6 +5047,14 @@ body {
 
 .card-modal__social:hover {
   transform: translateY(-2px);
+}
+
+.card-modal__social--linkedin {
+  color: #0a66c2;
+}
+.card-modal__social--linkedin:hover {
+  background: rgba(10, 102, 194, 0.12);
+  border-color: rgba(10, 102, 194, 0.4);
 }
 
 .card-modal__social--twitter {
