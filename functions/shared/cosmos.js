@@ -42,12 +42,34 @@ function getContainer(name = process.env.COSMOS_CONTAINER || 'developers') {
 
 function publicAiProfile(profile) {
   if (!profile || profile.visibility !== 'public') return undefined;
+  const opportunity = profile.opportunityPreferences;
+  const opportunityExpiresAt = Date.parse(opportunity?.expiresAt);
+  const activeOpportunity = opportunity?.enabled === true
+    && profile.acceptsAgentRequests === true
+    && profile.contactPolicy === 'verified-agents'
+    && Number.isFinite(opportunityExpiresAt)
+    && opportunityExpiresAt > Date.now()
+    && Array.isArray(opportunity.types)
+    && Array.isArray(opportunity.roles)
+    && Array.isArray(opportunity.locations)
+    && Array.isArray(opportunity.workModes)
+    ? {
+        enabled: true,
+        types: opportunity.types,
+        roles: opportunity.roles,
+        locations: opportunity.locations,
+        workModes: opportunity.workModes,
+        expiresAt: new Date(opportunityExpiresAt).toISOString(),
+        source: 'self-declared',
+      }
+    : undefined;
   return {
     tools: Array.isArray(profile.tools) ? profile.tools.map(tool => ({ id: tool.id, usage: tool.usage, source: 'self-declared' })) : [],
     acceptsAgentRequests: profile.acceptsAgentRequests === true,
     visibility: 'public',
     contactPolicy: profile.acceptsAgentRequests === true ? profile.contactPolicy : 'nobody',
     updatedAt: profile.updatedAt,
+    ...(activeOpportunity ? { opportunityPreferences: activeOpportunity } : {}),
   };
 }
 
@@ -61,4 +83,4 @@ function projectDeveloper(developer) {
   };
 }
 
-module.exports = { PUBLIC_FILTER, environmentValue, getContainer, projectDeveloper };
+module.exports = { PUBLIC_FILTER, environmentValue, getContainer, projectDeveloper, publicAiProfile };

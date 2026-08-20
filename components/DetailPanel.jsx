@@ -329,6 +329,11 @@ export default function DetailPanel({ dev, onClose, onCardGenerated, claimedLogi
 function AiCollaborationProfile({ dev, profile }) {
   const [shareStatus, setShareStatus] = useState('');
   const toolNames = new Map(AI_TOOLS.map(tool => [tool.id, tool.name]));
+  const opportunity = profile.opportunityPreferences;
+  const opportunityLabels = {
+    employment: 'Full-time', contract: 'Contract', 'open-source': 'Open source', speaking: 'Speaking', mentoring: 'Mentoring',
+    remote: 'Remote', hybrid: 'Hybrid', onsite: 'On-site',
+  };
 
   const shareAgentProfile = async () => {
     const tools = profile.tools.map(tool => toolNames.get(tool.id) || tool.id).join(' · ');
@@ -368,6 +373,20 @@ function AiCollaborationProfile({ dev, profile }) {
         </div>
       ) : (
         <p className="ai-collaboration__empty">No AI tools listed.</p>
+      )}
+      {opportunity && (
+        <div className="opportunity-signal">
+          <div className="opportunity-signal__title">
+            <strong>Open to opportunities</strong>
+            <span>Until {new Date(opportunity.expiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          </div>
+          <div className="opportunity-signal__tags">
+            {opportunity.types.map(type => <span key={type}>{opportunityLabels[type] || type}</span>)}
+            {opportunity.workModes.map(mode => <span key={mode}>{opportunityLabels[mode] || mode}</span>)}
+          </div>
+          {opportunity.roles.length > 0 && <p><strong>Interested in:</strong> {opportunity.roles.join(' · ')}</p>}
+          {opportunity.locations.length > 0 && <p><strong>Locations:</strong> {opportunity.locations.join(' · ')}</p>}
+        </div>
       )}
       {profile.acceptsAgentRequests && (
         <>

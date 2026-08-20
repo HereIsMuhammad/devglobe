@@ -28,6 +28,7 @@ Rankings are comparative discovery signals, not measures of personal worth. Pres
 ## Request an introduction
 
 1. Search for opted-in developers.
+	When the user has a specific opportunity, pass `opportunityType` so results include only developers with a current matching signal.
 2. Present candidates and public evidence to the user.
 3. Ask the user to approve the developer, project, and reason.
 4. Call `request_introduction` with an issued credential.

@@ -77,6 +77,35 @@ test('MCP client filters hydrated public profiles by agent availability', async 
   assert.deepEqual(results.map(result => result.login), ['open-dev']);
 });
 
+test('MCP client filters and explains active opportunity matches', async () => {
+  const opportunityPreferences = {
+    enabled: true,
+    types: ['employment', 'contract'],
+    roles: ['Staff engineer'],
+    locations: ['Colombo'],
+    workModes: ['remote'],
+    expiresAt: '2026-09-19T12:00:00.000Z',
+    source: 'self-declared',
+  };
+  const responses = new Map([
+    ['/api/search', { results: [{ login: 'job-seeker' }, { login: 'oss-only' }] }],
+    ['/api/developer?id=job-seeker', { login: 'job-seeker', aiProfile: { acceptsAgentRequests: true, opportunityPreferences } }],
+    ['/api/developer?id=oss-only', { login: 'oss-only', aiProfile: { acceptsAgentRequests: true, opportunityPreferences: { ...opportunityPreferences, types: ['open-source'] } } }],
+  ]);
+  const fetchImpl = async url => {
+    const parsed = new URL(url);
+    const key = parsed.pathname === '/api/search' ? parsed.pathname : `${parsed.pathname}?${parsed.searchParams}`;
+    return new Response(JSON.stringify(responses.get(key)), { status: 200 });
+  };
+  const client = createDevGlobeMcpClient({ baseUrl: 'http://localhost:3000', fetchImpl });
+
+  const results = await client.searchDevelopers({ query: 'TypeScript', opportunityType: 'employment', limit: 10 });
+
+  assert.deepEqual(results.map(result => result.login), ['job-seeker']);
+  assert.deepEqual(results[0].opportunityPreferences, opportunityPreferences);
+  assert.ok(results[0].whyMatched.includes('Developer is actively open to employment opportunities'));
+});
+
 test('MCP client requires an issued token for introductions', async () => {
   const client = createDevGlobeMcpClient({ baseUrl: 'https://devglobe.dev', fetchImpl: () => {} });
   await assert.rejects(() => client.requestIntroduction({}), /DEVGLOBE_AGENT_TOKEN/);

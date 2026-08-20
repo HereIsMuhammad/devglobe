@@ -24,6 +24,7 @@
 - Claim a profile through GitHub authentication.
 - Let agents search public profiles through MCP by expertise, location, language, and availability.
 - Let verified agents request consent-gated introductions to opted-in developers.
+- Let developers publish short-lived, self-declared opportunity preferences that agents can match explicitly.
 
 ## Data and interpretation
 
