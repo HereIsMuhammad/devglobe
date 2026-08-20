@@ -141,7 +141,7 @@ async function liveActivities(request) {
     parameters.push({ name: '@afterTime', value: after.createdAt }, { name: '@afterId', value: after.id });
   }
   const { resources } = await container.items.query({
-    query: `SELECT TOP ${limit} c.id, c.login, c.avatarUrl, c.type, c.description, c.repo, c.url, c.createdAt, c.ingestedAt FROM c WHERE ${conditions.join(' AND ')} ORDER BY c.createdAt DESC, c.id DESC`,
+    query: `SELECT TOP ${limit} c.id, c.login, c.avatarUrl, c.type, c.description, c.repo, c.url, c.createdAt, c.ingestedAt, c.documentType FROM c WHERE ${conditions.join(' AND ')} ORDER BY c.createdAt DESC, c.id DESC`,
     parameters,
   }).fetchAll();
   return json(request, {
