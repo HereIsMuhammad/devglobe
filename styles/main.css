@@ -1729,6 +1729,64 @@ body {
   flex-direction: column;
 }
 
+.global-activity__sources {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.global-activity__source {
+  display: flex;
+  min-width: 0;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 8px;
+  color: var(--text-muted);
+  background: var(--overlay-subtle);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.global-activity__source span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.global-activity__source strong {
+  min-width: 18px;
+  padding: 2px 4px;
+  color: var(--text-muted);
+  background: var(--overlay-subtle-strong);
+  border-radius: 3px;
+  font-size: 8px;
+  text-align: center;
+}
+
+.global-activity__source:hover,
+.global-activity__source:focus-visible {
+  color: var(--text-primary);
+  outline: none;
+}
+
+.global-activity__source--active {
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.08);
+  border-color: rgba(34, 211, 238, 0.4);
+}
+
+.global-activity__source--active strong {
+  color: #22d3ee;
+}
+
 .global-activity__status {
   display: flex;
   align-items: center;

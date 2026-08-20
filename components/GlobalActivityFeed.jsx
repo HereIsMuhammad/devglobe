@@ -1,7 +1,19 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { useGlobalActivityFeed } from './useGlobalActivityFeed.js';
+
+const ACTIVITY_SOURCES = [
+  { id: 'devglobe', label: 'DevGlobe Activity' },
+  { id: 'github', label: 'GitHub Activity' },
+];
+
+function activitySource(activity) {
+  return activity.documentType === 'platform-activity' || activity.documentType === 'fallback-activity'
+    ? 'devglobe'
+    : 'github';
+}
 
 function relativeTime(timestamp) {
   const seconds = Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000));
@@ -13,6 +25,7 @@ function relativeTime(timestamp) {
 }
 
 export default function GlobalActivityFeed({ active }) {
+  const [selectedSource, setSelectedSource] = useState('github');
   const {
     activities,
     loading,
@@ -24,14 +37,38 @@ export default function GlobalActivityFeed({ active }) {
     loadMore,
     refresh,
   } = useGlobalActivityFeed(active);
+  const sourceCounts = useMemo(() => activities.reduce((counts, activity) => {
+    counts[activitySource(activity)] += 1;
+    return counts;
+  }, { devglobe: 0, github: 0 }), [activities]);
+  const visibleActivities = useMemo(
+    () => activities.filter(activity => activitySource(activity) === selectedSource),
+    [activities, selectedSource]
+  );
+  const visibleNewCount = visibleActivities.filter(activity => newActivityIds.has(activity.id)).length;
 
   return (
     <div className="global-activity">
+      <div className="global-activity__sources" role="tablist" aria-label="Activity source">
+        {ACTIVITY_SOURCES.map(source => (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={selectedSource === source.id}
+            className={selectedSource === source.id ? 'global-activity__source global-activity__source--active' : 'global-activity__source'}
+            onClick={() => setSelectedSource(source.id)}
+            key={source.id}
+          >
+            <span>{source.label}</span>
+            <strong>{sourceCounts[source.id]}</strong>
+          </button>
+        ))}
+      </div>
       <div className="global-activity__status">
         <span className="global-activity__live" aria-live="polite">
-          {newActivityIds.size > 0 ? `${newActivityIds.size} new` : 'Live'}
+          {visibleNewCount > 0 ? `${visibleNewCount} new` : 'Live'}
         </span>
-        <span>Best-effort GitHub events</span>
+        <span>{selectedSource === 'github' ? 'Best-effort GitHub events' : 'Activity on DevGlobe'}</span>
       </div>
 
       {loading && <p className="global-activity__message">Loading activities...</p>}
@@ -41,20 +78,28 @@ export default function GlobalActivityFeed({ active }) {
           <button type="button" onClick={() => refresh(activities.length === 0)}>Retry</button>
         </div>
       )}
-      {!loading && !error && activities.length === 0 && (
-        <p className="global-activity__message">No indexed developer activity has been collected in the last 24 hours.</p>
+      {!loading && !error && visibleActivities.length === 0 && (
+        <p className="global-activity__message">
+          {selectedSource === 'github'
+            ? 'No GitHub activity has been collected in the last 24 hours.'
+            : 'No DevGlobe activity has been recorded in the last 24 hours.'}
+        </p>
       )}
 
       <ol className="global-activity__list">
-        {activities.map(activity => (
+        {visibleActivities.map(activity => (
           <li className={newActivityIds.has(activity.id) ? 'global-activity__item global-activity__item--new' : 'global-activity__item'} key={activity.id}>
             <Link className="global-activity__developer" href={`/developer/${encodeURIComponent(activity.login)}`}>
               <img src={activity.avatarUrl || `https://github.com/${encodeURIComponent(activity.login)}.png?size=64`} alt="" loading="lazy" />
               <span>@{activity.login}</span>
             </Link>
-            <a className="global-activity__event" href={activity.url} target="_blank" rel="noopener noreferrer">
-              {activity.description}
-            </a>
+            {selectedSource === 'github' ? (
+              <a className="global-activity__event" href={activity.url} target="_blank" rel="noopener noreferrer">
+                {activity.description}
+              </a>
+            ) : (
+              <Link className="global-activity__event" href={activity.url}>{activity.description}</Link>
+            )}
             <time dateTime={activity.createdAt} title={new Date(activity.createdAt).toLocaleString()}>
               {relativeTime(activity.createdAt)}
             </time>
