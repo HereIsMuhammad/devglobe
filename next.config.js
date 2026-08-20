@@ -17,6 +17,12 @@ const nextConfig = {
           { key: 'Vary', value: 'Accept' },
         ],
       },
+      {
+        source: '/share/:login',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
     ];
   },
   async rewrites() {

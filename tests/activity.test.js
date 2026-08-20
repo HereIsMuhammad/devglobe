@@ -49,6 +49,20 @@ test('creates platform card activity for the actor and target', () => {
   assert.equal(activity.documentType, 'platform-activity');
 });
 
+test('creates platform README activity for the actor and target', () => {
+  const activity = createPlatformActivity({
+    type: 'generated_readme',
+    login: 'octocat',
+    targetLogin: 'hubot',
+    now: new Date('2026-08-13T12:00:00Z'),
+  });
+
+  assert.equal(activity.login, 'octocat');
+  assert.equal(activity.description, "generated @hubot's GitHub profile README");
+  assert.equal(activity.url, '/developer/hubot');
+  assert.equal(activity.documentType, 'platform-activity');
+});
+
 test('creates stable fallback activities within an hourly window', () => {
   const first = createFallbackActivities(Date.parse('2026-08-13T12:10:00Z'));
   const second = createFallbackActivities(Date.parse('2026-08-13T12:50:00Z'));

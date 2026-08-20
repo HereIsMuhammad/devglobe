@@ -5027,15 +5027,57 @@ body {
 .card-modal__share {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(10, 102, 194, 0.35);
+  border-radius: 8px;
+  background: rgba(10, 102, 194, 0.07);
+}
+
+.card-modal__share-heading {
+  display: grid;
+  flex: 1 0 100%;
+  gap: 3px;
+}
+
+.card-modal__share-heading strong {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.card-modal__share-heading span {
+  color: var(--text-secondary);
+  font-size: 11px;
 }
 
 .card-modal__share-label {
-  font-size: 13px;
+  margin-left: 4px;
+  font-size: 11px;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.card-modal__linkedin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid #0a66c2;
+  border-radius: 6px;
+  background: #0a66c2;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.card-modal__linkedin:hover {
+  background: #084f96;
 }
 
 .card-modal__social {
@@ -5069,14 +5111,6 @@ body {
 .card-modal__social--facebook:hover {
   background: rgba(24, 119, 242, 0.12);
   border-color: rgba(24, 119, 242, 0.4);
-}
-
-.card-modal__social--linkedin {
-  color: #0a66c2;
-}
-.card-modal__social--linkedin:hover {
-  background: rgba(10, 102, 194, 0.12);
-  border-color: rgba(10, 102, 194, 0.4);
 }
 
 .card-modal__social--reddit {
