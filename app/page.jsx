@@ -42,7 +42,7 @@ export default function Home() {
   const [compareDevs, setCompareDevs] = useState([]);
   const [theme, setTheme] = useState('dark');
   const [user, setUser] = useState(null);
-  const [claimStatus, setClaimStatus] = useState('unclaimed'); // 'unclaimed' | 'pending' | 'claimed' | 'no_match'
+  const [claimStatus, setClaimStatus] = useState('checking'); // 'checking' | 'unclaimed' | 'pending' | 'claimed' | 'no_match'
   const [claimedLogins, setClaimedLogins] = useState(() => new Set(cachedDeveloperDataset?.claimedLogins || []));
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarView, setSidebarView] = useState('leaderboard');
@@ -115,15 +115,40 @@ export default function Home() {
     loadSession();
   }, []);
 
-  // Check claim status when user and developers are loaded
+  // Resolve ownership independently of the incrementally loaded leaderboard.
+  useEffect(() => {
+    if (!user) return undefined;
+    let cancelled = false;
+    setClaimStatus('checking');
+
+    fetch(`/api/developer?id=${encodeURIComponent(user.login)}`, { cache: 'no-store' })
+      .then(async response => {
+        if (response.status === 404) return null;
+        if (!response.ok) throw new Error('Unable to check profile ownership');
+        return response.json();
+      })
+      .then(profile => {
+        if (cancelled) return;
+        const isOwner = profile?.claimed === true
+          && profile.login?.toLowerCase() === user.login.toLowerCase();
+        setClaimStatus(isOwner ? 'claimed' : 'unclaimed');
+        if (isOwner) setClaimedLogins(previous => new Set(previous).add(user.login));
+      })
+      .catch(() => {
+        if (!cancelled) setClaimStatus(current => current === 'claimed' ? current : 'unclaimed');
+      });
+
+    return () => { cancelled = true; };
+  }, [user]);
+
+  // A claimed record in any loaded batch can promote the status, but an
+  // incomplete batch must never demote an authoritative ownership result.
   useEffect(() => {
     if (!user || developers.length === 0) return;
-    const match = developers.find(d => d.login === user.login);
+    const match = developers.find(developer => developer.login?.toLowerCase() === user.login.toLowerCase());
     if (match?.claimed) {
       setClaimStatus('claimed');
       setClaimedLogins(prev => new Set(prev).add(user.login));
-    } else {
-      setClaimStatus('unclaimed');
     }
   }, [user, developers]);
 
