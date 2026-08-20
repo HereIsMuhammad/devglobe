@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { getSiteUrl, SOCIAL_PREVIEW_VERSION } from '../../../lib/site.js';
+
+export const revalidate = 86400;
 
 export async function generateMetadata({ params }) {
   const { login } = await params;
@@ -34,11 +35,6 @@ export async function generateMetadata({ params }) {
 
 export default async function DeveloperSharePage({ params }) {
   const { login } = await params;
-  const requestHeaders = await headers();
-  console.info('social-preview-page', {
-    login,
-    userAgent: requestHeaders.get('user-agent') || 'unknown',
-  });
   const encodedLogin = encodeURIComponent(login);
   const siteUrl = getSiteUrl();
   const pageUrl = `${siteUrl}/share/${encodedLogin}`;

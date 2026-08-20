@@ -4,11 +4,12 @@ import { saveActivities } from '../../../../lib/activity-store.js';
 import { createPlatformActivity } from '../../../../lib/platform-activity.js';
 
 const LOGIN_PATTERN = /^[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i;
+const ACTIVITY_TYPES = new Set(['generated_card', 'generated_readme']);
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    if (body.type !== 'generated_card' || !LOGIN_PATTERN.test(body.targetLogin || '')) {
+    if (!ACTIVITY_TYPES.has(body.type) || !LOGIN_PATTERN.test(body.targetLogin || '')) {
       return NextResponse.json({ error: 'Invalid platform activity' }, { status: 400 });
     }
 

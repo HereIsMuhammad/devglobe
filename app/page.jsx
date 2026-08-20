@@ -320,17 +320,17 @@ export default function Home() {
     setFiltered(rankedResults);
   }, [developers]);
 
-  const recordCardActivity = useCallback((targetLogin) => {
+  const recordPlatformActivity = useCallback((type, targetLogin) => {
     fetch('/api/activities/platform', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'generated_card', targetLogin }),
+      body: JSON.stringify({ type, targetLogin }),
     }).catch(() => {});
   }, []);
 
   const handleGenerateCard = useCallback((developer) => {
     const rankedDeveloper = developers.find(item => item.login === developer.login) || developer;
-    recordCardActivity(rankedDeveloper.login);
+    recordPlatformActivity('generated_card', rankedDeveloper.login);
     setSelectedDev(rankedDeveloper);
     setCardContext('generate');
     setCardRequest(request => request + 1);
@@ -338,7 +338,7 @@ export default function Home() {
     if (rankedDeveloper.lat != null && rankedDeveloper.lng != null) {
       setFlyTarget({ lat: rankedDeveloper.lat, lng: rankedDeveloper.lng });
     }
-  }, [developers, recordCardActivity]);
+  }, [developers, recordPlatformActivity]);
 
   const handleOpenCardFeature = useCallback(() => {
     const developer = resolveIdentityCardDeveloper(selectedDev, user, developers);
@@ -350,7 +350,7 @@ export default function Home() {
     requestAnimationFrame(() => document.querySelector('#search-bar input')?.focus());
   }, [developers, handleGenerateCard, selectedDev, user]);
 
-  const handleOpenReadmeFeature = useCallback((requestedDeveloper) => {
+  const handleOpenReadmeFeature = useCallback((requestedDeveloper, { recordActivity = true } = {}) => {
     const developer = requestedDeveloper || selectedDev || resolveIdentityCardDeveloper(null, user, developers);
     if (!developer) {
       setTourStep('search');
@@ -358,12 +358,13 @@ export default function Home() {
       return;
     }
     track('profile_readme_opened', { login: developer.login, source: 'home' });
+    if (recordActivity) recordPlatformActivity('generated_readme', developer.login);
     setCardRequest(0);
     setCardContext(null);
     setSelectedDev(developer);
     setSidebarOpen(false);
     setReadmeRequest(request => request + 1);
-  }, [developers, selectedDev, user]);
+  }, [developers, recordPlatformActivity, selectedDev, user]);
 
   // Resume a "Generate README" request started from the home menu before sign-in.
   useEffect(() => {
@@ -373,7 +374,7 @@ export default function Home() {
     if (!pendingLogin) return;
     try { localStorage.removeItem(PENDING_HOME_README_KEY); } catch { /* best-effort cleanup */ }
     const developer = developers.find(candidate => candidate.login.toLowerCase() === pendingLogin.toLowerCase());
-    if (developer) handleOpenReadmeFeature(developer);
+    if (developer) handleOpenReadmeFeature(developer, { recordActivity: false });
   }, [user, developers, handleOpenReadmeFeature]);
 
   const handleOpenCompareFeature = useCallback(() => {
@@ -617,7 +618,8 @@ export default function Home() {
             key={`${selectedDev.login}-${cardRequest}`}
             dev={selectedDev}
             onClose={handleCloseDetail}
-            onCardGenerated={recordCardActivity}
+            onCardGenerated={targetLogin => recordPlatformActivity('generated_card', targetLogin)}
+            onReadmeGenerated={targetLogin => recordPlatformActivity('generated_readme', targetLogin)}
             claimedLogins={claimedLogins}
             user={user}
             onClaim={handleClaim}

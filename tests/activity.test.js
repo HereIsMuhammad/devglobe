@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { decodeActivityCursor, encodeActivityCursor } from '../lib/activity-store.js';
 import { describeGitHubEvent, normalizeGitHubEvent } from '../lib/github-activity.js';
-import { createFallbackActivities, createPlatformActivity } from '../lib/platform-activity.js';
+import { createFallbackActivities, createPlatformActivity, normalizePlatformActivity } from '../lib/platform-activity.js';
 
 test('normalizes a GitHub event into the public activity shape', () => {
   const activity = normalizeGitHubEvent({
@@ -44,7 +44,46 @@ test('creates platform card activity for the actor and target', () => {
   });
 
   assert.equal(activity.login, 'octocat');
-  assert.equal(activity.description, "generated @hubot's developer card");
+  assert.equal(activity.description, "revealed @hubot's open-source identity with a DevGlobe card - try it yourself");
+  assert.equal(activity.url, '/developer/hubot');
+  assert.equal(activity.documentType, 'platform-activity');
+});
+
+test('invites viewers to create a card from self-generated activity', () => {
+  const activity = createPlatformActivity({
+    type: 'generated_card',
+    login: 'octocat',
+    now: new Date('2026-08-13T12:00:00Z'),
+  });
+
+  assert.equal(activity.description, 'revealed their open-source identity with a DevGlobe card - create yours');
+  assert.equal(activity.url, '/developer/octocat');
+});
+
+test('refreshes legacy card activity wording for the live feed', () => {
+  const selfActivity = normalizePlatformActivity({
+    type: 'generated_card',
+    description: 'had their developer card generated',
+  });
+  const targetActivity = normalizePlatformActivity({
+    type: 'generated_card',
+    description: "generated @hubot's developer card",
+  });
+
+  assert.equal(selfActivity.description, 'revealed their open-source identity with a DevGlobe card - create yours');
+  assert.equal(targetActivity.description, "revealed @hubot's open-source identity with a DevGlobe card - try it yourself");
+});
+
+test('creates platform README activity for the actor and target', () => {
+  const activity = createPlatformActivity({
+    type: 'generated_readme',
+    login: 'octocat',
+    targetLogin: 'hubot',
+    now: new Date('2026-08-13T12:00:00Z'),
+  });
+
+  assert.equal(activity.login, 'octocat');
+  assert.equal(activity.description, "generated @hubot's GitHub profile README");
   assert.equal(activity.url, '/developer/hubot');
   assert.equal(activity.documentType, 'platform-activity');
 });
