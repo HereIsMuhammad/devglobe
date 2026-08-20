@@ -21,6 +21,10 @@ import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('../components/Globe.jsx'), { ssr: false });
 const PENDING_CLAIM_KEY = 'devglobe-pending-claim';
+// See #182: fetch a small, fast initial batch for quick Time-to-Interactive,
+// then progressively fetch the rest in the background instead of one huge payload.
+const INITIAL_BATCH_SIZE = 500;
+const BACKGROUND_BATCH_SIZE = 500;
 const PENDING_README_KEY = 'devglobe-pending-readme';
 const PENDING_HOME_README_KEY = 'devglobe-pending-home-readme';
 let cachedDeveloperDataset = null;
@@ -240,8 +244,12 @@ export default function Home() {
     });
   }, []);
 
+  const hasActiveSearchRef = useRef(false);
+
   useEffect(() => {
     if (cachedDeveloperDataset) return;
+
+    let cancelled = false;
 
     async function loadData() {
       try {
@@ -251,29 +259,57 @@ export default function Home() {
             if (Number.isInteger(data?.count)) setDatasetCount(data.count);
           })
           .catch(() => {});
-
-        const res = await fetch(developerSnapshotUrl(), { signal: AbortSignal.timeout(30000) });
-        if (!res.ok) throw new Error(`Failed to load data: ${res.status}`);
         setLoadingStage('downloading');
-        const raw = await res.json();
+        const firstRes = await fetch(`/api/developers?limit=${INITIAL_BATCH_SIZE}&offset=0`, { signal: AbortSignal.timeout(30000) });
+        if (!firstRes.ok) throw new Error(`Failed to load data: ${firstRes.status}`);
         setLoadingStage('preparing');
-        const scored = prepareDeveloperDataset(raw);
+        const firstPage = await firstRes.json();
+        if (cancelled) return;
+
+        let rawAll = firstPage.developers;
+        let scored = prepareDeveloperDataset(rawAll);
         setDevelopers(scored);
         setFiltered(scored);
-        // Build set of all claimed logins from data
-        const claimed = new Set(raw.filter(d => d.claimed).map(d => d.login));
+        let claimed = new Set(rawAll.filter(d => d.claimed).map(d => d.login));
         setClaimedLogins(claimed);
         cachedDeveloperDataset = { developers: scored, claimedLogins: claimed };
+        // The UI is usable now with the first batch; stop the loading overlay and
+        // keep fetching the remaining developers quietly in the background.
         setLoading(false);
+
+        let hasMore = firstPage.hasMore;
+        let nextOffset = firstPage.nextOffset;
+        while (hasMore && !cancelled) {
+          const pageRes = await fetch(`/api/developers?limit=${BACKGROUND_BATCH_SIZE}&offset=${nextOffset}`, { signal: AbortSignal.timeout(30000) })
+            .catch(() => null);
+          if (!pageRes?.ok) break;
+          const page = await pageRes.json();
+          if (cancelled || !page.developers?.length) break;
+
+          rawAll = rawAll.concat(page.developers);
+          scored = prepareDeveloperDataset(rawAll);
+          setDevelopers(scored);
+          // Don't clobber an active search/filter with the growing full dataset.
+          if (!hasActiveSearchRef.current) setFiltered(scored);
+          claimed = new Set(rawAll.filter(d => d.claimed).map(d => d.login));
+          setClaimedLogins(claimed);
+          cachedDeveloperDataset = { developers: scored, claimedLogins: claimed };
+
+          hasMore = page.hasMore;
+          nextOffset = page.nextOffset;
+        }
       } catch (err) {
+        if (cancelled) return;
         setError(err.message);
         setLoading(false);
       }
     }
     loadData();
+    return () => { cancelled = true; };
   }, []);
 
   const handleSearch = useCallback((results) => {
+    hasActiveSearchRef.current = true;
     const developerByLogin = new Map(developers.map(developer => [developer.login, developer]));
     const rankedResults = results.map(result => ({
       ...developerByLogin.get(result.login),
@@ -393,6 +429,7 @@ export default function Home() {
   }, [handleGenerateCard]);
 
   const handleResetFilter = useCallback(() => {
+    hasActiveSearchRef.current = false;
     setFiltered(developers);
   }, [developers]);
 
@@ -479,6 +516,7 @@ export default function Home() {
   }, []);
 
   const handleHome = useCallback(() => {
+    hasActiveSearchRef.current = false;
     setCardRequest(0);
     setCardContext(null);
     setSelectedDev(null);
@@ -542,16 +580,16 @@ export default function Home() {
         onClose={completeTour}
       />
       <a
-        className="spacerr-badge"
-        href="https://spacerrapps.com/apps/devglobe?utm_source=badge&amp;utm_medium=referral&amp;utm_campaign=featured"
+        className="product-hunt-badge"
+        href="https://www.producthunt.com/products/devglobe-2?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-devglobe-2"
         target="_blank"
         rel="noopener noreferrer"
       >
         <img
-          alt="DevGlobe is featured on Spacerr"
-          width="192"
+          alt="DevGlobe - Discover top open source devs on an interactive 3D globe | Product Hunt"
+          width="250"
           height="54"
-          src="https://spacerrapps.com/badge/devglobe.svg?theme=dark"
+          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1216204&amp;theme=light&amp;t=1785998968385"
         />
       </a>
       <main className="main">
