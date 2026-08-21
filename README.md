@@ -216,6 +216,7 @@ Required environment variables:
 | `COSMOS_ACTIVITY_CONTAINER` | Rolling GitHub activity container (`activities`) |
 | `COSMOS_CONTACTS_CONTAINER` | Private lifecycle-email contact container (`developer-contacts`) |
 | `COSMOS_ENGAGEMENT_CONTAINER` | Privacy-filtered engagement events (default: `engagement-events`) |
+| `COSMOS_CONTRIBUTION_STATE_CONTAINER` | Shared GitHub recommendation quota state (default: `contribution-opportunity-state`) |
 | `ENGAGEMENT_HASH_SECRET` | HMAC secret for session-window deduplication; defaults to `SESSION_SECRET` |
 | `ACTIVITY_INGEST_SECRET` | Bearer secret for the activity collector endpoint |
 | `RESEND_API_KEY` | Optional Resend API key for claim and approval emails |
@@ -234,6 +235,8 @@ npm run setup-contacts-container
 See the [lifecycle email PRD](docs/prd/lifecycle-email-notifications.md).
 
 Claimed-profile visibility insights use allow-listed engagement events with hashed session IDs. Create the TTL-enabled container before deployment with `node scripts/setup-engagement-container.js`. See the [engagement analytics contract](docs/prd/engagement-analytics.md) for event semantics, privacy thresholds, and deletion behavior.
+
+Claimed developers can also configure personalized open-source contribution recommendations. Candidates come only from public, fresh, unassigned GitHub issues in repositories with contribution guidance. Create the shared quota-state container with `node scripts/setup-contribution-state-container.js` before deployment. See the [contribution opportunities contract](docs/prd/contribution-opportunities.md).
 
 Verified users can explicitly opt in to a Monday weekly digest from the user menu. The digest includes current global and country rankings, rank movement since the previous digest, current DevGlobe features, and an Explore DevGlobe link. The Azure Functions app invokes `/api/cron/weekly-digest` at 13:00 UTC each Monday; only verified contacts with `productUpdatesEnabled: true` are eligible. Each message uses a per-user, per-week idempotency key and includes one-click unsubscribe headers and a signed unsubscribe link.
 
