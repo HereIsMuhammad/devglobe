@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getPublicAiProfile } from '../../../lib/ai-profile.js';
+import { withNumericScore } from '../../../lib/developer-score.js';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
 const COSMOS_KEY = process.env.COSMOS_KEY;
@@ -16,12 +17,13 @@ async function getSampleData() {
 }
 
 function withPublicAiProfile(developer) {
-  const aiProfile = getPublicAiProfile(developer.aiProfile);
+  const scoredDeveloper = withNumericScore(developer);
+  const aiProfile = getPublicAiProfile(scoredDeveloper.aiProfile);
   if (!aiProfile) {
-    const { aiProfile: omitted, ...publicDeveloper } = developer;
+    const { aiProfile: omitted, ...publicDeveloper } = scoredDeveloper;
     return publicDeveloper;
   }
-  return { ...developer, aiProfile };
+  return { ...scoredDeveloper, aiProfile };
 }
 
 export async function GET(request) {
