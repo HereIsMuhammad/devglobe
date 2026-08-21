@@ -5,7 +5,7 @@ import { track } from '../lib/analytics.js';
 import ProfileCompletionChecklist from './ProfileCompletionChecklist.jsx';
 import ProfileInsights from './ProfileInsights.jsx';
 
-export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, onOpenProfile, onGenerateCard, completionVersion, claimStatus }) {
+export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, onOpenContributions, onOpenProfile, onGenerateCard, completionVersion, claimStatus }) {
   const [open, setOpen] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState('idle');
   const [digestPreference, setDigestPreference] = useState(null);
@@ -164,6 +164,12 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
                 onCloseMenu={() => setOpen(false)}
               />
               <ProfileInsights />
+              <button className="user-menu__item" onClick={() => { onOpenContributions(); setOpen(false); }}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M9 18h6M10 22h4" /><path d="M8.5 14.5A7 7 0 1115.5 14.5L14 16h-4z" />
+                </svg>
+                Contribution opportunities
+              </button>
               <button className="user-menu__item" onClick={() => { onEditAiProfile(); setOpen(false); }}>
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 8V4H8" />

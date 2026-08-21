@@ -12,6 +12,7 @@ import AddMeModal from '../components/AddMeModal.jsx';
 import ClaimStatusModal from '../components/ClaimStatusModal.jsx';
 import AiProfileModal from '../components/AiProfileModal.jsx';
 import IntroductionInboxModal from '../components/IntroductionInboxModal.jsx';
+import ContributionOpportunitiesModal from '../components/ContributionOpportunitiesModal.jsx';
 import QuickTour from '../components/QuickTour.jsx';
 import PlatformActivityBanner from '../components/PlatformActivityBanner.jsx';
 import { prepareDeveloperDataset } from '../lib/developer-dataset.js';
@@ -54,6 +55,7 @@ export default function Home() {
   const [showClaimPending, setShowClaimPending] = useState(false);
   const [showAiProfile, setShowAiProfile] = useState(false);
   const [showIntroductions, setShowIntroductions] = useState(false);
+  const [showContributions, setShowContributions] = useState(false);
   const [completionVersion, setCompletionVersion] = useState(0);
   const [agentGlobeLayerVisible, setAgentGlobeLayerVisible] = useState(false);
   const [tourStep, setTourStep] = useState(null);
@@ -602,6 +604,7 @@ export default function Home() {
         onClaim={handleClaim}
         onEditAiProfile={() => setShowAiProfile(true)}
         onOpenIntroductions={() => setShowIntroductions(true)}
+        onOpenContributions={() => setShowContributions(true)}
         onOpenProfile={handleOpenOwnProfile}
         onGenerateCard={handleGenerateOwnCard}
         completionVersion={completionVersion}
@@ -715,6 +718,7 @@ export default function Home() {
           />
         )}
         {showIntroductions && <IntroductionInboxModal onClose={() => setShowIntroductions(false)} />}
+        {showContributions && <ContributionOpportunitiesModal onClose={() => setShowContributions(false)} />}
       </main>
     </div>
   );
