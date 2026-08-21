@@ -54,6 +54,7 @@ export default function Home() {
   const [showClaimPending, setShowClaimPending] = useState(false);
   const [showAiProfile, setShowAiProfile] = useState(false);
   const [showIntroductions, setShowIntroductions] = useState(false);
+  const [completionVersion, setCompletionVersion] = useState(0);
   const [agentGlobeLayerVisible, setAgentGlobeLayerVisible] = useState(false);
   const [tourStep, setTourStep] = useState(null);
   const [tourMatch, setTourMatch] = useState(null);
@@ -162,6 +163,7 @@ export default function Home() {
 
   const handleAiProfileSaved = useCallback((aiProfile) => {
     setSelectedDev(current => current?.login === user?.login ? { ...current, aiProfile } : current);
+    setCompletionVersion(version => version + 1);
   }, [user]);
 
   const handleClaim = useCallback(async ({ openCard = true, openReadme = false } = {}) => {
@@ -217,6 +219,13 @@ export default function Home() {
         if (openCard) {
           setCardContext('claim');
           setCardRequest(request => request + 1);
+          fetch('/api/profile-completion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'generated-card' }),
+          }).then(response => {
+            if (response.ok) setCompletionVersion(version => version + 1);
+          }).catch(() => {});
         }
         if (openReadme) setReadmeRequest(request => request + 1);
         setSidebarOpen(false);
@@ -356,6 +365,15 @@ export default function Home() {
   const handleGenerateCard = useCallback((developer) => {
     const rankedDeveloper = developers.find(item => item.login === developer.login) || developer;
     recordPlatformActivity('generated_card', rankedDeveloper.login);
+    if (user?.login?.toLowerCase() === rankedDeveloper.login?.toLowerCase()) {
+      fetch('/api/profile-completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'generated-card' }),
+      }).then(response => {
+        if (response.ok) setCompletionVersion(version => version + 1);
+      }).catch(() => {});
+    }
     setSelectedDev(rankedDeveloper);
     setCardContext('generate');
     setCardRequest(request => request + 1);
@@ -363,7 +381,29 @@ export default function Home() {
     if (rankedDeveloper.lat != null && rankedDeveloper.lng != null) {
       setFlyTarget({ lat: rankedDeveloper.lat, lng: rankedDeveloper.lng });
     }
-  }, [developers, recordPlatformActivity]);
+  }, [developers, recordPlatformActivity, user]);
+
+  const handleOpenOwnProfile = useCallback(async () => {
+    if (!user?.login) return;
+    let developer = developers.find(candidate => candidate.login?.toLowerCase() === user.login.toLowerCase());
+    if (!developer) {
+      const response = await fetch(`/api/developer?id=${encodeURIComponent(user.login)}`, { cache: 'no-store' });
+      if (response.ok) developer = await response.json();
+    }
+    if (!developer) return;
+    setCardRequest(0);
+    setCardContext(null);
+    setSelectedDev(developer);
+    setSidebarOpen(false);
+    if (developer.lat != null && developer.lng != null) {
+      setFlyTarget({ lat: developer.lat, lng: developer.lng });
+    }
+  }, [developers, user]);
+
+  const handleGenerateOwnCard = useCallback(() => {
+    const developer = resolveIdentityCardDeveloper(null, user, developers);
+    if (developer) handleGenerateCard(developer);
+  }, [developers, handleGenerateCard, user]);
 
   const handleOpenCardFeature = useCallback(() => {
     const developer = resolveIdentityCardDeveloper(selectedDev, user, developers);
@@ -562,6 +602,9 @@ export default function Home() {
         onClaim={handleClaim}
         onEditAiProfile={() => setShowAiProfile(true)}
         onOpenIntroductions={() => setShowIntroductions(true)}
+        onOpenProfile={handleOpenOwnProfile}
+        onGenerateCard={handleGenerateOwnCard}
+        completionVersion={completionVersion}
         claimStatus={claimStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
