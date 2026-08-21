@@ -26,6 +26,7 @@ import {
 } from '../lib/nominate.js';
 import { buildNominationApprovedEmail, sendLifecycleEmail } from '../lib/lifecycle-email.js';
 import { getDeveloperContact } from '../lib/developer-contact-store.js';
+import { scoreDeveloperForDataset } from '../lib/scoring.js';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -106,24 +107,43 @@ async function approve(container, username, reviewer, refresh = false) {
   // itself (the partition key) is intentionally never changed here — only
   // lat/lng and other non-partition fields are updated.
   const coords = await geocodeLocation(dev.location);
+  const profileUpdate = {
+    name: enriched.name,
+    avatarUrl: enriched.avatarUrl,
+    bio: enriched.bio,
+    githubUrl: enriched.githubUrl,
+    followers: enriched.followers,
+    publicRepos: enriched.publicRepos,
+    totalStars: enriched.totalStars,
+    totalForks: enriched.totalForks,
+    totalWatchers: enriched.totalWatchers,
+    totalCommits: enriched.totalCommits,
+    topLanguage: enriched.topLanguage,
+    languages: enriched.languages,
+    topRepos: enriched.topRepos,
+    metricsUpdatedAt: new Date().toISOString(),
+    ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
+  };
+
+  const { resources: publicDevelopers } = await container.items.query({
+    query: `SELECT c.id, c.login, c.followers, c.totalStars, c.totalForks, c.totalWatchers,
+      c.totalCommits, c.soUserId, c.soReputation, c.soAnswers, c.soAcceptRate, c.soBadges
+      FROM c WHERE (NOT IS_DEFINED(c.nomination) OR c.nomination.status = 'approved') AND c.id != @id`,
+    parameters: [{ name: '@id', value: dev.id }],
+  }).fetchAll();
+  const scored = scoreDeveloperForDataset({ ...dev, ...profileUpdate }, publicDevelopers);
+  const scoreUpdate = {
+    score: scored.score,
+    scoreDimensions: scored.scoreDimensions,
+    scoreWeights: scored.scoreWeights,
+    scoreHasSO: scored.scoreHasSO,
+    scorePercentile: scored.scorePercentile,
+  };
 
   try {
     await patchDeveloperNomination(container, dev, {
-      name: enriched.name,
-      avatarUrl: enriched.avatarUrl,
-      bio: enriched.bio,
-      githubUrl: enriched.githubUrl,
-      followers: enriched.followers,
-      publicRepos: enriched.publicRepos,
-      totalStars: enriched.totalStars,
-      totalForks: enriched.totalForks,
-      totalWatchers: enriched.totalWatchers,
-      totalCommits: enriched.totalCommits,
-      topLanguage: enriched.topLanguage,
-      languages: enriched.languages,
-      topRepos: enriched.topRepos,
-      metricsUpdatedAt: new Date().toISOString(),
-      ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
+      ...profileUpdate,
+      ...scoreUpdate,
       ...(dev.nomination ? { nomination: {
         status: refresh ? dev.nomination.status : 'approved',
         reviewedAt: refresh ? dev.nomination.reviewedAt : new Date().toISOString(),

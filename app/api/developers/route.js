@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { projectAgentReadiness } from '../../../lib/agent-network.js';
+import { withNumericScore } from '../../../lib/developer-score.js';
 import { parsePaginationParams } from '../../../lib/pagination.js';
 
 const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT;
@@ -17,7 +18,7 @@ async function getSampleData() {
 }
 
 function projectAgentReadinessList(developers) {
-  return developers.map(projectAgentReadiness);
+  return developers.map(withNumericScore).map(projectAgentReadiness);
 }
 
 // GET /api/developers            -> full array (legacy shape, unchanged for existing callers)
