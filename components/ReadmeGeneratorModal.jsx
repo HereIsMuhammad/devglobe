@@ -1,21 +1,40 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 import { track } from '../lib/analytics.js';
 import { defaultReadmeAbout, generateProfileReadme } from '../lib/profile-readme.js';
 
-const MODES = ['edit', 'source'];
+const MODES = ['edit', 'preview', 'source'];
+const previewSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), 'picture', 'source'],
+  attributes: {
+    ...defaultSchema.attributes,
+    div: [...(defaultSchema.attributes?.div || []), 'align'],
+    img: [...(defaultSchema.attributes?.img || []), 'align', 'height', 'width'],
+    source: ['media', 'srcSet'],
+  },
+};
+
+function PreviewLink({ children, href }) {
+  return <a href={href} target="_blank" rel="noreferrer">{children}</a>;
+}
 
 export default function ReadmeGeneratorModal({ developer, access = 'preview', viewerLogin, onClaim, onClose }) {
   const [about, setAbout] = useState(() => defaultReadmeAbout(developer));
-  const [mode, setMode] = useState(access === 'generate' ? 'edit' : 'source');
+  const [mode, setMode] = useState(access === 'generate' ? 'edit' : 'preview');
   const [status, setStatus] = useState('');
   const [claiming, setClaiming] = useState(false);
   const siteUrl = typeof window === 'undefined' ? 'https://www.devglobe.dev' : window.location.origin;
   const markdown = generateProfileReadme(developer, { about, siteUrl });
   const canCustomize = access === 'generate';
   const signedInAsDifferentUser = Boolean(viewerLogin && viewerLogin.toLowerCase() !== developer.login.toLowerCase());
-  const availableModes = canCustomize ? MODES : ['source'];
+  const availableModes = canCustomize ? MODES : ['preview', 'source'];
 
   useEffect(() => {
     const handleKeyDown = event => {
@@ -69,7 +88,7 @@ export default function ReadmeGeneratorModal({ developer, access = 'preview', vi
     window.location.assign(`/api/auth/github?login=${encodeURIComponent(developer.login)}`);
   }
 
-  return (
+  return createPortal((
     <div className="readme-modal__backdrop" onMouseDown={event => event.target === event.currentTarget && onClose()}>
       <section className="readme-modal" role="dialog" aria-modal="true" aria-labelledby="readme-modal-title">
         <button type="button" className="readme-modal__close" onClick={onClose} aria-label="Close README generator">&times;</button>
@@ -83,10 +102,11 @@ export default function ReadmeGeneratorModal({ developer, access = 'preview', vi
 
         <div className="readme-modal__tabs" role="tablist" aria-label="README generator view">
           {canCustomize && <button type="button" id="readme-tab-edit" role="tab" aria-selected={mode === 'edit'} aria-controls="readme-panel-edit" tabIndex={mode === 'edit' ? 0 : -1} onClick={() => setMode('edit')} onKeyDown={handleTabKeyDown}>Edit profile</button>}
+          <button type="button" id="readme-tab-preview" role="tab" aria-selected={mode === 'preview'} aria-controls="readme-panel-preview" tabIndex={mode === 'preview' ? 0 : -1} onClick={() => setMode('preview')} onKeyDown={handleTabKeyDown}>Rendered preview</button>
           <button type="button" id="readme-tab-source" role="tab" aria-selected={mode === 'source'} aria-controls="readme-panel-source" tabIndex={mode === 'source' ? 0 : -1} onClick={() => setMode('source')} onKeyDown={handleTabKeyDown}>Markdown source</button>
         </div>
 
-        {mode === 'edit' ? (
+        {mode === 'edit' && (
           <div className="readme-modal__panel" id="readme-panel-edit" role="tabpanel" aria-labelledby="readme-tab-edit">
             <label className="readme-modal__field">
               <span>About me</span>
@@ -94,7 +114,23 @@ export default function ReadmeGeneratorModal({ developer, access = 'preview', vi
               <small>Markdown is supported. Profile metrics, languages, repositories, and links are filled from DevGlobe.</small>
             </label>
           </div>
-        ) : (
+        )}
+
+        {mode === 'preview' && (
+          <div className="readme-modal__panel" id="readme-panel-preview" role="tabpanel" aria-labelledby="readme-tab-preview">
+            <article className="readme-modal__preview">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw, [rehypeSanitize, previewSchema]]}
+                components={{ a: PreviewLink }}
+              >
+                {markdown}
+              </ReactMarkdown>
+            </article>
+          </div>
+        )}
+
+        {mode === 'source' && (
           <div className="readme-modal__panel" id="readme-panel-source" role="tabpanel" aria-labelledby="readme-tab-source">
             <pre className="readme-modal__source" tabIndex="0"><code>{markdown}</code></pre>
           </div>
@@ -120,5 +156,5 @@ export default function ReadmeGeneratorModal({ developer, access = 'preview', vi
         </footer>
       </section>
     </div>
-  );
+  ), document.body);
 }
