@@ -3848,7 +3848,7 @@ body {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  min-width: 220px;
+  width: min(320px, calc(100vw - 24px));
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -3997,6 +3997,128 @@ body {
   height: 16px;
   flex: 0 0 auto;
   accent-color: var(--accent-github);
+}
+
+.profile-checklist {
+  margin: 6px 8px 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.profile-checklist__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-checklist__header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.profile-checklist__header strong {
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+.profile-checklist__header span {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.profile-checklist__dismiss {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 18px;
+}
+
+.profile-checklist__progress {
+  height: 4px;
+  margin: 9px 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.profile-checklist__progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent-github);
+  transition: width 0.2s ease;
+}
+
+.profile-checklist__steps {
+  display: grid;
+  gap: 2px;
+}
+
+.profile-checklist__step {
+  display: grid;
+  grid-template-columns: 18px 1fr 12px;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 4px 3px;
+  border: 0;
+  background: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 11px;
+  text-align: left;
+}
+
+.profile-checklist__step:not(:disabled):hover {
+  color: var(--accent-github);
+}
+
+.profile-checklist__step--complete {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.profile-checklist__status {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--accent-github);
+  font-size: 10px;
+}
+
+.profile-checklist__step--complete .profile-checklist__status {
+  border-color: var(--accent-github);
+  background: rgba(46, 164, 79, 0.12);
+}
+
+.profile-checklist__arrow {
+  color: var(--text-muted);
+  font-size: 18px;
+  text-align: right;
+}
+
+.profile-checklist__restore-icon {
+  width: 14px;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-checklist__progress span {
+    transition: none;
+  }
 }
 
 /* =============== Verified Badge =============== */
