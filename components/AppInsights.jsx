@@ -30,13 +30,17 @@ export default function AppInsights({ connectionString: connectionStringProp }) 
           },
         });
         appInsights.loadAppInsights();
+        window.__DEVGLOBE_APP_INSIGHTS__ = appInsights;
         appInsights.trackPageView();
       } catch {
         // Analytics is best-effort; never block the app if it fails to load.
       }
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      delete window.__DEVGLOBE_APP_INSIGHTS__;
+    };
   }, [connectionStringProp]);
 
   return null;

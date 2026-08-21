@@ -215,6 +215,8 @@ Required environment variables:
 | `COSMOS_CONTAINER` | Container name |
 | `COSMOS_ACTIVITY_CONTAINER` | Rolling GitHub activity container (`activities`) |
 | `COSMOS_CONTACTS_CONTAINER` | Private lifecycle-email contact container (`developer-contacts`) |
+| `COSMOS_ENGAGEMENT_CONTAINER` | Privacy-filtered engagement events (default: `engagement-events`) |
+| `ENGAGEMENT_HASH_SECRET` | HMAC secret for session-window deduplication; defaults to `SESSION_SECRET` |
 | `ACTIVITY_INGEST_SECRET` | Bearer secret for the activity collector endpoint |
 | `RESEND_API_KEY` | Optional Resend API key for claim and approval emails |
 | `EMAIL_FROM` | Sender on a domain verified by Resend |
@@ -230,6 +232,8 @@ npm run setup-contacts-container
 ```
 
 See the [lifecycle email PRD](docs/prd/lifecycle-email-notifications.md).
+
+Claimed-profile visibility insights use allow-listed engagement events with hashed session IDs. Create the TTL-enabled container before deployment with `node scripts/setup-engagement-container.js`. See the [engagement analytics contract](docs/prd/engagement-analytics.md) for event semantics, privacy thresholds, and deletion behavior.
 
 Verified users can explicitly opt in to a Monday weekly digest from the user menu. The digest includes current global and country rankings, rank movement since the previous digest, current DevGlobe features, and an Explore DevGlobe link. The Azure Functions app invokes `/api/cron/weekly-digest` at 13:00 UTC each Monday; only verified contacts with `productUpdatesEnabled: true` are eligible. Each message uses a per-user, per-week idempotency key and includes one-click unsubscribe headers and a signed unsubscribe link.
 

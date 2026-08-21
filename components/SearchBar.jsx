@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import SpecialTags from './SpecialTags.jsx';
+import { trackSearchAppearances } from '../lib/analytics.js';
 import { countryKey } from '../lib/country.js';
 import { publicApiUrl } from '../lib/public-api.js';
 
@@ -78,6 +79,7 @@ export default function SearchBar({ developers, onResults, onReset, onSelectDeve
       onResults(results);
       setResultCount(results.length);
       setSingleResult(results.length === 1 ? results[0] : null);
+      trackSearchAppearances(results.map(result => result.login), m);
       onSearchState?.({ query: q.trim(), results });
       return;
     }
@@ -101,6 +103,7 @@ export default function SearchBar({ developers, onResults, onReset, onSelectDeve
           ? developers.find(developer => developer.login === results[0].login) || results[0]
           : null;
         setSingleResult(matchedDeveloper);
+        trackSearchAppearances(results.map(result => result.login), m);
         onSearchState?.({ query: q.trim(), results });
       }
     } catch (e) {

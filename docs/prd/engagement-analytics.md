@@ -1,0 +1,21 @@
+# Engagement analytics and profile visibility
+
+## Event contract
+
+DevGlobe records intentional browser actions only. `profile_viewed`, `card_generated`, `profile_shared`, and `search_appearance` include the public target login needed to build owner insights. `comparison_started`, `recommendation_opened`, `next_action_selected`, and `session_restored` measure the broader engagement funnel. Optional properties are limited to `action`, `channel`, `journey`, and `source`, each capped at 40 characters.
+
+Search text, email addresses, OAuth data, IP addresses, and raw browser session IDs are never stored. Search appearance events contain only the public logins displayed in the result set and the search mode.
+
+## Counting and privacy
+
+The server rejects missing and known automated user agents, social preview crawlers, and direct image requests. It issues a signed, HTTP-only browser-session cookie and rejects forged session identities; raw session IDs are HMACed before storage. Repeated events for the same session, event name, target profile, action qualifier, and 30-minute window produce the same Cosmos item ID and are idempotent. The minimum-volume threshold counts separately HMACed network cohorts, so deleting or rotating a browser cookie cannot reveal a low-volume metric.
+
+Profile insights show 7, 30, and 90-day event counts with the immediately preceding period. A metric is suppressed unless at least three distinct hashed sessions contributed during that period. Only an authenticated GitHub owner whose matching profile is claimed can read the private panel.
+
+An engaged session contains at least two distinct meaningful event types or a card generation followed by another meaningful action. Returning-user reporting compares a claimed user's first session in a 7 or 30-day period with an earlier session. Funnel reporting uses `card_generated` followed by a different meaningful event in the same hashed session.
+
+## Retention and deletion
+
+Raw allow-listed events have item-level Cosmos TTL and expire after 180 days, which supports current and prior 90-day comparisons. Aggregate responses are computed on demand and are not persisted. Session hashes cannot be reversed without the server secret and rotate when that secret changes.
+
+When a profile is removed, its event partition should be deleted as part of the same administrative removal workflow. Until that workflow runs, TTL remains the deletion backstop. Rotating `ENGAGEMENT_HASH_SECRET` prevents future sessions from being linked to earlier hashes.
