@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { track } from '../lib/analytics.js';
 import ProfileCompletionChecklist from './ProfileCompletionChecklist.jsx';
+import ProfileInsights from './ProfileInsights.jsx';
 
 export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onOpenIntroductions, onOpenProfile, onGenerateCard, completionVersion, claimStatus }) {
   const [open, setOpen] = useState(false);
@@ -162,6 +163,7 @@ export default function UserMenu({ user, onLogout, onClaim, onEditAiProfile, onO
                 onGenerateCard={onGenerateCard}
                 onCloseMenu={() => setOpen(false)}
               />
+              <ProfileInsights />
               <button className="user-menu__item" onClick={() => { onEditAiProfile(); setOpen(false); }}>
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 8V4H8" />

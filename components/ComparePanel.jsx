@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { track } from '../lib/analytics.js';
 import { formatNum } from '../lib/format.js';
 
 const METRICS = [
@@ -12,6 +13,10 @@ const METRICS = [
 
 export default function ComparePanel({ devs, onClose }) {
   const [devA, devB] = devs;
+
+  useEffect(() => {
+    track('comparison_started', { source: 'compare_panel' });
+  }, []);
 
   return (
     <div className="compare-panel-backdrop" onClick={onClose}>

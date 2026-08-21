@@ -3855,6 +3855,8 @@ body {
   box-shadow: var(--shadow-strong);
   z-index: 200;
   padding: 8px 0;
+  max-height: calc(100vh - 72px);
+  overflow-y: auto;
   animation: fadeIn 0.15s ease;
 }
 
@@ -4113,6 +4115,81 @@ body {
 .profile-checklist__restore-icon {
   width: 14px;
   text-align: center;
+}
+
+.profile-insights__chevron {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.profile-insights__panel {
+  margin: 2px 8px 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.profile-insights__panel > p {
+  margin: 0;
+}
+
+.profile-insights__periods {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  margin-bottom: 10px;
+}
+
+.profile-insights__periods button {
+  min-height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+}
+
+.profile-insights__periods button.active {
+  border-color: var(--accent-github);
+  background: rgba(46, 164, 79, 0.12);
+  color: var(--text-primary);
+}
+
+.profile-insights__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.profile-insights__metrics > div {
+  display: grid;
+  min-width: 0;
+  min-height: 72px;
+  align-content: start;
+  gap: 2px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.profile-insights__metrics strong {
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.profile-insights__trend--up { color: var(--accent-github); }
+.profile-insights__trend--down { color: #ef4444; }
+.profile-insights__private { line-height: 1.25; }
+
+.profile-insights__note {
+  margin-top: 9px !important;
+  line-height: 1.4;
 }
 
 @media (prefers-reduced-motion: reduce) {
